@@ -20,7 +20,7 @@ RUN composer install --no-dev --prefer-dist --no-interaction --optimize-autoload
 
 
 # ===== 3) Runtime (Apache + PHP) =====
-FROM php:8.3-apache
+FROM php:8.4-apache
 
 # System dependencies + PHP extensions
 RUN apt-get update && apt-get install -y \
