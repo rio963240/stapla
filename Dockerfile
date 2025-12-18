@@ -61,4 +61,5 @@ RUN mkdir -p storage/framework/cache/data storage/framework/sessions storage/fra
  && chmod -R 775 storage bootstrap/cache
 
 EXPOSE 80
-CMD ["apache2-foreground"]
+CMD ["bash", "-lc", "sed -i \"s/Listen 80/Listen ${PORT:-80}/\" /etc/apache2/ports.conf && apache2-foreground"]
+
