@@ -63,3 +63,8 @@ RUN mkdir -p storage/framework/cache/data storage/framework/sessions storage/fra
 EXPOSE 80
 CMD ["bash", "-lc", "sed -i \"s/Listen 80/Listen ${PORT:-80}/\" /etc/apache2/ports.conf && apache2-foreground"]
 
+RUN printf '<Directory /var/www/html>\n\
+    AllowOverride All\n\
+    Require all granted\n\
+</Directory>\n' > /etc/apache2/conf-available/laravel.conf \
+ && a2enconf laravel
