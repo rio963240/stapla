@@ -14,9 +14,9 @@ FROM composer:2 AS vendor
 WORKDIR /app
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
-COPY . .
+#COPY . .
 # ここで追加のオートロード最適化
-RUN composer dump-autoload --no-dev --optimize
+#RUN composer dump-autoload --no-dev --optimize
 
 
 # ===== 3) Runtime (Apache + PHP) =====
