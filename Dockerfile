@@ -53,12 +53,13 @@ COPY --from=vendor /app/vendor ./vendor
 COPY --from=frontend /app/public/build ./public/build
 
 # Laravel permissions
-RUN mkdir -p storage/framework/{cache,sessions,views} bootstrap/cache \
-&& chown -R www-data:www-data storage bootstrap/cache
+RUN mkdir -p storage/framework/{cache,sessions,views} \
+ && chown -R www-data:www-data storage bootstrap/cache
+
 
 
 EXPOSE 80
 
 # Render ではコンテナ起動時に env が入るので、ここでキャッシュ生成するのが安全
 # （DBを触る migrate は最初は入れない方が無難。必要なら後述）
-CMD ["bash", "-lc", "php artisan config:cache && php artisan route:cache && php artisan view:cache && apache2-foreground"]
+CMD ["bash", "-lc", "apache2-foreground"]
