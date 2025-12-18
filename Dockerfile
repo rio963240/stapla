@@ -1,6 +1,6 @@
 # ===== 1) Frontend build (Vite) =====
 FROM node:20-alpine AS frontend
-WORKDIRUNDIR /app
+WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY resources ./resources
