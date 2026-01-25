@@ -1,11 +1,16 @@
 <x-guest-layout>
     <x-authentication-card>
         <x-slot name="logo">
-            <x-authentication-card-logo />
+            <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-orange-500">
+                <img src="{{ asset('images/stapla-logo.png') }}" alt="スタプラ" class="h-16 w-16" />
+            </div>
         </x-slot>
 
-        <div class="mb-4 text-sm text-gray-600">
-            {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
+        <div class="mb-4 text-sm text-gray-600 leading-relaxed">
+            {{ __('パスワードをお忘れですか？') }}<br>
+            <span class="block mt-1">
+                {{ __('登録メールアドレス宛に、パスワードリセット用のURLを送信します') }}
+            </span>
         </div>
 
         @session('status')
@@ -20,13 +25,13 @@
             @csrf
 
             <div class="block">
-                <x-label for="email" value="{{ __('Email') }}" />
+                <x-label for="email" value="{{ __('メールアドレス') }}" />
                 <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
             </div>
 
             <div class="flex items-center justify-end mt-4">
                 <x-button>
-                    {{ __('Email Password Reset Link') }}
+                    {{ __('メールを送信') }}
                 </x-button>
             </div>
         </form>
