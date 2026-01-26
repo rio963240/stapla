@@ -1,3 +1,6 @@
+@props([
+    'showNavigation' => true,
+])
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
@@ -16,12 +19,15 @@
 
         <!-- Styles -->
         @livewireStyles
+        @stack('styles')
     </head>
     <body class="font-sans antialiased">
         <x-banner />
 
         <div class="min-h-screen bg-gray-100">
-            @livewire('navigation-menu')
+            @if ($showNavigation)
+                @livewire('navigation-menu')
+            @endif
 
             <!-- Page Heading -->
             @if (isset($header))
@@ -40,6 +46,7 @@
 
         @stack('modals')
 
+        @stack('scripts')
         @livewireScripts
     </body>
 </html>
