@@ -66,9 +66,9 @@
                 <x-button class="self-center w-32 justify-center bg-orange-500 hover:bg-orange-600 focus:bg-orange-600 active:bg-orange-700 focus:ring-orange-400">
                     ログイン
                 </x-button>
-                <x-button >
+                <button>
                     ログイン2
-                </x-button>
+                </button>
             </div>
         </form>
     </x-authentication-card>
