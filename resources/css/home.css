@@ -1,0 +1,12 @@
+.fc .fc-toolbar-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.fc .fc-day-sat {
+    background-color: rgba(59, 130, 246, 0.08);
+}
+
+.fc .fc-day-sun {
+    background-color: rgba(239, 68, 68, 0.08);
+}
