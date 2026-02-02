@@ -11,6 +11,10 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
+    Route::get('/settings', function () {
+        return view('settings');
+    })->name('settings');
+
     Route::get('/home', function () {
         return view('home');
     })->name('home');

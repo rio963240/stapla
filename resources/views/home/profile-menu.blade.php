@@ -32,7 +32,7 @@
             </div>
             <div class="profile-menu-actions">
                 <a
-                    href="{{ route('profile.show') }}"
+                    href="{{ route('settings') }}"
                     class="profile-menu-button"
                 >
                     設定
