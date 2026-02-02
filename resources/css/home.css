@@ -10,3 +10,282 @@
 .fc .fc-day-sun {
     background-color: rgba(239, 68, 68, 0.08);
 }
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(15, 23, 42, 0.4);
+    z-index: 60;
+    padding: 1.5rem;
+}
+
+.modal-backdrop.hidden {
+    display: none;
+}
+
+.modal-panel {
+    width: 720px;
+    max-width: 100%;
+    border-radius: 24px;
+    background-color: #fff;
+    box-shadow: 0 24px 64px rgba(15, 23, 42, 0.2);
+    padding: 2.5rem 2.5rem 2rem;
+}
+
+.modal-title {
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.modal-close {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    display: inline-flex;
+    height: 2rem;
+    width: 2rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    border: 1px solid #e5e7eb;
+    background-color: #fff;
+    font-size: 1.1rem;
+    line-height: 1;
+    color: #374151;
+}
+
+.modal-pill-button {
+    border-radius: 9999px;
+    border: 2px solid #374151;
+    padding: 1rem 1.25rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #111827;
+    background-color: #fff;
+}
+
+.modal-form {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+
+.modal-row {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 1rem;
+    align-items: center;
+}
+
+.modal-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #111827;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.modal-help {
+    display: inline-flex;
+    height: 1.25rem;
+    width: 1.25rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    border: 1px solid #d1d5db;
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.modal-inline {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.modal-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.modal-input {
+    width: 100%;
+    border-radius: 0.75rem;
+    border: 1px solid #d1d5db;
+    padding: 0.55rem 0.9rem;
+    font-size: 0.95rem;
+    color: #111827;
+    background-color: #fff;
+}
+
+.modal-unit {
+    font-size: 0.9rem;
+    color: #374151;
+}
+
+.modal-icon-button {
+    height: 2rem;
+    width: 2rem;
+    border-radius: 9999px;
+    border: 1px solid #d1d5db;
+    background-color: #fff;
+    font-size: 1.1rem;
+    line-height: 1;
+    color: #374151;
+}
+
+.modal-chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.modal-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border-radius: 9999px;
+    border: 1px solid #d1d5db;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.85rem;
+    color: #111827;
+    background-color: #f9fafb;
+}
+
+.modal-chip button {
+    border: none;
+    background: transparent;
+    color: #6b7280;
+    font-size: 0.9rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.modal-actions {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+.modal-secondary,
+.modal-primary {
+    min-width: 140px;
+    border-radius: 9999px;
+    border: 2px solid #111827;
+    padding: 0.65rem 1.5rem;
+    font-weight: 600;
+}
+
+.modal-primary {
+    background-color: #111827;
+    color: #fff;
+}
+
+.modal-secondary {
+    background-color: #fff;
+    color: #111827;
+}
+
+.profile-menu-trigger {
+    display: inline-flex;
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    padding: 0;
+    background-color: transparent;
+}
+
+.profile-menu-trigger:focus-visible {
+    outline: none;
+    border-color: #111827;
+}
+
+.profile-menu {
+    position: absolute;
+    left: calc(100% + 1rem);
+    bottom: 0;
+    z-index: 50;
+}
+
+.profile-menu.hidden {
+    display: none;
+}
+
+.profile-menu-card {
+    width: 260px;
+    border-radius: 24px;
+    background-color: #f3f4f6;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.profile-menu-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.profile-menu-avatar {
+    height: 64px;
+    width: 64px;
+    border-radius: 9999px;
+    object-fit: cover;
+    background-color: #fff;
+}
+
+.profile-menu-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.profile-menu-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.profile-menu-button {
+    min-width: 160px;
+    border-radius: 0.75rem;
+    border: 1px solid #111827;
+    padding: 0.55rem 1rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-align: center;
+    background-color: #fff;
+    color: #111827;
+}
+
+@media (max-width: 640px) {
+    .modal-panel {
+        padding: 2rem 1.5rem 1.5rem;
+    }
+
+    .modal-row {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-menu {
+        left: 0;
+        right: auto;
+        bottom: calc(100% + 0.75rem);
+    }
+
+    .profile-menu-card {
+        width: 220px;
+    }
+}

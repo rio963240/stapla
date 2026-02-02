@@ -11,9 +11,13 @@
                     <a class="flex items-center rounded-md px-3 py-2 text-gray-700 hover:bg-gray-100" href="#">
                         <span>HOME</span>
                     </a>
-                    <a class="flex items-center rounded-md px-3 py-2 text-gray-700 hover:bg-gray-100" href="#">
+                    <button
+                        id="plan-register-trigger"
+                        type="button"
+                        class="flex items-center rounded-md px-3 py-2 text-gray-700 hover:bg-gray-100"
+                    >
                         <span>計画登録</span>
-                    </a>
+                    </button>
                     <a class="flex items-center rounded-md px-3 py-2 text-gray-700 hover:bg-gray-100" href="#">
                         <span>学習実績</span>
                     </a>
@@ -21,13 +25,7 @@
                         <span>リスケジュール</span>
                     </a>
                     <hr class="my-2 h-px w-40 self-center border-0 bg-black" />
-                    <div class="flex items-center gap-3 px-3 pb-8">
-                        <img
-                            src="{{ asset('images/no-image.jpeg') }}"
-                            alt="プロフィール"
-                            class="h-16 w-16 rounded-full object-cover"
-                        />
-                    </div>
+                    @include('home.profile-menu')
                 </nav>
             </aside>
 
@@ -36,6 +34,8 @@
             </section>
         </div>
     </div>
+
+    @include('home.plan-register-modals')
 
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
