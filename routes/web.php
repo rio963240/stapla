@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\SettingsController;
 use Illuminate\Support\Facades\Route;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -11,41 +13,21 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/settings', function () {
-        return view('settings');
-    })->name('settings');
+    // 設定ページ（表示・更新・削除）
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+    Route::put('/settings/basic', [SettingsController::class, 'updateBasic'])
+        ->name('settings.basic.update');
+    Route::put('/settings/password', [SettingsController::class, 'updatePassword'])
+        ->name('settings.password.update');
+    Route::delete('/settings/account', [SettingsController::class, 'destroy'])
+        ->name('settings.account.destroy');
 
-    Route::put('/settings/basic', function () {
-        $user = request()->user();
-        $input = [
-            'name' => request()->input('name'),
-            'email' => $user->email,
-        ];
-        if (request()->hasFile('photo')) {
-            $input['photo'] = request()->file('photo');
-        }
-
-        app(\Laravel\Fortify\Contracts\UpdatesUserProfileInformation::class)
-            ->update($user, $input);
-
-        if (request()->expectsJson()) {
-            $freshUser = $user->fresh();
-            return response()->json([
-                'status' => 'basic-info-updated',
-                'name' => $freshUser?->name,
-                'photo_url' => $freshUser?->profile_photo_url,
-            ]);
-        }
-
-        return redirect()
-            ->route('settings')
-            ->with('status', 'basic-info-updated');
-    })->name('settings.basic.update');
-
+    // ログイン後の遷移先
     Route::get('/home', function () {
         return view('home');
     })->name('home');
 
+    // ダッシュボードはホームにリダイレクト
     Route::get('/dashboard', function () {
         return redirect()->route('home');
     })->name('dashboard');

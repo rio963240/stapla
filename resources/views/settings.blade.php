@@ -1,4 +1,5 @@
 <x-app-layout>
+    {{-- 設定画面専用のCSS --}}
     @push('styles')
         @vite('resources/css/settings.css')
     @endpush
@@ -11,6 +12,7 @@
 
     <div class="settings-page">
         <div class="settings-container">
+            {{-- 基本情報（名前・アイコン）更新フォーム --}}
             <form method="POST" action="{{ route('settings.basic.update') }}" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
@@ -23,12 +25,8 @@
                     </div>
                     <div class="settings-card-body">
                         <div class="settings-avatar">
-                            <img
-                                src="{{ auth()->user()?->profile_photo_url ?? asset('images/no-image.jpeg') }}"
-                                alt="プロフィール"
-                                class="settings-avatar-image"
-                                data-settings-avatar
-                            />
+                            <img src="{{ auth()->user()?->profile_photo_url ?? asset('images/no-image.jpeg') }}"
+                                alt="プロフィール" class="settings-avatar-image" data-settings-avatar />
                             <div class="settings-avatar-actions">
                                 <button type="button" class="settings-secondary-button" data-settings-photo-trigger>
                                     アイコン変更
@@ -36,59 +34,35 @@
                                 <p class="settings-muted">JPEG/PNG 5MB まで</p>
                             </div>
                         </div>
-                        <input
-                            id="settings-photo"
-                            name="photo"
-                            type="file"
-                            class="sr-only"
-                            accept="image/jpeg,image/png"
-                        />
+                        <input id="settings-photo" name="photo" type="file" class="sr-only"
+                            accept="image/jpeg,image/png" />
 
                         <div class="settings-grid">
                             <label class="settings-label" for="settings-name">名前</label>
-                            <input
-                                id="settings-name"
-                                name="name"
-                                type="text"
-                                class="settings-input"
-                                value="{{ old('name', auth()->user()?->name ?? '') }}"
-                                required
-                                data-settings-name
-                            />
+                            <input id="settings-name" name="name" type="text" class="settings-input"
+                                value="{{ old('name', auth()->user()?->name ?? '') }}" required data-settings-name />
 
                             <label class="settings-label" for="settings-email">E-mail</label>
-                            <input
-                                id="settings-email"
-                                type="email"
-                                class="settings-input settings-input-disabled"
-                                value="{{ auth()->user()?->email ?? '' }}"
-                                disabled
-                            />
+                            <input id="settings-email" type="email" class="settings-input settings-input-disabled"
+                                value="{{ auth()->user()?->email ?? '' }}" disabled />
                         </div>
                     </div>
                 </section>
             </form>
 
+            {{-- 通知設定（UIのみ） --}}
             <section class="settings-card">
                 <div class="settings-card-header">
                     <h3 class="settings-card-title">通知設定</h3>
-                    <button
-                        type="button"
-                        class="settings-save-button"
-                        data-toast-status="success"
-                        data-toast-message="通知設定を保存しました"
-                    >
+                    <button type="button" class="settings-save-button" data-toast-status="success"
+                        data-toast-message="通知設定を保存しました">
                         保存
                     </button>
                 </div>
                 <div class="settings-card-body settings-notify">
                     <div class="settings-qr-block">
                         <p class="settings-label">LINE QRコード</p>
-                        <img
-                            src="{{ asset('images/line-qr-dummy.svg') }}"
-                            alt="LINE QRコード"
-                            class="settings-qr-image"
-                        />
+                        <img src="{{ asset('images/line-qr-dummy.svg') }}" alt="LINE QRコード" class="settings-qr-image" />
                         <p class="settings-muted">LINEで友だち追加して通知を受け取ります</p>
                     </div>
 
@@ -107,7 +81,8 @@
                                     <select class="settings-select" aria-label="LINE通知 朝">
                                         @for ($hour = 0; $hour < 24; $hour++)
                                             @php($time = sprintf('%02d:00', $hour))
-                                            <option value="{{ $time }}" @selected($time === '08:00')>{{ $time }}</option>
+                                            <option value="{{ $time }}" @selected($time === '08:00')>
+                                                {{ $time }}</option>
                                         @endfor
                                     </select>
                                 </div>
@@ -116,7 +91,8 @@
                                     <select class="settings-select" aria-label="LINE通知 夜">
                                         @for ($hour = 0; $hour < 24; $hour++)
                                             @php($time = sprintf('%02d:00', $hour))
-                                            <option value="{{ $time }}" @selected($time === '20:00')>{{ $time }}</option>
+                                            <option value="{{ $time }}" @selected($time === '20:00')>
+                                                {{ $time }}</option>
                                         @endfor
                                     </select>
                                 </div>
@@ -137,7 +113,8 @@
                                     <select class="settings-select" aria-label="メール通知 朝">
                                         @for ($hour = 0; $hour < 24; $hour++)
                                             @php($time = sprintf('%02d:00', $hour))
-                                            <option value="{{ $time }}" @selected($time === '08:00')>{{ $time }}</option>
+                                            <option value="{{ $time }}" @selected($time === '08:00')>
+                                                {{ $time }}</option>
                                         @endfor
                                     </select>
                                 </div>
@@ -146,7 +123,8 @@
                                     <select class="settings-select" aria-label="メール通知 夜">
                                         @for ($hour = 0; $hour < 24; $hour++)
                                             @php($time = sprintf('%02d:00', $hour))
-                                            <option value="{{ $time }}" @selected($time === '20:00')>{{ $time }}</option>
+                                            <option value="{{ $time }}" @selected($time === '20:00')>
+                                                {{ $time }}</option>
                                         @endfor
                                     </select>
                                 </div>
@@ -156,47 +134,36 @@
                 </div>
             </section>
 
-            <section class="settings-card">
-                <div class="settings-card-header">
-                    <h3 class="settings-card-title">パスワード変更</h3>
-                    <button
-                        type="button"
-                        class="settings-save-button"
-                        data-toast-status="success"
-                        data-toast-message="パスワードを変更しました"
-                    >
-                        保存
-                    </button>
-                </div>
-                <div class="settings-card-body">
-                    <div class="settings-grid">
-                        <label class="settings-label" for="current-password">現在のパスワード</label>
-                        <input
-                            id="current-password"
-                            type="password"
-                            class="settings-input"
-                            autocomplete="current-password"
-                        />
-
-                        <label class="settings-label" for="new-password">新しいパスワード</label>
-                        <input
-                            id="new-password"
-                            type="password"
-                            class="settings-input"
-                            autocomplete="new-password"
-                        />
-
-                        <label class="settings-label" for="confirm-password">パスワードの確認</label>
-                        <input
-                            id="confirm-password"
-                            type="password"
-                            class="settings-input"
-                            autocomplete="new-password"
-                        />
+            {{-- パスワード変更フォーム --}}
+            <form method="POST" action="{{ route('settings.password.update') }}">
+                @csrf
+                @method('PUT')
+                <section class="settings-card">
+                    <div class="settings-card-header">
+                        <h3 class="settings-card-title">パスワード変更</h3>
+                        <button type="submit" class="settings-save-button">
+                            保存
+                        </button>
                     </div>
-                </div>
-            </section>
+                    <div class="settings-card-body">
+                        <div class="settings-grid">
+                            <label class="settings-label" for="current-password">現在のパスワード</label>
+                            <input id="current-password" name="current_password" type="password"
+                                class="settings-input" autocomplete="current-password" required />
 
+                            <label class="settings-label" for="new-password">新しいパスワード</label>
+                            <input id="new-password" name="password" type="password" class="settings-input"
+                                autocomplete="new-password" required />
+
+                            <label class="settings-label" for="confirm-password">パスワードの確認</label>
+                            <input id="confirm-password" name="password_confirmation" type="password"
+                                class="settings-input" autocomplete="new-password" required />
+                        </div>
+                    </div>
+                </section>
+            </form>
+
+            {{-- アカウント削除への導線 --}}
             <section class="settings-card">
                 <div class="settings-card-header">
                     <h3 class="settings-card-title">アカウント削除</h3>
@@ -205,27 +172,55 @@
                     <p class="settings-muted">
                         アカウント削除を行うと、登録したデータはすべて削除されます。
                     </p>
-                    <button type="button" class="settings-danger-button">
-                        DELETE ACCOUNT
+                    <button type="button" class="settings-danger-button" data-delete-modal-open>
+                        アカウントを削除
                     </button>
                 </div>
             </section>
         </div>
     </div>
 
+    {{-- アカウント削除モーダル --}}
+    <div class="settings-modal is-hidden" data-delete-modal>
+        <div class="settings-modal-overlay" data-delete-modal-close></div>
+        <div class="settings-modal-panel" role="dialog" aria-modal="true" aria-labelledby="delete-account-title">
+            <div class="settings-modal-header">
+                <h3 id="delete-account-title" class="settings-modal-title">アカウント削除</h3>
+            </div>
+            <p class="settings-modal-text">
+                アカウントを削除してもよろしいですか？削除すると、アカウントに紐づくデータはすべて
+                完全に削除されます。削除を確定するため、パスワードを入力してください。
+            </p>
+            <form method="POST" action="{{ route('settings.account.destroy') }}" data-delete-form>
+                @csrf
+                @method('DELETE')
+                <input type="password" name="password" class="settings-input" placeholder="パスワード"
+                    autocomplete="current-password" required data-delete-password />
+                <p class="settings-modal-error" data-delete-error></p>
+                <div class="settings-modal-actions">
+                    <button type="button" class="settings-secondary-button" data-delete-modal-close>
+                        キャンセル
+                    </button>
+                    <button type="submit" class="settings-modal-danger-button">
+                        削除する
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- 保存結果を通知するトースト --}}
     <div class="settings-toast-stack" aria-live="polite" aria-atomic="true">
-        <div
-            id="settings-toast"
+        <div id="settings-toast"
             class="settings-toast {{ session('status') === 'basic-info-updated' ? 'is-visible' : '' }}"
-            role="status"
-            data-toast-status="{{ session('status') === 'basic-info-updated' ? 'success' : '' }}"
+            role="status" data-toast-status="{{ session('status') === 'basic-info-updated' ? 'success' : '' }}"
             data-toast-message="基本情報を保存しました"
-            data-toast-autoshow="{{ session('status') === 'basic-info-updated' ? 'true' : 'false' }}"
-        >
+            data-toast-autoshow="{{ session('status') === 'basic-info-updated' ? 'true' : 'false' }}">
             <span class="settings-toast-label"></span>
         </div>
     </div>
 
+    {{-- 設定画面専用のJS --}}
     @push('scripts')
         @vite('resources/js/settings.js')
     @endpush
