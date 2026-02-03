@@ -102,6 +102,31 @@
     border: 1px solid #d1d5db;
     font-size: 0.75rem;
     color: #6b7280;
+    background: #fff;
+    cursor: pointer;
+    padding: 0;
+}
+
+.modal-help-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.modal-popover {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    width: 260px;
+    padding: 0.75rem 0.9rem;
+    border-radius: 0.75rem;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    color: #374151;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+    z-index: 20;
 }
 
 .modal-inline {
@@ -124,6 +149,11 @@
     font-size: 0.95rem;
     color: #111827;
     background-color: #fff;
+}
+
+.modal-input-short {
+    max-width: 120px;
+    width: 120px;
 }
 
 .modal-unit {

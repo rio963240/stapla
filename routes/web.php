@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\SettingsController;
+use App\Models\QualificationDomain;
+use App\Models\Qualification;
 use Illuminate\Support\Facades\Route;
 
 
@@ -24,8 +26,28 @@ Route::middleware([
 
     // ログイン後の遷移先
     Route::get('/home', function () {
-        return view('home');
+        $qualifications = Qualification::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['qualification_id', 'name']);
+
+        return view('home', compact('qualifications'));
     })->name('home');
+
+    Route::get('/qualifications/{qualificationId}/domains', function (int $qualificationId) {
+        $domains = QualificationDomain::query()
+            ->where('qualification_id', $qualificationId)
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['qualification_domains_id', 'name']);
+
+        return response()->json(
+            $domains->map(fn ($domain) => [
+                'id' => $domain->qualification_domains_id,
+                'name' => $domain->name,
+            ]),
+        );
+    })->name('qualifications.domains');
 
     // ダッシュボードはホームにリダイレクト
     Route::get('/dashboard', function () {

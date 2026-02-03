@@ -36,7 +36,7 @@
                         <select class="modal-input">
                             <option>サブ分野を選択</option>
                         </select>
-                        <input type="number" class="modal-input" placeholder="重み" />
+                        <input type="number" class="modal-input modal-input-short" placeholder="重み" />
                         <button
                             type="button"
                             class="modal-icon-button modal-icon-button-round"
