@@ -13,27 +13,39 @@
             </div>
             <div class="modal-row">
                 <label class="modal-label">分野</label>
-                <select class="modal-input">
-                    <option>分野を選択</option>
-                </select>
-            </div>
-            <div class="modal-row">
-                <label class="modal-label">サブ分野</label>
-                <div class="modal-inline">
-                    <select class="modal-input">
-                        <option>サブ分野を選択</option>
-                    </select>
-                    <input type="number" class="modal-input" placeholder="重み" />
-                    <button type="button" class="modal-icon-button" aria-label="サブ分野を追加">+</button>
+                <div class="modal-stack" data-repeat-container="subdomain-domain">
+                    <div class="modal-inline" data-repeat-row>
+                        <select class="modal-input">
+                            <option>分野を選択</option>
+                        </select>
+                        <button
+                            type="button"
+                            class="modal-icon-button modal-icon-button-round"
+                            data-repeat-add="subdomain-domain"
+                            aria-label="分野を追加"
+                        >
+                            +
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="modal-row">
                 <label class="modal-label">サブ分野</label>
-                <div class="modal-inline">
-                    <select class="modal-input">
-                        <option>サブ分野を選択</option>
-                    </select>
-                    <input type="number" class="modal-input" placeholder="重み" />
+                <div class="modal-stack" data-repeat-container="subdomain">
+                    <div class="modal-inline" data-repeat-row>
+                        <select class="modal-input">
+                            <option>サブ分野を選択</option>
+                        </select>
+                        <input type="number" class="modal-input" placeholder="重み" />
+                        <button
+                            type="button"
+                            class="modal-icon-button modal-icon-button-round"
+                            data-repeat-add="subdomain"
+                            aria-label="サブ分野を追加"
+                        >
+                            +
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="modal-row">

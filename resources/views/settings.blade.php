@@ -11,53 +11,63 @@
 
     <div class="settings-page">
         <div class="settings-container">
-            <section class="settings-card">
-                <div class="settings-card-header">
-                    <h3 class="settings-card-title">基本情報</h3>
-                    <button
-                        type="button"
-                        class="settings-save-button"
-                        data-toast-status="success"
-                        data-toast-message="基本情報を保存しました"
-                    >
-                        保存
-                    </button>
-                </div>
-                <div class="settings-card-body">
-                    <div class="settings-avatar">
-                        <img
-                            src="{{ auth()->user()?->profile_photo_url ?? asset('images/no-image.jpeg') }}"
-                            alt="プロフィール"
-                            class="settings-avatar-image"
+            <form method="POST" action="{{ route('settings.basic.update') }}" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+                <section class="settings-card">
+                    <div class="settings-card-header">
+                        <h3 class="settings-card-title">基本情報</h3>
+                        <button type="submit" class="settings-save-button">
+                            保存
+                        </button>
+                    </div>
+                    <div class="settings-card-body">
+                        <div class="settings-avatar">
+                            <img
+                                src="{{ auth()->user()?->profile_photo_url ?? asset('images/no-image.jpeg') }}"
+                                alt="プロフィール"
+                                class="settings-avatar-image"
+                                data-settings-avatar
+                            />
+                            <div class="settings-avatar-actions">
+                                <button type="button" class="settings-secondary-button" data-settings-photo-trigger>
+                                    アイコン変更
+                                </button>
+                                <p class="settings-muted">JPEG/PNG 5MB まで</p>
+                            </div>
+                        </div>
+                        <input
+                            id="settings-photo"
+                            name="photo"
+                            type="file"
+                            class="sr-only"
+                            accept="image/jpeg,image/png"
                         />
-                        <div class="settings-avatar-actions">
-                            <button type="button" class="settings-secondary-button">
-                                アイコン変更
-                            </button>
-                            {{-- <p class="settings-muted">JPEG/PNG 5MB まで</p> --}}
+
+                        <div class="settings-grid">
+                            <label class="settings-label" for="settings-name">名前</label>
+                            <input
+                                id="settings-name"
+                                name="name"
+                                type="text"
+                                class="settings-input"
+                                value="{{ old('name', auth()->user()?->name ?? '') }}"
+                                required
+                                data-settings-name
+                            />
+
+                            <label class="settings-label" for="settings-email">E-mail</label>
+                            <input
+                                id="settings-email"
+                                type="email"
+                                class="settings-input settings-input-disabled"
+                                value="{{ auth()->user()?->email ?? '' }}"
+                                disabled
+                            />
                         </div>
                     </div>
-
-                    <div class="settings-grid">
-                        <label class="settings-label" for="settings-name">名前</label>
-                        <input
-                            id="settings-name"
-                            type="text"
-                            class="settings-input"
-                            value="{{ auth()->user()?->name ?? '' }}"
-                        />
-
-                        <label class="settings-label" for="settings-email">E-mail</label>
-                        <input
-                            id="settings-email"
-                            type="email"
-                            class="settings-input settings-input-disabled"
-                            value="{{ auth()->user()?->email ?? '' }}"
-                            disabled
-                        />
-                    </div>
-                </div>
-            </section>
+                </section>
+            </form>
 
             <section class="settings-card">
                 <div class="settings-card-header">
@@ -204,7 +214,14 @@
     </div>
 
     <div class="settings-toast-stack" aria-live="polite" aria-atomic="true">
-        <div id="settings-toast" class="settings-toast" role="status">
+        <div
+            id="settings-toast"
+            class="settings-toast {{ session('status') === 'basic-info-updated' ? 'is-visible' : '' }}"
+            role="status"
+            data-toast-status="{{ session('status') === 'basic-info-updated' ? 'success' : '' }}"
+            data-toast-message="基本情報を保存しました"
+            data-toast-autoshow="{{ session('status') === 'basic-info-updated' ? 'true' : 'false' }}"
+        >
             <span class="settings-toast-label"></span>
         </div>
     </div>

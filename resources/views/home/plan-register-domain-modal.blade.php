@@ -13,11 +13,13 @@
             </div>
             <div class="modal-row">
                 <label class="modal-label">分野</label>
-                <div class="modal-inline">
-                    <select class="modal-input">
-                        <option>選択してください</option>
-                    </select>
-                    <button type="button" class="modal-icon-button" aria-label="分野を追加">+</button>
+                <div class="modal-stack" data-repeat-container="domain">
+                    <div class="modal-inline" data-repeat-row>
+                        <select class="modal-input">
+                            <option>選択してください</option>
+                        </select>
+                        <button type="button" class="modal-icon-button" data-repeat-add="domain" aria-label="分野を追加">+</button>
+                    </div>
                 </div>
             </div>
             <div class="modal-row">

@@ -112,6 +112,45 @@ const initNoStudyChips = () => {
     });
 };
 
+const initRepeatRows = () => {
+    document.querySelectorAll('[data-repeat-add]').forEach((button) => {
+        const key = button.dataset.repeatAdd;
+        const container = button.closest('[data-repeat-container]');
+        if (!key || !container) return;
+
+        button.addEventListener('click', () => {
+            const row = button.closest('[data-repeat-row]');
+            if (!row) return;
+
+            const clone = row.cloneNode(true);
+            const addButton = clone.querySelector('[data-repeat-add]');
+            if (addButton) {
+                addButton.removeAttribute('data-repeat-add');
+                addButton.setAttribute('data-repeat-remove', key);
+                addButton.setAttribute('aria-label', '入力欄を削除');
+                addButton.textContent = '-';
+            }
+
+            clone.querySelectorAll('input').forEach((input) => {
+                input.value = '';
+            });
+            clone.querySelectorAll('select').forEach((select) => {
+                select.selectedIndex = 0;
+            });
+
+            container.appendChild(clone);
+        });
+    });
+
+    document.addEventListener('click', (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        if (!target.matches('[data-repeat-remove]')) return;
+        const row = target.closest('[data-repeat-row]');
+        if (row) row.remove();
+    });
+};
+
 const initProfileMenu = () => {
     const trigger = document.getElementById('profile-menu-trigger');
     const menu = document.getElementById('profile-menu');
@@ -161,5 +200,6 @@ onReady(() => {
     waitForCalendarLib();
     initPlanRegisterModals();
     initNoStudyChips();
+    initRepeatRows();
     initProfileMenu();
 });
