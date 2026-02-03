@@ -9,6 +9,12 @@ class UserDomainPreference extends BaseModel
     protected $table = 'user_domain_preferences';
     protected $primaryKey = 'user_domain_preferences_id';
     public $timestamps = false; // ←timestamps無し
+    // 分野重みの登録に使用
+    protected $fillable = [
+        'user_qualification_targets_id',
+        'qualification_domains_id',
+        'weight',
+    ];
 
     public function target(): BelongsTo
     {

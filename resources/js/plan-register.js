@@ -239,10 +239,125 @@ const initHelpPopovers = () => {
     });
 };
 
+// CSRFトークン取得（Laravel用）
+const getCsrfToken = () => {
+    const token = document.querySelector('meta[name="csrf-token"]');
+    return token ? token.getAttribute('content') : '';
+};
+
+// 計画登録（分野単位）の送信
+const initPlanRegisterSubmit = () => {
+    const submitButton = document.querySelector('[data-plan-submit="domain"]');
+    if (!submitButton) return;
+
+    submitButton.addEventListener('click', async () => {
+        const startInput = document.querySelector('[data-plan-start="domain"]');
+        const examInput = document.querySelector('[data-plan-exam="domain"]');
+        const qualificationSelect = document.querySelector('[data-qualification-select="domain"]');
+        const dailyInput = document.querySelector('[data-daily-study="domain"]');
+        const bufferInput = document.querySelector('[data-buffer-rate="domain"]');
+        const noStudyList = document.querySelector('[data-no-study-list="domain"]');
+
+        if (!startInput || !examInput || !qualificationSelect || !dailyInput || !bufferInput) return;
+
+        // 入力された分野と重みを収集
+        const domains = Array.from(
+            document.querySelectorAll('#plan-register-domain-modal [data-repeat-row]'),
+        )
+            .map((row) => {
+                const domainSelect = row.querySelector('[data-domain-select="domain"]');
+                const weightInput = row.querySelector('[data-domain-weight="domain"]');
+                if (!(domainSelect instanceof HTMLSelectElement)) return null;
+                if (!(weightInput instanceof HTMLInputElement)) return null;
+                const id = Number.parseInt(domainSelect.value, 10);
+                const weight = Number.parseInt(weightInput.value, 10);
+                if (!Number.isFinite(id) || !Number.isFinite(weight)) return null;
+                return { id, weight };
+            })
+            .filter(Boolean);
+
+        // 勉強不可日を収集
+        const noStudyDays = noStudyList
+            ? Array.from(noStudyList.querySelectorAll('[data-no-study-chip]'))
+                  .map((chip) => chip.dataset.noStudyChip)
+                  .filter(Boolean)
+            : [];
+
+        const qualificationId = Number.parseInt(qualificationSelect.value, 10);
+        const dailyStudyTime = Number.parseInt(dailyInput.value, 10);
+        const bufferRate = Number.parseInt(bufferInput.value, 10);
+
+        // 最低限のフロントバリデーション
+        const errors = [];
+        if (!startInput.value) errors.push('勉強開始日を入力してください。');
+        if (!examInput.value) errors.push('受験日を入力してください。');
+        if (!Number.isFinite(qualificationId)) errors.push('資格を選択してください。');
+        if (!Number.isFinite(dailyStudyTime) || dailyStudyTime <= 0) {
+            errors.push('1日の学習時間を入力してください。');
+        }
+        if (!Number.isFinite(bufferRate) || bufferRate < 0 || bufferRate > 99) {
+            errors.push('余裕確保率は0〜99で入力してください。');
+        }
+        if (domains.length === 0) errors.push('分野と重みを入力してください。');
+
+        if (errors.length > 0) {
+            alert(errors[0]);
+            return;
+        }
+
+        // 送信ペイロード
+        const payload = {
+            start_date: startInput.value,
+            exam_date: examInput.value,
+            qualification_id: qualificationId,
+            daily_study_time: dailyStudyTime,
+            buffer_rate: bufferRate,
+            domains,
+            no_study_days: noStudyDays,
+        };
+
+        const originalLabel = submitButton.textContent;
+        submitButton.setAttribute('disabled', 'true');
+        submitButton.textContent = '送信中...';
+
+        try {
+            const response = await fetch('/plan-register/domain', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': getCsrfToken(),
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify(payload),
+            });
+
+            if (response.ok) {
+                alert('計画を生成しました。');
+                window.location.reload();
+                return;
+            }
+
+            const data = await response.json().catch(() => ({}));
+            const message =
+                (data?.errors && Object.values(data.errors).flat()[0]) ||
+                data?.message ||
+                '登録に失敗しました。';
+            alert(message);
+        } catch (error) {
+            alert('通信に失敗しました。');
+        } finally {
+            submitButton.removeAttribute('disabled');
+            submitButton.textContent = originalLabel;
+        }
+    });
+};
+
 export const initPlanRegister = () => {
     initPlanRegisterModals();
     initNoStudyChips();
     initRepeatRows();
     initQualificationDomains();
     initHelpPopovers();
+    initPlanRegisterSubmit();
 };

@@ -5,7 +5,7 @@
         <div class="modal-form">
             <div class="modal-row">
                 <label class="modal-label">勉強開始日</label>
-                <input type="date" class="modal-input" />
+                <input type="date" class="modal-input" data-plan-start="domain" />
             </div>
             <div class="modal-row">
                 <label class="modal-label">資格名</label>
@@ -49,7 +49,12 @@
                         <select class="modal-input" data-domain-select="domain">
                             <option>選択してください</option>
                         </select>
-                        <input type="number" class="modal-input modal-input-short" placeholder="重み" />
+                        <input
+                            type="number"
+                            class="modal-input modal-input-short"
+                            placeholder="重み"
+                            data-domain-weight="domain"
+                        />
                         <button
                             type="button"
                             class="modal-icon-button modal-icon-button-round"
@@ -64,7 +69,7 @@
             <div class="modal-row">
                 <label class="modal-label">1日の学習時間</label>
                 <div class="modal-inline">
-                    <input type="number" class="modal-input" placeholder="60" />
+                    <input type="number" class="modal-input" placeholder="60" data-daily-study="domain" />
                     <span class="modal-unit">分</span>
                 </div>
             </div>
@@ -92,7 +97,7 @@
                     </span>
                 </label>
                 <div class="modal-inline">
-                    <input type="number" class="modal-input" placeholder="10" />
+                    <input type="number" class="modal-input" placeholder="10" data-buffer-rate="domain" />
                     <span class="modal-unit">%</span>
                 </div>
             </div>
@@ -115,12 +120,12 @@
             </div>
             <div class="modal-row">
                 <label class="modal-label">受験日</label>
-                <input type="date" class="modal-input" />
+                <input type="date" class="modal-input" data-plan-exam="domain" />
             </div>
         </div>
         <div class="modal-actions">
             <button type="button" class="modal-secondary" data-modal-close>キャンセル</button>
-            <button type="button" class="modal-primary">生成</button>
+            <button type="button" class="modal-primary" data-plan-submit="domain">生成</button>
         </div>
     </div>
 </div>

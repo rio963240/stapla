@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\PlanRegisterController;
 use App\Http\Controllers\SettingsController;
 use App\Models\QualificationDomain;
 use App\Models\Qualification;
@@ -48,6 +50,12 @@ Route::middleware([
             ]),
         );
     })->name('qualifications.domains');
+
+    Route::post('/plan-register/domain', [PlanRegisterController::class, 'storeDomain'])
+        ->name('plan-register.domain');
+
+    Route::get('/calendar/events', [CalendarController::class, 'events'])
+        ->name('calendar.events');
 
     // ダッシュボードはホームにリダイレクト
     Route::get('/dashboard', function () {

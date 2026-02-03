@@ -4,16 +4,91 @@ const initCalendar = () => {
 
     if (!calendarEl || !window.FullCalendar) return false;
 
-    const calendar = new window.FullCalendar.Calendar(calendarEl, {
+    let calendar;
+    // ビュー切替時にAPIのviewパラメータを更新するため保持
+    let currentViewType = 'dayGridMonth';
+    const renderEventContent = (arg) => {
+        const { qualificationName, domainName, plannedMinutes, details } = arg.event.extendedProps ?? {};
+        const container = document.createElement('div');
+
+        // 月表示は資格名のみ
+        if (arg.view.type === 'dayGridMonth') {
+            container.textContent = qualificationName || arg.event.title;
+            return { domNodes: [container] };
+        }
+
+        // 週表示は資格名 + 分野名/分数
+        const title = document.createElement('div');
+        title.textContent = qualificationName || arg.event.title;
+        container.append(title);
+
+        if (Array.isArray(details) && details.length > 0) {
+            details.forEach((item) => {
+                const line = document.createElement('div');
+                if (item?.domainName && Number.isFinite(item?.plannedMinutes)) {
+                    line.textContent = `${item.domainName}: ${item.plannedMinutes}分`;
+                } else if (Number.isFinite(item?.plannedMinutes)) {
+                    line.textContent = `${item.plannedMinutes}分`;
+                }
+                container.append(line);
+            });
+            return { domNodes: [container] };
+        }
+
+        const detail = document.createElement('div');
+        if (domainName && Number.isFinite(plannedMinutes)) {
+            detail.textContent = `${domainName}: ${plannedMinutes}分`;
+        } else if (Number.isFinite(plannedMinutes)) {
+            detail.textContent = `${plannedMinutes}分`;
+        } else {
+            detail.textContent = '';
+        }
+        container.append(detail);
+        return { domNodes: [container] };
+    };
+
+    calendar = new window.FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'ja',
         height: '100%',
         allDaySlot: false,
+        // 同時刻のイベントは横並びにせず縦に積む
+        slotEventOverlap: false,
+        eventOverlap: false,
+        // FullCalendarのリクエスト範囲に合わせてイベントを取得
+        events: (info, successCallback, failureCallback) => {
+            const viewType = currentViewType;
+            const params = new URLSearchParams({
+                start: info.startStr,
+                end: info.endStr,
+                view: viewType,
+            });
+            fetch(`/calendar/events?${params.toString()}`, {
+                headers: { Accept: 'application/json' },
+                credentials: 'same-origin',
+            })
+                .then((response) => {
+                    if (!response.ok) throw new Error('failed to load events');
+                    return response.json();
+                })
+                .then((events) => successCallback(events))
+                .catch((error) => failureCallback(error));
+        },
+        eventContent: renderEventContent,
+        // ビュー切替時に view を更新して再取得
+        datesSet: (arg) => {
+            const nextViewType = arg.view.type;
+            const shouldRefetch = currentViewType !== nextViewType;
+            currentViewType = nextViewType;
+            if (shouldRefetch && calendar) {
+                calendar.refetchEvents();
+            }
+        },
         // 上部ツールバーの配置
         headerToolbar: {
             left: 'prev,next today',
             center: 'title',
-            right: 'dayGridMonth,timeGridWeek',
+            right: 'dayGridMonth,dayGridWeek',
         },
         // ビュー切替ボタンの表示名
         buttonText: {

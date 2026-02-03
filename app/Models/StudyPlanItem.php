@@ -13,6 +13,8 @@ class StudyPlanItem extends BaseModel
 
     protected $fillable = [
         'todo_id',
+        // 分野単位計画で使用
+        'qualification_domains_id',
         'qualification_subdomains_id',
         'planned_minutes',
         'status',
