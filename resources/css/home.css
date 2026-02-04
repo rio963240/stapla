@@ -100,6 +100,17 @@
     word-break: break-word;
 }
 
+/* 日付を上中央に配置（Googleカレンダー寄り） */
+.fc .fc-daygrid-day-top {
+    justify-content: center;
+}
+
+.fc .fc-daygrid-day-number {
+    display: inline-block;
+    margin: 4px auto 0;
+    text-align: center;
+}
+
 /* 週表示のイベントを日付枠内で均等配分 */
 .fc .fc-daygrid-day-events {
     display: flex;
@@ -122,6 +133,12 @@
 .fc .fc-dayGridWeek-view .fc-daygrid-day-events {
     gap: 10px;
     padding: 6px 0;
+}
+
+/* 月表示の縦スクロールバーと日付の重なり回避（週表示には影響させない） */
+.fc .fc-dayGridMonth-view .fc-scroller-harness {
+    padding-right: 16px;
+    box-sizing: border-box;
 }
 
 /* ------------------------------ */
