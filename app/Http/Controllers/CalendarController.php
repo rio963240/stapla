@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -23,6 +24,29 @@ class CalendarController extends Controller
         $end = Carbon::parse($request->query('end'))->startOfDay();
         $viewType = (string) $request->query('view', 'dayGridMonth');
         $isMonthView = $viewType === 'dayGridMonth';
+        $palette = [
+            '#3ab679', // 1つ目
+            '#f59e0b', // 2つ目
+            '#c4b5fd', // 3つ目
+        ];
+
+        // 勉強不可日の取得（横棒の分割に使用）
+        $noStudyRows = DB::table('user_no_study_days')
+            ->join(
+                'user_qualification_targets',
+                'user_no_study_days.user_qualification_targets_id',
+                '=',
+                'user_qualification_targets.user_qualification_targets_id',
+            )
+            ->where('user_qualification_targets.user_id', $userId)
+            ->where('user_no_study_days.no_study_day', '>=', $start->toDateString())
+            ->where('user_no_study_days.no_study_day', '<', $end->toDateString())
+            ->select(['user_no_study_days.no_study_day'])
+            ->get();
+        $noStudySet = $noStudyRows
+            ->pluck('no_study_day')
+            ->map(fn ($date) => Carbon::parse($date)->toDateString())
+            ->flip();
 
         if ($isMonthView) {
             $rows = DB::table('todo')
@@ -42,18 +66,82 @@ class CalendarController extends Controller
                     'todo.todo_id',
                     'todo.date',
                     'qualification.name as qualification_name',
+                    'study_plans.study_plans_id as plan_order',
                 ])
                 ->get();
 
-            $events = $rows->map(fn ($row) => [
-                'id' => 'todo-' . $row->todo_id,
-                'title' => $row->qualification_name,
-                'start' => $row->date,
-                'allDay' => true,
-                'extendedProps' => [
-                    'qualificationName' => $row->qualification_name,
-                ],
-            ]);
+            $events = collect();
+            $grouped = $rows->groupBy('qualification_name');
+            $qualificationOrder = $grouped->keys()->values();
+            $colorMap = $qualificationOrder
+                ->mapWithKeys(function ($name, $index) use ($palette) {
+                    $color = $palette[$index % count($palette)];
+                    return [$name => $color];
+                });
+            foreach ($grouped as $qualificationName => $items) {
+                $planOrder = $items->min('plan_order') ?? 0;
+                $dates = $items
+                    ->pluck('date')
+                    ->map(fn ($date) => Carbon::parse($date)->toDateString())
+                    ->unique()
+                    ->sort()
+                    ->values();
+
+                if ($dates->isEmpty()) {
+                    continue;
+                }
+
+                $todoSet = $dates->flip();
+                $minDate = Carbon::parse($dates->first())->startOfDay();
+                $maxDate = Carbon::parse($dates->last())->startOfDay();
+
+                $rangeStart = null;
+                foreach (CarbonPeriod::create($minDate, $maxDate) as $date) {
+                    $dateString = $date->toDateString();
+                    $isStudyDay = $todoSet->has($dateString);
+                    $isNoStudyDay = $noStudySet->has($dateString);
+
+                    if ($isStudyDay && !$isNoStudyDay) {
+                        if (!$rangeStart) {
+                            $rangeStart = $date->copy();
+                        }
+                        continue;
+                    }
+
+                    if ($rangeStart) {
+                        $events->push([
+                            'id' => 'todo-' . $qualificationName . '-' . $rangeStart->toDateString(),
+                            'title' => $qualificationName,
+                            'start' => $rangeStart->toDateString(),
+                            'end' => $dateString,
+                            'allDay' => true,
+                            'planOrder' => $planOrder,
+                            'backgroundColor' => $colorMap[$qualificationName] ?? $palette[0],
+                            'borderColor' => $colorMap[$qualificationName] ?? $palette[0],
+                            'extendedProps' => [
+                                'qualificationName' => $qualificationName,
+                            ],
+                        ]);
+                        $rangeStart = null;
+                    }
+                }
+
+                if ($rangeStart) {
+                    $events->push([
+                        'id' => 'todo-' . $qualificationName . '-' . $rangeStart->toDateString(),
+                        'title' => $qualificationName,
+                        'start' => $rangeStart->toDateString(),
+                        'end' => $maxDate->copy()->addDay()->toDateString(),
+                        'allDay' => true,
+                        'planOrder' => $planOrder,
+                        'backgroundColor' => $colorMap[$qualificationName] ?? $palette[0],
+                        'borderColor' => $colorMap[$qualificationName] ?? $palette[0],
+                        'extendedProps' => [
+                            'qualificationName' => $qualificationName,
+                        ],
+                    ]);
+                }
+            }
 
             return response()->json($events);
         }
@@ -75,6 +163,12 @@ class CalendarController extends Controller
                 '=',
                 'qualification_domains.qualification_domains_id',
             )
+            ->leftJoin(
+                'qualification_subdomains',
+                'study_plan_items.qualification_subdomains_id',
+                '=',
+                'qualification_subdomains.qualification_subdomains_id',
+            )
             ->where('study_plans.is_active', true)
             ->where('user_qualification_targets.user_id', $userId)
             ->where('todo.date', '>=', $start->toDateString())
@@ -83,15 +177,24 @@ class CalendarController extends Controller
                 'study_plan_items.study_plan_items_id',
                 'todo.date',
                 'qualification.name as qualification_name',
-                'qualification_domains.name as domain_name',
+                DB::raw('COALESCE(qualification_subdomains.name, qualification_domains.name) as domain_name'),
                 'study_plan_items.planned_minutes',
+                'study_plans.study_plans_id as plan_order',
             ])
             ->get();
 
+        $qualificationOrder = $rows->pluck('qualification_name')->unique()->values();
+        $colorMap = $qualificationOrder
+            ->mapWithKeys(function ($name, $index) use ($palette) {
+                $color = $palette[$index % count($palette)];
+                return [$name => $color];
+            });
+
         $events = $rows
-            ->groupBy('date')
-            ->map(function ($items, $date) {
-                $first = $items->first();
+            ->groupBy(fn ($row) => $row->date . '|' . $row->qualification_name)
+            ->map(function ($items, $key) use ($colorMap, $palette) {
+                [$date, $qualificationName] = explode('|', $key, 2);
+                $planOrder = $items->min('plan_order') ?? 0;
                 $details = $items->map(function ($item) {
                     return [
                         'domainName' => $item->domain_name,
@@ -100,12 +203,15 @@ class CalendarController extends Controller
                 })->values();
 
                 return [
-                    'id' => 'todo-' . $date,
-                    'title' => $first->qualification_name,
+                    'id' => 'todo-' . $qualificationName . '-' . $date,
+                    'title' => $qualificationName,
                     'start' => $date,
                     'allDay' => true,
+                    'planOrder' => $planOrder,
+                    'backgroundColor' => $colorMap[$qualificationName] ?? $palette[0],
+                    'borderColor' => $colorMap[$qualificationName] ?? $palette[0],
                     'extendedProps' => [
-                        'qualificationName' => $first->qualification_name,
+                        'qualificationName' => $qualificationName,
                         'details' => $details,
                     ],
                 ];

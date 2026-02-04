@@ -70,6 +70,7 @@
     align-items: center;
 }
 
+/* 各入力欄の見出し */
 .settings-label {
     font-size: 0.95rem;
     font-weight: 600;
@@ -99,6 +100,7 @@
     border-color: #e5e7eb;
 }
 
+/* 補足説明のテキスト */
 .settings-muted {
     font-size: 0.85rem;
     color: #6b7280;
@@ -234,6 +236,7 @@
     gap: 0.5rem;
 }
 
+/* 時間ラベルの小見出し */
 .settings-time-tag {
     font-size: 0.85rem;
     font-weight: 600;
@@ -276,6 +279,7 @@
     transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
+/* 表示時のみフェードインする */
 .settings-toast.is-visible {
     opacity: 1;
     transform: translateY(0);

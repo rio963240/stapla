@@ -2,8 +2,9 @@
 
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\PlanRegisterController;
+use App\Http\Controllers\PlanRegisterSubdomainController;
+use App\Http\Controllers\QualificationController;
 use App\Http\Controllers\SettingsController;
-use App\Models\QualificationDomain;
 use App\Models\Qualification;
 use Illuminate\Support\Facades\Route;
 
@@ -36,23 +37,15 @@ Route::middleware([
         return view('home', compact('qualifications'));
     })->name('home');
 
-    Route::get('/qualifications/{qualificationId}/domains', function (int $qualificationId) {
-        $domains = QualificationDomain::query()
-            ->where('qualification_id', $qualificationId)
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get(['qualification_domains_id', 'name']);
-
-        return response()->json(
-            $domains->map(fn ($domain) => [
-                'id' => $domain->qualification_domains_id,
-                'name' => $domain->name,
-            ]),
-        );
-    })->name('qualifications.domains');
+    Route::get('/qualifications/{qualificationId}/domains', [QualificationController::class, 'domains'])
+        ->name('qualifications.domains');
+    Route::get('/qualifications/{qualificationId}/subdomains', [QualificationController::class, 'subdomains'])
+        ->name('qualifications.subdomains');
 
     Route::post('/plan-register/domain', [PlanRegisterController::class, 'storeDomain'])
         ->name('plan-register.domain');
+    Route::post('/plan-register/subdomain', [PlanRegisterSubdomainController::class, 'store'])
+        ->name('plan-register.subdomain');
 
     Route::get('/calendar/events', [CalendarController::class, 'events'])
         ->name('calendar.events');

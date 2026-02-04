@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\QualificationDomain;
+use App\Models\QualificationSubdomain;
 use App\Models\StudyPlan;
 use App\Models\StudyPlanItem;
 use App\Models\Todo;
-use App\Models\UserDomainPreference;
 use App\Models\UserNoStudyDay;
 use App\Models\UserQualificationTarget;
+use App\Models\UserSubdomainPreference;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\JsonResponse;
@@ -16,9 +16,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
-class PlanRegisterController extends Controller
+class PlanRegisterSubdomainController extends Controller
 {
-    public function storeDomain(Request $request): JsonResponse
+    public function store(Request $request): JsonResponse
     {
         $validated = $request->validate(
             [
@@ -27,9 +27,9 @@ class PlanRegisterController extends Controller
                 'qualification_id' => ['required', 'integer', 'exists:qualification,qualification_id'],
                 'daily_study_time' => ['required', 'integer', 'min:1', 'max:999'],
                 'buffer_rate' => ['required', 'integer', 'min:0', 'max:99'],
-                'domains' => ['required', 'array', 'min:1'],
-                'domains.*.id' => ['required', 'integer', 'exists:qualification_domains,qualification_domains_id'],
-                'domains.*.weight' => ['required', 'integer', 'min:1', 'max:999'],
+                'subdomains' => ['required', 'array', 'min:1'],
+                'subdomains.*.id' => ['required', 'integer', 'exists:qualification_subdomains,qualification_subdomains_id'],
+                'subdomains.*.weight' => ['required', 'integer', 'min:1', 'max:999'],
                 'no_study_days' => ['array'],
                 'no_study_days.*' => ['date'],
             ],
@@ -46,21 +46,27 @@ class PlanRegisterController extends Controller
             ]);
         }
 
-        // 資格と分野の整合性チェック用
+        // 資格とサブ分野の整合性チェック用
         $qualificationId = (int) $validated['qualification_id'];
-        $domainIds = collect($validated['domains'])->pluck('id')->unique()->values();
-        $domainsCount = QualificationDomain::query()
-            ->where('qualification_id', $qualificationId)
-            ->whereIn('qualification_domains_id', $domainIds)
+        $subdomainIds = collect($validated['subdomains'])->pluck('id')->unique()->values();
+        $subdomainsCount = QualificationSubdomain::query()
+            ->join(
+                'qualification_domains',
+                'qualification_subdomains.qualification_domains_id',
+                '=',
+                'qualification_domains.qualification_domains_id',
+            )
+            ->where('qualification_domains.qualification_id', $qualificationId)
+            ->whereIn('qualification_subdomains.qualification_subdomains_id', $subdomainIds)
             ->count();
 
-        if ($domainsCount !== $domainIds->count()) {
+        if ($subdomainsCount !== $subdomainIds->count()) {
             throw ValidationException::withMessages([
-                'domains' => ['資格に紐づかない分野が含まれています。'],
+                'subdomains' => ['資格に紐づかないサブ分野が含まれています。'],
             ]);
         }
 
-        return DB::transaction(function () use ($request, $validated, $domainIds): JsonResponse {
+        return DB::transaction(function () use ($request, $validated): JsonResponse {
             $user = $request->user();
             $startDate = Carbon::parse($validated['start_date'])->startOfDay();
             $examDate = Carbon::parse($validated['exam_date'])->startOfDay();
@@ -114,13 +120,13 @@ class PlanRegisterController extends Controller
                 ]);
             }
 
-            // 分野重みを一括置き換え
-            UserDomainPreference::where('user_qualification_targets_id', $target->user_qualification_targets_id)->delete();
-            foreach ($validated['domains'] as $domain) {
-                UserDomainPreference::create([
+            // サブ分野重みを一括置き換え
+            UserSubdomainPreference::where('user_qualification_targets_id', $target->user_qualification_targets_id)->delete();
+            foreach ($validated['subdomains'] as $subdomain) {
+                UserSubdomainPreference::create([
                     'user_qualification_targets_id' => $target->user_qualification_targets_id,
-                    'qualification_domains_id' => $domain['id'],
-                    'weight' => $domain['weight'],
+                    'qualification_subdomains_id' => $subdomain['id'],
+                    'weight' => $subdomain['weight'],
                 ]);
             }
 
@@ -167,18 +173,18 @@ class PlanRegisterController extends Controller
             $totalCapacity = $availableDays * (int) $validated['daily_study_time'];
             $planCapacity = (int) floor($totalCapacity * (1 - ((int) $validated['buffer_rate']) / 100));
 
-            $totalWeight = collect($validated['domains'])->sum('weight');
+            $totalWeight = collect($validated['subdomains'])->sum('weight');
             if ($totalWeight <= 0) {
                 throw ValidationException::withMessages([
-                    'domains' => ['重みの合計が0です。'],
+                    'subdomains' => ['重みの合計が0です。'],
                 ]);
             }
 
-            // 分野別の1日あたり学習時間（切り捨て）
+            // サブ分野別の1日あたり学習時間（切り捨て）
             $dailyMinutes = [];
-            foreach ($validated['domains'] as $domain) {
-                $allocMinutes = $planCapacity * ($domain['weight'] / $totalWeight);
-                $dailyMinutes[$domain['id']] = (int) floor($allocMinutes / $availableDays);
+            foreach ($validated['subdomains'] as $subdomain) {
+                $allocMinutes = $planCapacity * ($subdomain['weight'] / $totalWeight);
+                $dailyMinutes[$subdomain['id']] = (int) floor($allocMinutes / $availableDays);
             }
 
             // todo と study_plan_items を生成
@@ -193,16 +199,16 @@ class PlanRegisterController extends Controller
             $lastTodo = $todos[$availableDays - 1] ?? null;
             $lastTodoItems = [];
             foreach ($todos as $todo) {
-                foreach ($validated['domains'] as $domain) {
+                foreach ($validated['subdomains'] as $subdomain) {
                     $item = StudyPlanItem::create([
                         'todo_id' => $todo->todo_id,
-                        'qualification_domains_id' => $domain['id'],
-                        'qualification_subdomains_id' => null,
-                        'planned_minutes' => $dailyMinutes[$domain['id']],
+                        'qualification_domains_id' => null,
+                        'qualification_subdomains_id' => $subdomain['id'],
+                        'planned_minutes' => $dailyMinutes[$subdomain['id']],
                         'status' => false,
                     ]);
                     if ($lastTodo && $todo->todo_id === $lastTodo->todo_id) {
-                        $lastTodoItems[$domain['id']] = $item;
+                        $lastTodoItems[$subdomain['id']] = $item;
                     }
                 }
             }
@@ -212,11 +218,11 @@ class PlanRegisterController extends Controller
             $leftover = $planCapacity - $sumPlanned;
             if ($leftover > 0 && $lastTodo) {
                 while ($leftover > 0) {
-                    foreach ($validated['domains'] as $domain) {
+                    foreach ($validated['subdomains'] as $subdomain) {
                         if ($leftover <= 0) {
                             break;
                         }
-                        $item = $lastTodoItems[$domain['id']] ?? null;
+                        $item = $lastTodoItems[$subdomain['id']] ?? null;
                         if ($item) {
                             $item->increment('planned_minutes');
                             $leftover -= 1;
@@ -230,5 +236,4 @@ class PlanRegisterController extends Controller
             ]);
         });
     }
-
 }

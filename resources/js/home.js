@@ -13,6 +13,7 @@ const initCalendar = () => {
 
         // 月表示は資格名のみ
         if (arg.view.type === 'dayGridMonth') {
+            container.classList.add('fc-month-event-title');
             container.textContent = qualificationName || arg.event.title;
             return { domNodes: [container] };
         }
@@ -55,6 +56,7 @@ const initCalendar = () => {
         // 同時刻のイベントは横並びにせず縦に積む
         slotEventOverlap: false,
         eventOverlap: false,
+        eventOrder: 'planOrder',
         // FullCalendarのリクエスト範囲に合わせてイベントを取得
         events: (info, successCallback, failureCallback) => {
             const viewType = currentViewType;
@@ -117,6 +119,7 @@ const waitForCalendarLib = () => {
 };
 
 import { initPlanRegister } from './plan-register';
+import { initPlanRegisterSubdomain } from './plan-register-subdomain';
 
 // プロフィールメニューの開閉
 const initProfileMenu = () => {
@@ -174,5 +177,6 @@ const onReady = (callback) => {
 onReady(() => {
     waitForCalendarLib();
     initPlanRegister();
+    initPlanRegisterSubdomain();
     initProfileMenu();
 });

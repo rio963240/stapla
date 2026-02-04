@@ -9,6 +9,11 @@ class UserSubdomainPreference extends BaseModel
     protected $table = 'user_subdomain_preferences';
     protected $primaryKey = 'user_subdomain_preferences_id';
     public $timestamps = false; // ←timestamps無し
+    protected $fillable = [
+        'user_qualification_targets_id',
+        'qualification_subdomains_id',
+        'weight',
+    ];
 
     public function target(): BelongsTo
     {
