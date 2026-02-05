@@ -1,0 +1,120 @@
+/* ------------------------------ */
+/* 実績入力モーダル */
+/* ------------------------------ */
+.study-record-popover {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+}
+
+.study-record-popover.is-hidden {
+    display: none;
+}
+
+.study-record-popover-panel {
+    position: relative;
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 1.75rem;
+    width: min(520px, 100%);
+    box-shadow: 0 24px 48px rgba(15, 23, 42, 0.2);
+    pointer-events: auto;
+}
+
+.study-record-panel {
+    width: min(560px, 100%);
+}
+
+.study-record-popover-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    display: inline-flex;
+    height: 2rem;
+    width: 2rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    border: 1px solid #e5e7eb;
+    background-color: #fff;
+    font-size: 1.1rem;
+    line-height: 1;
+    color: #374151;
+}
+
+.study-record-step {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    height: 100%;
+}
+
+.study-record-step.hidden {
+    display: none;
+}
+
+.study-record-meta {
+    margin-top: 0.75rem;
+    text-align: center;
+    font-size: 0.95rem;
+    color: #6b7280;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.study-record-title {
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: #111827;
+}
+
+.study-record-form {
+    margin-top: 1.25rem;
+}
+
+.study-record-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.study-record-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border-radius: 0.9rem;
+    border: 1px solid #f3f4f6;
+    padding: 0.7rem 1rem;
+    background-color: #ffffff;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+}
+
+.study-record-inline {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.study-record-label {
+    font-weight: 600;
+    color: #111827;
+}
+
+.study-record-note {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.study-record-textarea {
+    resize: vertical;
+    min-height: 90px;
+}
+
+.study-record-empty {
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.9rem;
+}

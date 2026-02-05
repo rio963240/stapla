@@ -175,6 +175,7 @@ class CalendarController extends Controller
             ->where('todo.date', '<', $end->toDateString())
             ->select([
                 'study_plan_items.study_plan_items_id',
+                'todo.todo_id',
                 'todo.date',
                 'qualification.name as qualification_name',
                 DB::raw('COALESCE(qualification_subdomains.name, qualification_domains.name) as domain_name'),
@@ -195,6 +196,7 @@ class CalendarController extends Controller
             ->map(function ($items, $key) use ($colorMap, $palette) {
                 [$date, $qualificationName] = explode('|', $key, 2);
                 $planOrder = $items->min('plan_order') ?? 0;
+                $todoId = $items->first()->todo_id ?? null;
                 $details = $items->map(function ($item) {
                     return [
                         'domainName' => $item->domain_name,
@@ -213,6 +215,7 @@ class CalendarController extends Controller
                     'extendedProps' => [
                         'qualificationName' => $qualificationName,
                         'details' => $details,
+                        'todoId' => $todoId,
                     ],
                 ];
             })

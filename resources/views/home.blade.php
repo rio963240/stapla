@@ -36,6 +36,7 @@
     </div>
 
     @include('home.plan-register-modals')
+    @include('home.study-record-modal')
 
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>

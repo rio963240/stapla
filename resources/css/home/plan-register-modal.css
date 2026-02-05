@@ -1,0 +1,252 @@
+/* ------------------------------ */
+/* 計画登録モーダル */
+/* ------------------------------ */
+/* オーバーレイ */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(15, 23, 42, 0.4);
+    z-index: 60;
+    padding: 1.5rem;
+}
+
+.modal-backdrop.hidden {
+    display: none;
+}
+
+/* コンテナ */
+.modal-panel {
+    width: 720px;
+    max-width: 100%;
+    border-radius: 24px;
+    background-color: #fff;
+    box-shadow: 0 24px 64px rgba(15, 23, 42, 0.2);
+    padding: 2.5rem 2.5rem 2rem;
+    max-height: calc(100vh - 3rem);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* ヘッダー */
+.modal-title {
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+/* ヘッダー操作 */
+.modal-close {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    display: inline-flex;
+    height: 2rem;
+    width: 2rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    border: 1px solid #e5e7eb;
+    background-color: #fff;
+    font-size: 1.1rem;
+    line-height: 1;
+    color: #374151;
+}
+
+/* 選択ボタン */
+.modal-pill-button {
+    border-radius: 9999px;
+    border: 2px solid #374151;
+    padding: 1rem 1.25rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #111827;
+    background-color: #fff;
+}
+
+/* フォームレイアウト */
+.modal-form {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+    flex: 1 1 auto;
+}
+
+/* フォーム行 */
+.modal-row {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 1rem;
+    align-items: center;
+}
+
+/* ラベル */
+.modal-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #111827;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+/* ヘルプアイコン */
+.modal-help {
+    display: inline-flex;
+    height: 1.25rem;
+    width: 1.25rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    border: 1px solid #d1d5db;
+    font-size: 0.75rem;
+    color: #6b7280;
+    background: #fff;
+    cursor: pointer;
+    padding: 0;
+}
+
+/* ヘルプラッパー */
+.modal-help-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* ヘルプポップオーバー */
+.modal-popover {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    width: 260px;
+    padding: 0.75rem 0.9rem;
+    border-radius: 0.75rem;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    color: #374151;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+    z-index: 20;
+}
+
+/* 横並びレイアウト */
+.modal-inline {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+/* 縦並びレイアウト */
+.modal-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+/* 入力欄 */
+.modal-input {
+    width: 100%;
+    border-radius: 0.75rem;
+    border: 1px solid #d1d5db;
+    padding: 0.55rem 0.9rem;
+    font-size: 0.95rem;
+    color: #111827;
+    background-color: #fff;
+}
+
+/* 短い入力欄 */
+.modal-input-short {
+    max-width: 120px;
+    width: 120px;
+}
+
+/* 単位 */
+.modal-unit {
+    font-size: 0.9rem;
+    color: #374151;
+}
+
+/* アイコンボタン */
+.modal-icon-button {
+    height: 2rem;
+    width: 2rem;
+    border-radius: 9999px;
+    border: 1px solid #d1d5db;
+    background-color: #fff;
+    font-size: 1.1rem;
+    line-height: 1;
+    color: #374151;
+}
+
+/* 丸型アイコンボタン */
+.modal-icon-button-round {
+    flex: 0 0 auto;
+    align-self: center;
+}
+
+/* チップ一覧 */
+.modal-chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* チップ */
+.modal-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border-radius: 9999px;
+    border: 1px solid #d1d5db;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.85rem;
+    color: #111827;
+    background-color: #f9fafb;
+}
+
+/* チップ削除 */
+.modal-chip button {
+    border: none;
+    background: transparent;
+    color: #6b7280;
+    font-size: 0.9rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+/* フッター操作 */
+.modal-actions {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex: 0 0 auto;
+}
+
+/* アクションボタン */
+.modal-secondary,
+.modal-primary {
+    min-width: 140px;
+    border-radius: 9999px;
+    border: 2px solid #111827;
+    padding: 0.65rem 1.5rem;
+    font-weight: 600;
+}
+
+.modal-primary {
+    background-color: #111827;
+    color: #fff;
+}
+
+.modal-secondary {
+    background-color: #fff;
+    color: #111827;
+}

@@ -5,6 +5,7 @@ use App\Http\Controllers\PlanRegisterController;
 use App\Http\Controllers\PlanRegisterSubdomainController;
 use App\Http\Controllers\QualificationController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\StudyRecordController;
 use App\Models\Qualification;
 use Illuminate\Support\Facades\Route;
 
@@ -49,6 +50,11 @@ Route::middleware([
 
     Route::get('/calendar/events', [CalendarController::class, 'events'])
         ->name('calendar.events');
+
+    Route::get('/study-records/todo/{todoId}', [StudyRecordController::class, 'showTodo'])
+        ->name('study-records.todo');
+    Route::post('/study-records', [StudyRecordController::class, 'store'])
+        ->name('study-records.store');
 
     // ダッシュボードはホームにリダイレクト
     Route::get('/dashboard', function () {

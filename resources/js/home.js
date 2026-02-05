@@ -1,3 +1,7 @@
+import { initStudyRecordModal } from './study-record-modal';
+
+let studyRecordModal = null;
+
 // カレンダーの初期化（FullCalendar）
 const initCalendar = () => {
     const calendarEl = document.getElementById('calendar');
@@ -97,6 +101,14 @@ const initCalendar = () => {
             month: '月',
             week: '週',
         },
+        eventClick: (info) => {
+            if (info.view.type !== 'dayGridWeek') return;
+            const todoId = info.event.extendedProps?.todoId;
+            if (!todoId || !studyRecordModal?.open) return;
+            info.jsEvent?.preventDefault();
+            info.jsEvent?.stopPropagation();
+            studyRecordModal.open({ todoId, anchorEvent: info.jsEvent });
+        },
     });
 
     // 画面に描画
@@ -175,6 +187,7 @@ const onReady = (callback) => {
 
 // 初期化エントリポイント
 onReady(() => {
+    studyRecordModal = initStudyRecordModal();
     waitForCalendarLib();
     initPlanRegister();
     initPlanRegisterSubdomain();
