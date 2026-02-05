@@ -102,6 +102,7 @@ export const initStudyRecordModal = () => {
         return null;
 
     let currentTodoId = null;
+    let lastAnchorEvent = null;
 
     const setTextNodes = (nodes, text) => {
         nodes.forEach((node) => {
@@ -112,6 +113,7 @@ export const initStudyRecordModal = () => {
     const showStep = (step) => {
         summaryStep?.classList.toggle('hidden', step !== 'summary');
         formStep?.classList.toggle('hidden', step !== 'form');
+        requestAnimationFrame(() => positionPanel(lastAnchorEvent));
     };
 
     const positionPanel = (anchorEvent) => {
@@ -140,6 +142,7 @@ export const initStudyRecordModal = () => {
     };
 
     const openModal = (anchorEvent) => {
+        lastAnchorEvent = anchorEvent ?? lastAnchorEvent;
         modal.classList.remove('is-hidden');
     };
 
@@ -147,6 +150,7 @@ export const initStudyRecordModal = () => {
         modal.classList.add('is-hidden');
         showStep('summary');
         currentTodoId = null;
+        lastAnchorEvent = null;
     };
 
     const setLoading = () => {
@@ -177,6 +181,7 @@ export const initStudyRecordModal = () => {
 
         nextButton.removeAttribute('disabled');
         saveButton.removeAttribute('disabled');
+        requestAnimationFrame(() => positionPanel(lastAnchorEvent));
     };
 
     const fetchTodo = async (todoId) => {
@@ -192,6 +197,7 @@ export const initStudyRecordModal = () => {
             setTextNodes(dateNodes, formatDateLabel(data?.date));
             memoInput.value = data?.memo ?? '';
             setItems(Array.isArray(data?.items) ? data.items : []);
+            requestAnimationFrame(() => positionPanel(lastAnchorEvent));
         } catch (error) {
             summaryList.innerHTML = '';
             summaryList.append(buildEmptyRow());
@@ -281,6 +287,12 @@ export const initStudyRecordModal = () => {
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape' && !modal.classList.contains('is-hidden')) {
             closeModal();
+        }
+    });
+
+    window.addEventListener('resize', () => {
+        if (!modal.classList.contains('is-hidden')) {
+            requestAnimationFrame(() => positionPanel(lastAnchorEvent));
         }
     });
 
