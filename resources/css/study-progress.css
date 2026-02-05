@@ -1,0 +1,244 @@
+.study-progress-page {
+    min-height: 100%;
+}
+
+.study-progress-container {
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.study-progress-controls {
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 24px;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+.study-progress-control {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.study-progress-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.study-progress-select,
+.study-progress-date {
+    min-width: 180px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    padding: 8px 12px;
+    font-size: 0.95rem;
+    background: #fff;
+}
+
+.study-progress-date-range {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.study-progress-date-separator {
+    color: #9ca3af;
+}
+
+.study-progress-apply {
+    border-radius: 10px;
+    padding: 8px 16px;
+    border: none;
+    background: #111827;
+    color: #fff;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.study-progress-summary {
+    margin-left: auto;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.study-progress-summary-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: right;
+}
+
+.study-progress-summary-label {
+    font-size: 0.8rem;
+    color: #9ca3af;
+}
+
+.study-progress-summary-value {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.study-progress-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.study-progress-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 320px;
+}
+
+.study-progress-card-wide {
+    grid-column: 1 / -1;
+}
+
+.study-progress-card-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.study-progress-card-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.study-progress-card-subtitle {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+.study-progress-chart {
+    position: relative;
+    width: 100%;
+    min-height: 240px;
+}
+
+.study-progress-domain-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.study-progress-domain-item {
+    display: grid;
+    gap: 6px;
+}
+
+.study-progress-domain-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 0.9rem;
+    color: #111827;
+}
+
+.study-progress-domain-name {
+    font-weight: 600;
+}
+
+.study-progress-domain-meta {
+    color: #6b7280;
+    font-size: 0.85rem;
+}
+
+.study-progress-domain-bar {
+    width: 100%;
+    height: 12px;
+    border-radius: 999px;
+    background: #e5e7eb;
+    overflow: hidden;
+}
+
+.study-progress-domain-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #3b82f6 0%, #6366f1 100%);
+    transition: width 0.2s ease;
+}
+
+.study-progress-legend {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.study-progress-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.study-progress-legend-item::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #9ca3af;
+}
+
+.study-progress-legend-item.is-good::before {
+    background: #10b981;
+}
+
+.study-progress-legend-item.is-mid::before {
+    background: #f59e0b;
+}
+
+.study-progress-legend-item.is-low::before {
+    background: #ef4444;
+}
+
+.study-progress-empty {
+    display: none;
+    font-size: 0.9rem;
+    color: #9ca3af;
+}
+
+.study-progress-empty.is-visible {
+    display: block;
+}
+
+@media (max-width: 1024px) {
+    .study-progress-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .study-progress-summary {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 640px) {
+    .study-progress-card {
+        min-height: auto;
+    }
+
+    .study-progress-summary-item {
+        text-align: left;
+    }
+}

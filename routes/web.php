@@ -6,6 +6,7 @@ use App\Http\Controllers\PlanRegisterSubdomainController;
 use App\Http\Controllers\QualificationController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\StudyRecordController;
+use App\Http\Controllers\StudyProgressController;
 use App\Models\Qualification;
 use Illuminate\Support\Facades\Route;
 
@@ -50,6 +51,11 @@ Route::middleware([
 
     Route::get('/calendar/events', [CalendarController::class, 'events'])
         ->name('calendar.events');
+
+    Route::get('/study-progress', [StudyProgressController::class, 'index'])
+        ->name('study-progress');
+    Route::get('/study-progress/data', [StudyProgressController::class, 'data'])
+        ->name('study-progress.data');
 
     Route::get('/study-records/todo/{todoId}', [StudyRecordController::class, 'showTodo'])
         ->name('study-records.todo');

@@ -185,11 +185,26 @@ const onReady = (callback) => {
     }
 };
 
+const openPlanRegisterFromQuery = () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('open') !== 'plan-register') return;
+    const trigger = document.getElementById('plan-register-trigger');
+    if (trigger) {
+        trigger.click();
+    }
+
+    params.delete('open');
+    const next = params.toString();
+    const nextUrl = next ? `${window.location.pathname}?${next}` : window.location.pathname;
+    window.history.replaceState(null, '', nextUrl);
+};
+
 // 初期化エントリポイント
 onReady(() => {
     studyRecordModal = initStudyRecordModal();
     waitForCalendarLib();
     initPlanRegister();
+    openPlanRegisterFromQuery();
     initPlanRegisterSubdomain();
     initProfileMenu();
 });
