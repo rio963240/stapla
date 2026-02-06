@@ -12,6 +12,7 @@ class StudyProgressController extends Controller
 {
     public function index(Request $request)
     {
+        // 画面初期表示用の対象取得とデータ組み立て
         $userId = $request->user()->id;
         $targets = $this->fetchTargets($userId);
         $selectedTarget = $this->selectTarget($targets, $request->query('target_id'));
@@ -29,6 +30,7 @@ class StudyProgressController extends Controller
             $selectedTarget,
         );
 
+        // 進捗グラフ・一覧に必要な集計データを作成
         $data = $this->buildData((int) $selectedTarget->active_plan_id, $periodStart, $periodEnd);
         $data['selected_target_id'] = (int) $selectedTarget->user_qualification_targets_id;
         $data['period_start'] = $periodStart->toDateString();
@@ -43,6 +45,7 @@ class StudyProgressController extends Controller
 
     public function data(Request $request): JsonResponse
     {
+        // フロントの再取得用API（期間や対象変更時）
         $validated = $request->validate([
             'target_id' => ['required', 'integer'],
             'start' => ['nullable', 'date'],
@@ -63,6 +66,7 @@ class StudyProgressController extends Controller
             $selectedTarget,
         );
 
+        // 対象プランの集計データを返却
         $data = $this->buildData((int) $selectedTarget->active_plan_id, $periodStart, $periodEnd);
         $data['selected_target_id'] = (int) $selectedTarget->user_qualification_targets_id;
         $data['period_start'] = $periodStart->toDateString();
@@ -74,6 +78,7 @@ class StudyProgressController extends Controller
 
     private function fetchTargets(int $userId): Collection
     {
+        // ユーザーの資格目標一覧とアクティブ計画を取得
         return DB::table('user_qualification_targets as uqt')
             ->join('qualification as q', 'uqt.qualification_id', '=', 'q.qualification_id')
             ->leftJoin('study_plans as sp', function ($join) {
@@ -94,6 +99,7 @@ class StudyProgressController extends Controller
 
     private function selectTarget(Collection $targets, $targetId)
     {
+        // 指定IDがあれば優先、それ以外はアクティブ計画 → 先頭を選択
         $targetId = $targetId ? (int) $targetId : null;
         if ($targetId) {
             $match = $targets->firstWhere('user_qualification_targets_id', $targetId);
@@ -110,6 +116,7 @@ class StudyProgressController extends Controller
 
     private function resolvePeriod(?string $start, ?string $end, $target): array
     {
+        // 期間のデフォルトを対象の開始日〜試験日（最大で今日まで）に設定
         $today = Carbon::today();
         $defaultStart = $target?->start_date ? Carbon::parse($target->start_date)->startOfDay() : $today->copy()->subDays(13);
         $defaultEnd = $target?->exam_date ? Carbon::parse($target->exam_date)->startOfDay() : $today->copy();
@@ -130,10 +137,12 @@ class StudyProgressController extends Controller
 
     private function buildData(int $planId, Carbon $periodStart, Carbon $periodEnd): array
     {
+        // 計画IDがない場合は空データを返す
         if (!$planId) {
             return $this->emptyData();
         }
 
+        // 日別の予定/実績合計を取得
         $dailyRows = DB::table('todo')
             ->join('study_plan_items', 'todo.todo_id', '=', 'study_plan_items.todo_id')
             ->leftJoin('study_records', function ($join) {
@@ -152,6 +161,7 @@ class StudyProgressController extends Controller
 
         $plannedCumulative = 0;
         $actualCumulative = 0;
+        // 累積推移データを作成
         $cumulative = $dailyRows->map(function ($row) use (&$plannedCumulative, &$actualCumulative) {
             $plannedCumulative += (int) $row->planned_minutes;
             $actualCumulative += (int) $row->actual_minutes;
@@ -163,6 +173,7 @@ class StudyProgressController extends Controller
             ];
         })->values();
 
+        // 分野別の予定/実績を集計
         $domainRows = DB::table('study_plan_items')
             ->join('todo', 'study_plan_items.todo_id', '=', 'todo.todo_id')
             ->leftJoin('study_records', function ($join) {
@@ -204,6 +215,7 @@ class StudyProgressController extends Controller
             ];
         })->values();
 
+        // 期間内の日別達成率を集計
         $periodRows = DB::table('todo')
             ->join('study_plan_items', 'todo.todo_id', '=', 'study_plan_items.todo_id')
             ->leftJoin('study_records', function ($join) {
@@ -235,6 +247,7 @@ class StudyProgressController extends Controller
             ];
         })->values();
 
+        // 全期間の合計と達成率を算出
         $totals = $dailyRows->reduce(function ($carry, $row) {
             $carry['planned'] += (int) $row->planned_minutes;
             $carry['actual'] += (int) $row->actual_minutes;

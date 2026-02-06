@@ -1,8 +1,10 @@
+// サーバーから渡された初期データ
 const initialData = window.studyProgressInitialData ?? {};
 
 let cumulativeChart = null;
 let periodChart = null;
 
+// DOM読み込み後に実行するユーティリティ
 const onReady = (callback) => {
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', callback);
@@ -11,22 +13,26 @@ const onReady = (callback) => {
     }
 };
 
+// 率表示のフォーマット
 const formatRate = (value) => {
     if (!Number.isFinite(value)) return '--';
     return `${value}%`;
 };
 
+// 分数表示のフォーマット
 const formatMinutes = (value) => {
     if (!Number.isFinite(value)) return '--';
     return `${value}分`;
 };
 
+// 空表示のON/OFF
 const setEmptyState = (key, isEmpty) => {
     const el = document.querySelector(`[data-study-progress-empty="${key}"]`);
     if (!el) return;
     el.classList.toggle('is-visible', isEmpty);
 };
 
+// サマリー（達成率/実績合計）の更新
 const updateSummary = (summary) => {
     const rateEl = document.querySelector('[data-study-progress-summary-rate]');
     const actualEl = document.querySelector('[data-study-progress-summary-actual]');
@@ -38,6 +44,7 @@ const updateSummary = (summary) => {
     actualEl.textContent = formatMinutes(actual);
 };
 
+// 累積グラフの生成・更新
 const buildCumulativeChart = (data) => {
     const canvas = document.getElementById('study-progress-cumulative');
     if (!canvas || !window.Chart) return;
@@ -98,6 +105,7 @@ const buildCumulativeChart = (data) => {
     });
 };
 
+// 分野別リストの描画
 const renderDomainList = (items) => {
     const container = document.querySelector('[data-study-progress-domain-list]');
     if (!container) return;
@@ -146,6 +154,7 @@ const renderDomainList = (items) => {
     });
 };
 
+// 期間別達成率グラフの生成・更新
 const buildPeriodChart = (data) => {
     const canvas = document.getElementById('study-progress-period');
     if (!canvas || !window.Chart) return;
@@ -203,6 +212,7 @@ const buildPeriodChart = (data) => {
     });
 };
 
+// 画面全体の表示更新
 const updateCharts = (data) => {
     const cumulative = data?.cumulative ?? [];
     const period = data?.period_rates ?? [];
@@ -231,6 +241,7 @@ const updateCharts = (data) => {
     updateSummary(data?.summary ?? {});
 };
 
+// 期間・対象を指定してAPIからデータ取得
 const fetchData = async ({ targetId, start, end }) => {
     if (!targetId) return;
     const params = new URLSearchParams({ target_id: String(targetId) });
@@ -249,6 +260,7 @@ const fetchData = async ({ targetId, start, end }) => {
     return response.json();
 };
 
+// 画面初期化とイベント登録
 const init = () => {
     const targetSelect = document.querySelector('[data-study-progress-target]');
     const startInput = document.querySelector('[data-study-progress-start]');
@@ -283,6 +295,7 @@ const init = () => {
     applyButton.addEventListener('click', applyFilters);
 };
 
+// プロフィールメニューの開閉処理
 const initProfileMenu = () => {
     const trigger = document.getElementById('profile-menu-trigger');
     const menu = document.getElementById('profile-menu');

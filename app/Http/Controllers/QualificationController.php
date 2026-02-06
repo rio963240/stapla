@@ -10,12 +10,14 @@ class QualificationController extends Controller
 {
     public function domains(int $qualificationId): JsonResponse
     {
+        // 資格に紐づく有効な分野一覧を取得
         $domains = QualificationDomain::query()
             ->where('qualification_id', $qualificationId)
             ->where('is_active', true)
             ->orderBy('name')
             ->get(['qualification_domains_id', 'name']);
 
+        // フロント向けのid/name形式に整形して返却
         return response()->json(
             $domains->map(fn ($domain) => [
                 'id' => $domain->qualification_domains_id,
@@ -26,6 +28,7 @@ class QualificationController extends Controller
 
     public function subdomains(int $qualificationId): JsonResponse
     {
+        // 資格に紐づく分野/サブ分野を結合して取得
         $subdomains = QualificationSubdomain::query()
             ->join(
                 'qualification_domains',
@@ -44,6 +47,7 @@ class QualificationController extends Controller
                 'qualification_domains.name as domain_name',
             ]);
 
+        // フロント向けのid/name/domain_name形式に整形して返却
         return response()->json(
             $subdomains->map(fn ($subdomain) => [
                 'id' => $subdomain->qualification_subdomains_id,

@@ -12,13 +12,14 @@ class CalendarController extends Controller
 {
     public function events(Request $request): JsonResponse
     {
+        // 入力パラメータのバリデーション
         $request->validate([
             'start' => ['required', 'date'],
             'end' => ['required', 'date'],
             'view' => ['nullable', 'string'],
         ]);
 
-        // ビュー種別で月/週の返却内容を切り替える
+        // ビュー種別で月/週の返却内容を切り替えるための基礎情報を準備
         $userId = $request->user()->id;
         $start = Carbon::parse($request->query('start'))->startOfDay();
         $end = Carbon::parse($request->query('end'))->startOfDay();
@@ -30,7 +31,7 @@ class CalendarController extends Controller
             '#c4b5fd', // 3つ目
         ];
 
-        // 勉強不可日の取得（横棒の分割に使用）
+        // 勉強不可日の取得（連続イベントの分割に使用）
         $noStudyRows = DB::table('user_no_study_days')
             ->join(
                 'user_qualification_targets',
@@ -49,6 +50,7 @@ class CalendarController extends Controller
             ->flip();
 
         if ($isMonthView) {
+            // 月表示：資格ごとの勉強日をまとめて横棒イベントに変換
             $rows = DB::table('todo')
                 ->join('study_plans', 'todo.study_plans_id', '=', 'study_plans.study_plans_id')
                 ->join(
@@ -79,6 +81,7 @@ class CalendarController extends Controller
                     return [$name => $color];
                 });
             foreach ($grouped as $qualificationName => $items) {
+                // 資格ごとに連続日をまとめる
                 $planOrder = $items->min('plan_order') ?? 0;
                 $dates = $items
                     ->pluck('date')
@@ -101,6 +104,7 @@ class CalendarController extends Controller
                     $isStudyDay = $todoSet->has($dateString);
                     $isNoStudyDay = $noStudySet->has($dateString);
 
+                    // 学習日が連続している区間だけをイベント化する
                     if ($isStudyDay && !$isNoStudyDay) {
                         if (!$rangeStart) {
                             $rangeStart = $date->copy();
@@ -127,6 +131,7 @@ class CalendarController extends Controller
                 }
 
                 if ($rangeStart) {
+                    // 末尾まで連続していた区間をイベント化
                     $events->push([
                         'id' => 'todo-' . $qualificationName . '-' . $rangeStart->toDateString(),
                         'title' => $qualificationName,
@@ -184,6 +189,7 @@ class CalendarController extends Controller
             ])
             ->get();
 
+        // 資格名の出現順で色を固定
         $qualificationOrder = $rows->pluck('qualification_name')->unique()->values();
         $colorMap = $qualificationOrder
             ->mapWithKeys(function ($name, $index) use ($palette) {
@@ -191,6 +197,7 @@ class CalendarController extends Controller
                 return [$name => $color];
             });
 
+        // 日付×資格でまとめて、分野別内訳を付与
         $events = $rows
             ->groupBy(fn ($row) => $row->date . '|' . $row->qualification_name)
             ->map(function ($items, $key) use ($colorMap, $palette) {

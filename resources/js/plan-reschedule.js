@@ -1,8 +1,10 @@
+// CSRFトークン取得（Laravel用）
 const getCsrfToken = () => {
     const token = document.querySelector('meta[name="csrf-token"]');
     return token ? token.getAttribute('content') : '';
 };
 
+// 日付入力用の yyyy-mm-dd 形式を作る
 const formatDateInputValue = (date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -10,12 +12,14 @@ const formatDateInputValue = (date) => {
     return `${year}-${month}-${day}`;
 };
 
+// フォームを開いた日の「翌日」
 const getTomorrowValue = () => {
     const date = new Date();
     date.setDate(date.getDate() + 1);
     return formatDateInputValue(date);
 };
 
+// 対象資格の切替時にフォームを初期化
 const resetRescheduleForm = (modal) => {
     modal.querySelector('[data-reschedule-qualification]')?.setAttribute('value', '');
     modal.querySelector('[data-reschedule-exam]')?.setAttribute('value', '');
@@ -34,6 +38,7 @@ const resetRescheduleForm = (modal) => {
     modal.dataset.weightType = '';
 };
 
+// 勉強不可日のチップを描画
 const renderNoStudyChips = (modal, dates) => {
     const list = modal.querySelector('[data-reschedule-no-study-list]');
     if (!list) return;
@@ -48,6 +53,7 @@ const renderNoStudyChips = (modal, dates) => {
     });
 };
 
+// 分野/サブ分野の重みを描画
 const renderWeights = (modal, weightType, weights) => {
     const list = modal.querySelector('[data-reschedule-weights]');
     if (!list) return;
@@ -75,6 +81,7 @@ const renderWeights = (modal, weightType, weights) => {
     });
 };
 
+// 選択した対象の初期データを取得
 const fetchRescheduleData = async (targetId) => {
     const params = new URLSearchParams({ target_id: String(targetId) });
     const response = await fetch(`/plan-reschedule/target?${params.toString()}`, {
@@ -92,6 +99,7 @@ const fetchRescheduleData = async (targetId) => {
     return response.json();
 };
 
+// モーダルの開閉と対象資格変更時の反映
 const initPlanRescheduleModal = () => {
     const trigger = document.getElementById('plan-reschedule-trigger');
     const modal = document.getElementById('plan-reschedule-modal');
@@ -155,6 +163,7 @@ const initPlanRescheduleModal = () => {
     }
 };
 
+// 勉強不可日のチップ追加
 const initRescheduleNoStudyChips = () => {
     const modal = document.getElementById('plan-reschedule-modal');
     if (!modal) return;
@@ -188,6 +197,7 @@ const initRescheduleNoStudyChips = () => {
     });
 };
 
+// リスケ実行の送信処理
 const initPlanRescheduleSubmit = () => {
     const submitButton = document.querySelector('[data-reschedule-submit]');
     if (!submitButton) return;
@@ -296,6 +306,7 @@ const initPlanRescheduleSubmit = () => {
     });
 };
 
+// リスケジュール機能の初期化
 export const initPlanReschedule = () => {
     initPlanRescheduleModal();
     initRescheduleNoStudyChips();

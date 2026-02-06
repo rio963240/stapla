@@ -18,6 +18,7 @@ use Illuminate\Validation\ValidationException;
 
 class PlanRescheduleController extends Controller
 {
+    // リスケ画面表示用の初期データを返す
     public function data(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -47,6 +48,7 @@ class PlanRescheduleController extends Controller
             ]);
         }
 
+        // 勉強不可日（チップ表示用）
         $noStudyDays = UserNoStudyDay::query()
             ->where('user_qualification_targets_id', $targetId)
             ->orderBy('no_study_day')
@@ -54,6 +56,7 @@ class PlanRescheduleController extends Controller
             ->map(fn ($date) => Carbon::parse($date)->toDateString())
             ->values();
 
+        // サブ分野/分野の重み（どちらか一方だけ使う）
         $subdomainWeights = UserSubdomainPreference::query()
             ->where('user_qualification_targets_id', $targetId)
             ->join(
@@ -150,6 +153,7 @@ class PlanRescheduleController extends Controller
             $baseDate = Carbon::now($timezone)->startOfDay();
             $minStartDate = $baseDate->copy()->addDay();
             $inputStartDate = Carbon::parse($validated['reschedule_start_date'], $timezone)->startOfDay();
+            // リスケ開始日は「明日以降」で固定
             $regenFrom = $inputStartDate->gt($minStartDate) ? $inputStartDate : $minStartDate;
             $examDate = Carbon::parse($target->exam_date, $timezone)->startOfDay();
             $regenTo = $examDate->copy()->subDay();
@@ -172,6 +176,7 @@ class PlanRescheduleController extends Controller
                 ]);
             }
 
+            // 勉強不可日を上書き保存
             $noStudyDays = collect($validated['no_study_days'] ?? [])
                 ->filter()
                 ->unique()
@@ -218,6 +223,7 @@ class PlanRescheduleController extends Controller
 
             $remainingTotal = max(0, $plannedTotal - $actualTotal);
 
+            // リスケ入力値で目標情報を更新
             $target->daily_study_time = (int) $validated['daily_study_time'];
             $target->buffer_rate = (int) $validated['buffer_rate'];
             $target->save();
@@ -266,6 +272,7 @@ class PlanRescheduleController extends Controller
                 ]);
             }
 
+            // 重みは追加/削除不可、値のみ更新
             if ($useSubdomain) {
                 UserSubdomainPreference::where('user_qualification_targets_id', $target->user_qualification_targets_id)->delete();
                 foreach ($payloadWeights as $weight) {

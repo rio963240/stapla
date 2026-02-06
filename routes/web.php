@@ -71,6 +71,7 @@ Route::middleware([
         ->name('plan-register.domain');
     Route::post('/plan-register/subdomain', [PlanRegisterSubdomainController::class, 'store'])
         ->name('plan-register.subdomain');
+    // リスケジュール（保存/初期データ取得）
     Route::post('/plan-reschedule', [PlanRescheduleController::class, 'store'])
         ->name('plan-reschedule.store');
     Route::get('/plan-reschedule/target', [PlanRescheduleController::class, 'data'])

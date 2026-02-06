@@ -20,6 +20,7 @@ class PlanRegisterController extends Controller
 {
     public function storeDomain(Request $request): JsonResponse
     {
+        // 入力値のバリデーションとエラーメッセージ
         $validated = $request->validate(
             [
                 'start_date' => ['required', 'date'],
@@ -40,13 +41,14 @@ class PlanRegisterController extends Controller
 
         $startDate = Carbon::parse($validated['start_date'])->startOfDay();
         $examDate = Carbon::parse($validated['exam_date'])->startOfDay();
+        // 学習期間が一週間未満の場合はエラー
         if ($examDate->lt($startDate->copy()->addDays(7))) {
             throw ValidationException::withMessages([
                 'exam_date' => ['登録は一週間以上からです。'],
             ]);
         }
 
-        // 資格と分野の整合性チェック用
+        // 資格と分野の整合性チェック
         $qualificationId = (int) $validated['qualification_id'];
         $domainIds = collect($validated['domains'])->pluck('id')->unique()->values();
         $domainsCount = QualificationDomain::query()
@@ -60,18 +62,21 @@ class PlanRegisterController extends Controller
             ]);
         }
 
+        // 計画登録は関連テーブル更新が多いためトランザクションで実施
         return DB::transaction(function () use ($request, $validated, $domainIds): JsonResponse {
             $user = $request->user();
             $startDate = Carbon::parse($validated['start_date'])->startOfDay();
             $examDate = Carbon::parse($validated['exam_date'])->startOfDay();
             $endDate = $examDate->copy()->subDay();
 
+            // 学習期間が確保できない場合はエラー
             if ($endDate->lt($startDate)) {
                 throw ValidationException::withMessages([
                     'exam_date' => ['学習期間が確保できません。'],
                 ]);
             }
 
+            // 対象資格が未登録の場合は上限件数をチェック
             $alreadyTargeted = UserQualificationTarget::query()
                 ->where('user_id', $user->id)
                 ->where('qualification_id', $validated['qualification_id'])

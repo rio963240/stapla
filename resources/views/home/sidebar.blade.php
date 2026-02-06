@@ -19,6 +19,7 @@
             href="{{ route('study-progress') }}">
             <span>学習実績</span>
         </a>
+        {{-- リスケジュール起動 --}}
         @if ($context === 'home')
             <button id="plan-reschedule-trigger" type="button"
                 class="flex items-center rounded-md px-3 py-2 text-gray-700 hover:bg-gray-100">

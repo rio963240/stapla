@@ -1,8 +1,10 @@
+// metaタグからCSRFトークンを取得
 const getCsrfToken = () => {
     const token = document.querySelector('meta[name="csrf-token"]');
     return token ? token.getAttribute('content') : '';
 };
 
+// 日付ラベルの日本語表記
 const formatDateLabel = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
@@ -15,6 +17,7 @@ const formatDateLabel = (dateString) => {
     });
 };
 
+// データなし表示の行
 const buildEmptyRow = () => {
     const row = document.createElement('div');
     row.className = 'study-record-empty';
@@ -22,6 +25,7 @@ const buildEmptyRow = () => {
     return row;
 };
 
+// 読み込み中表示の行
 const buildLoadingRow = () => {
     const row = document.createElement('div');
     row.className = 'study-record-empty';
@@ -29,6 +33,7 @@ const buildLoadingRow = () => {
     return row;
 };
 
+// サマリー表示用の行（予定分数のみ）
 const buildSummaryRow = (item) => {
     const row = document.createElement('div');
     row.className = 'study-record-row';
@@ -47,6 +52,7 @@ const buildSummaryRow = (item) => {
     return row;
 };
 
+// 入力フォーム用の行（実績分数）
 const buildFormRow = (item) => {
     const row = document.createElement('div');
     row.className = 'study-record-row';
@@ -82,6 +88,7 @@ const buildFormRow = (item) => {
 };
 
 export const initStudyRecordModal = () => {
+    // モーダル内のDOM取得
     const modal = document.getElementById('study-record-modal');
     if (!modal) return null;
 
@@ -104,18 +111,21 @@ export const initStudyRecordModal = () => {
     let currentTodoId = null;
     let lastAnchorEvent = null;
 
+    // タイトル/日付のテキスト更新
     const setTextNodes = (nodes, text) => {
         nodes.forEach((node) => {
             node.textContent = text;
         });
     };
 
+    // サマリー/フォームの表示切り替え
     const showStep = (step) => {
         summaryStep?.classList.toggle('hidden', step !== 'summary');
         formStep?.classList.toggle('hidden', step !== 'form');
         requestAnimationFrame(() => positionPanel(lastAnchorEvent));
     };
 
+    // クリック位置を基準にパネルの表示位置を調整
     const positionPanel = (anchorEvent) => {
         if (!anchorEvent) return;
         const { clientX, clientY } = anchorEvent;
@@ -141,11 +151,13 @@ export const initStudyRecordModal = () => {
         panel.style.top = `${top}px`;
     };
 
+    // モーダルを表示
     const openModal = (anchorEvent) => {
         lastAnchorEvent = anchorEvent ?? lastAnchorEvent;
         modal.classList.remove('is-hidden');
     };
 
+    // モーダルを閉じて状態をリセット
     const closeModal = () => {
         modal.classList.add('is-hidden');
         showStep('summary');
@@ -153,6 +165,7 @@ export const initStudyRecordModal = () => {
         lastAnchorEvent = null;
     };
 
+    // 読み込み中の表示に切り替え
     const setLoading = () => {
         summaryList.innerHTML = '';
         formList.innerHTML = '';
@@ -162,6 +175,7 @@ export const initStudyRecordModal = () => {
         saveButton.setAttribute('disabled', 'true');
     };
 
+    // 取得した項目をサマリー/フォームに反映
     const setItems = (items) => {
         summaryList.innerHTML = '';
         formList.innerHTML = '';
@@ -184,6 +198,7 @@ export const initStudyRecordModal = () => {
         requestAnimationFrame(() => positionPanel(lastAnchorEvent));
     };
 
+    // todo詳細と項目の取得
     const fetchTodo = async (todoId) => {
         setLoading();
         try {
@@ -207,6 +222,7 @@ export const initStudyRecordModal = () => {
         }
     };
 
+    // 入力フォームから実績データを回収
     const collectRecords = () =>
         Array.from(formList.querySelectorAll('[data-study-record-input]'))
             .map((input) => {
@@ -228,11 +244,13 @@ export const initStudyRecordModal = () => {
             return;
         }
 
+        // 保存中の表示に切り替え
         const originalLabel = saveButton.textContent;
         saveButton.setAttribute('disabled', 'true');
         saveButton.textContent = '保存中...';
 
         try {
+            // 実績データを保存
             const response = await fetch('/study-records', {
                 method: 'POST',
                 headers: {
@@ -254,6 +272,7 @@ export const initStudyRecordModal = () => {
                 return;
             }
 
+            // バリデーション/エラーメッセージの整形
             const data = await response.json().catch(() => ({}));
             const message =
                 (data?.errors && Object.values(data.errors).flat()[0]) ||
@@ -263,19 +282,23 @@ export const initStudyRecordModal = () => {
         } catch (error) {
             alert('通信に失敗しました。');
         } finally {
+            // ボタン表示を元に戻す
             saveButton.removeAttribute('disabled');
             saveButton.textContent = originalLabel;
         }
     };
 
+    // ステップ遷移と保存操作
     nextButton.addEventListener('click', () => showStep('form'));
     backButton.addEventListener('click', () => showStep('summary'));
     saveButton.addEventListener('click', saveRecords);
 
+    // 閉じるボタンのイベント
     closeButtons.forEach((button) => {
         button.addEventListener('click', closeModal);
     });
 
+    // モーダル外クリックで閉じる
     document.addEventListener('click', (event) => {
         if (modal.classList.contains('is-hidden')) return;
         const target = event.target;
@@ -284,12 +307,14 @@ export const initStudyRecordModal = () => {
         closeModal();
     });
 
+    // ESCキーで閉じる
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape' && !modal.classList.contains('is-hidden')) {
             closeModal();
         }
     });
 
+    // 画面リサイズ時に位置調整
     window.addEventListener('resize', () => {
         if (!modal.classList.contains('is-hidden')) {
             requestAnimationFrame(() => positionPanel(lastAnchorEvent));
@@ -297,6 +322,7 @@ export const initStudyRecordModal = () => {
     });
 
     return {
+        // 外部から呼ぶモーダル表示API
         open: async ({ todoId, anchorEvent }) => {
             currentTodoId = todoId;
             showStep('summary');

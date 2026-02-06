@@ -162,6 +162,7 @@
     background-color: #fff;
 }
 
+/* 読み取り専用入力（リスケ画面の固定情報） */
 .modal-input[readonly] {
     background-color: #f3f4f6;
     color: #6b7280;

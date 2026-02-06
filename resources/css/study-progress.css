@@ -1,7 +1,9 @@
+/* ページ全体のベース */
 .study-progress-page {
     min-height: 100%;
 }
 
+/* コンテンツ全体の縦レイアウト */
 .study-progress-container {
     max-width: 100%;
     display: flex;
@@ -9,6 +11,7 @@
     gap: 24px;
 }
 
+/* 期間や対象選択のコントロール領域 */
 .study-progress-controls {
     background: #fff;
     border-radius: 16px;
@@ -20,17 +23,20 @@
     box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
 }
 
+/* 個別コントロールの縦並び */
 .study-progress-control {
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
 
+/* ラベルの視認性 */
 .study-progress-label {
     font-size: 0.85rem;
     color: #6b7280;
 }
 
+/* セレクト・日付入力の共通スタイル */
 .study-progress-select,
 .study-progress-date {
     min-width: 180px;
@@ -41,6 +47,7 @@
     background: #fff;
 }
 
+/* 日付範囲の並び */
 .study-progress-date-range {
     display: flex;
     align-items: center;
@@ -48,10 +55,12 @@
     flex-wrap: wrap;
 }
 
+/* 日付の区切り表示 */
 .study-progress-date-separator {
     color: #9ca3af;
 }
 
+/* 適用ボタン */
 .study-progress-apply {
     border-radius: 10px;
     padding: 8px 16px;
@@ -62,6 +71,7 @@
     cursor: pointer;
 }
 
+/* 右側のサマリー表示 */
 .study-progress-summary {
     margin-left: auto;
     display: flex;
@@ -70,6 +80,7 @@
     flex-wrap: wrap;
 }
 
+/* サマリーの項目 */
 .study-progress-summary-item {
     display: flex;
     flex-direction: column;
@@ -77,23 +88,27 @@
     text-align: right;
 }
 
+/* サマリーのラベル */
 .study-progress-summary-label {
     font-size: 0.8rem;
     color: #9ca3af;
 }
 
+/* サマリーの値 */
 .study-progress-summary-value {
     font-size: 1.2rem;
     font-weight: 600;
     color: #111827;
 }
 
+/* チャートとリストのグリッド */
 .study-progress-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 24px;
 }
 
+/* カード共通スタイル */
 .study-progress-card {
     background: #fff;
     border-radius: 16px;
@@ -105,10 +120,12 @@
     min-height: 320px;
 }
 
+/* 横幅フルのカード */
 .study-progress-card-wide {
     grid-column: 1 / -1;
 }
 
+/* カード見出し */
 .study-progress-card-header {
     display: flex;
     justify-content: space-between;
@@ -117,35 +134,41 @@
     flex-wrap: wrap;
 }
 
+/* カードタイトル */
 .study-progress-card-title {
     font-size: 1.05rem;
     font-weight: 600;
     color: #111827;
 }
 
+/* カードサブタイトル */
 .study-progress-card-subtitle {
     font-size: 0.85rem;
     color: #6b7280;
     margin-top: 4px;
 }
 
+/* グラフ表示領域 */
 .study-progress-chart {
     position: relative;
     width: 100%;
     min-height: 240px;
 }
 
+/* 分野別一覧 */
 .study-progress-domain-list {
     display: flex;
     flex-direction: column;
     gap: 14px;
 }
 
+/* 分野別アイテム */
 .study-progress-domain-item {
     display: grid;
     gap: 6px;
 }
 
+/* 分野名と数値の行 */
 .study-progress-domain-head {
     display: flex;
     justify-content: space-between;
@@ -154,15 +177,18 @@
     color: #111827;
 }
 
+/* 分野名を強調 */
 .study-progress-domain-name {
     font-weight: 600;
 }
 
+/* 分野の補足情報 */
 .study-progress-domain-meta {
     color: #6b7280;
     font-size: 0.85rem;
 }
 
+/* 進捗バーの土台 */
 .study-progress-domain-bar {
     width: 100%;
     height: 12px;
@@ -171,6 +197,7 @@
     overflow: hidden;
 }
 
+/* 進捗バーの塗り */
 .study-progress-domain-bar-fill {
     height: 100%;
     border-radius: 999px;
@@ -178,6 +205,7 @@
     transition: width 0.2s ease;
 }
 
+/* 達成率の凡例 */
 .study-progress-legend {
     display: flex;
     gap: 12px;
@@ -186,12 +214,14 @@
     color: #6b7280;
 }
 
+/* 凡例のアイテム */
 .study-progress-legend-item {
     display: inline-flex;
     align-items: center;
     gap: 6px;
 }
 
+/* 凡例ドット */
 .study-progress-legend-item::before {
     content: '';
     width: 10px;
@@ -200,28 +230,34 @@
     background: #9ca3af;
 }
 
+/* 凡例（良） */
 .study-progress-legend-item.is-good::before {
     background: #10b981;
 }
 
+/* 凡例（中） */
 .study-progress-legend-item.is-mid::before {
     background: #f59e0b;
 }
 
+/* 凡例（低） */
 .study-progress-legend-item.is-low::before {
     background: #ef4444;
 }
 
+/* データなし表示 */
 .study-progress-empty {
     display: none;
     font-size: 0.9rem;
     color: #9ca3af;
 }
 
+/* データなし表示（表示状態） */
 .study-progress-empty.is-visible {
     display: block;
 }
 
+/* タブレット以下のレイアウト調整 */
 @media (max-width: 1024px) {
     .study-progress-grid {
         grid-template-columns: 1fr;
@@ -233,6 +269,7 @@
     }
 }
 
+/* スマホ表示の最適化 */
 @media (max-width: 640px) {
     .study-progress-card {
         min-height: auto;

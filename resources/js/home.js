@@ -132,6 +132,7 @@ const waitForCalendarLib = () => {
 
 import { initPlanRegister } from './plan-register';
 import { initPlanRegisterSubdomain } from './plan-register-subdomain';
+// リスケジュール機能
 import { initPlanReschedule } from './plan-reschedule';
 
 // プロフィールメニューの開閉
