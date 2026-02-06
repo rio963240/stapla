@@ -132,6 +132,7 @@ const waitForCalendarLib = () => {
 
 import { initPlanRegister } from './plan-register';
 import { initPlanRegisterSubdomain } from './plan-register-subdomain';
+import { initPlanReschedule } from './plan-reschedule';
 
 // プロフィールメニューの開閉
 const initProfileMenu = () => {
@@ -199,12 +200,28 @@ const openPlanRegisterFromQuery = () => {
     window.history.replaceState(null, '', nextUrl);
 };
 
+const openRescheduleFromQuery = () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('open') !== 'reschedule') return;
+    const trigger = document.getElementById('plan-reschedule-trigger');
+    if (trigger) {
+        trigger.click();
+    }
+
+    params.delete('open');
+    const next = params.toString();
+    const nextUrl = next ? `${window.location.pathname}?${next}` : window.location.pathname;
+    window.history.replaceState(null, '', nextUrl);
+};
+
 // 初期化エントリポイント
 onReady(() => {
     studyRecordModal = initStudyRecordModal();
     waitForCalendarLib();
     initPlanRegister();
     openPlanRegisterFromQuery();
+    initPlanReschedule();
+    openRescheduleFromQuery();
     initPlanRegisterSubdomain();
     initProfileMenu();
 });

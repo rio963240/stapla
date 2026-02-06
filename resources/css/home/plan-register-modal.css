@@ -162,6 +162,11 @@
     background-color: #fff;
 }
 
+.modal-input[readonly] {
+    background-color: #f3f4f6;
+    color: #6b7280;
+}
+
 /* 短い入力欄 */
 .modal-input-short {
     max-width: 120px;
@@ -220,6 +225,30 @@
     font-size: 0.9rem;
     line-height: 1;
     cursor: pointer;
+}
+
+/* 注意文言 */
+.modal-note {
+    border-radius: 0.75rem;
+    border: 1px solid #e5e7eb;
+    background-color: #f9fafb;
+    padding: 0.75rem 0.9rem;
+    color: #374151;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.modal-note-list {
+    padding-left: 1rem;
+    list-style: disc;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.modal-note-text {
+    color: #6b7280;
+    font-size: 0.85rem;
 }
 
 /* フッター操作 */

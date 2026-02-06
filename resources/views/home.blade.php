@@ -15,6 +15,7 @@
     </div>
 
     @include('home.plan-register-modals')
+    @include('home.plan-reschedule-modal')
     @include('home.study-record-modal')
 
     @push('scripts')
