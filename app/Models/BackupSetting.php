@@ -4,6 +4,7 @@ namespace App\Models;
 
 class BackupSetting extends BaseModel
 {
+    protected $guarded = [];
     protected $table = 'backup_settings';
     protected $primaryKey = 'backup_settings_id';
     public $timestamps = true;

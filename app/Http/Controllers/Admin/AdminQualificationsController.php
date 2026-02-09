@@ -16,6 +16,7 @@ class AdminQualificationsController extends Controller
 {
     public function index(Request $request)
     {
+        // クエリに応じて表示対象（資格/分野/サブ分野）を切り替える
         $qualificationId = $request->query('qualification_id');
         $domainId = $request->query('domain_id');
 
@@ -27,6 +28,7 @@ class AdminQualificationsController extends Controller
         $subdomains = collect();
 
         if ($qualificationId) {
+            // 資格が指定された場合は分野一覧へ
             $qualification = Qualification::query()
                 ->where('qualification_id', $qualificationId)
                 ->firstOrFail();
@@ -38,6 +40,7 @@ class AdminQualificationsController extends Controller
                 ->get();
 
             if ($domainId) {
+                // 分野が指定された場合はサブ分野一覧へ
                 $domain = QualificationDomain::query()
                     ->where('qualification_domains_id', $domainId)
                     ->where('qualification_id', $qualificationId)
@@ -50,6 +53,7 @@ class AdminQualificationsController extends Controller
                     ->get();
             }
         } else {
+            // 資格一覧表示
             $qualifications = Qualification::query()
                 ->orderBy('name')
                 ->get();
@@ -67,6 +71,7 @@ class AdminQualificationsController extends Controller
 
     public function updateQualification(Request $request, Qualification $qualification): RedirectResponse
     {
+        // 資格名の更新
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
         ]);
@@ -90,6 +95,7 @@ class AdminQualificationsController extends Controller
 
     public function updateDomain(Request $request, QualificationDomain $domain): RedirectResponse
     {
+        // 分野名の更新
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
         ]);
@@ -113,6 +119,7 @@ class AdminQualificationsController extends Controller
 
     public function updateSubdomain(Request $request, QualificationSubdomain $subdomain): RedirectResponse
     {
+        // サブ分野名の更新
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
         ]);
@@ -136,6 +143,7 @@ class AdminQualificationsController extends Controller
 
     public function destroyQualification(Qualification $qualification): RedirectResponse
     {
+        // 資格の削除
         try {
             $qualification->delete();
         } catch (Throwable $exception) {
@@ -153,6 +161,7 @@ class AdminQualificationsController extends Controller
 
     public function destroyDomain(QualificationDomain $domain): RedirectResponse
     {
+        // 分野の削除
         try {
             $domain->delete();
         } catch (Throwable $exception) {
@@ -170,6 +179,7 @@ class AdminQualificationsController extends Controller
 
     public function destroySubdomain(QualificationSubdomain $subdomain): RedirectResponse
     {
+        // サブ分野の削除
         try {
             $subdomain->delete();
         } catch (Throwable $exception) {
@@ -187,6 +197,7 @@ class AdminQualificationsController extends Controller
 
     public function storeQualification(Request $request): RedirectResponse
     {
+        // 資格の新規登録
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
         ]);
@@ -218,6 +229,7 @@ class AdminQualificationsController extends Controller
 
     public function storeDomain(Request $request): RedirectResponse
     {
+        // 分野の新規登録
         $data = $request->validate([
             'qualification_id' => ['required', 'integer', 'exists:qualification,qualification_id'],
             'name' => ['required', 'string', 'max:255'],
@@ -253,12 +265,14 @@ class AdminQualificationsController extends Controller
 
     public function storeSubdomain(Request $request): RedirectResponse
     {
+        // サブ分野の新規登録
         $data = $request->validate([
             'qualification_id' => ['required', 'integer', 'exists:qualification,qualification_id'],
             'qualification_domains_id' => ['required', 'integer', 'exists:qualification_domains,qualification_domains_id'],
             'name' => ['required', 'string', 'max:255'],
         ]);
 
+        // 資格と分野の整合性チェック
         $domain = QualificationDomain::query()
             ->where('qualification_domains_id', $data['qualification_domains_id'])
             ->where('qualification_id', $data['qualification_id'])
@@ -301,6 +315,7 @@ class AdminQualificationsController extends Controller
 
     public function importCsv(Request $request): RedirectResponse
     {
+        // CSVアップロードのバリデーション
         $data = $request->validate([
             'csv_file' => ['required', 'file', 'mimes:csv,txt'],
         ]);
@@ -311,6 +326,7 @@ class AdminQualificationsController extends Controller
         $skipped = 0;
 
         try {
+            // CSV読み込みとヘッダチェック
             $csv = new SplFileObject($file->getRealPath());
             $csv->setFlags(SplFileObject::READ_CSV | SplFileObject::SKIP_EMPTY);
 
@@ -324,6 +340,7 @@ class AdminQualificationsController extends Controller
                 }
 
                 if ($header === null) {
+                    // ヘッダ行の検証とカラム位置の確定
                     $header = array_map('trim', $row);
                     if (isset($header[0])) {
                         $header[0] = ltrim($header[0], "\xEF\xBB\xBF");
@@ -342,6 +359,7 @@ class AdminQualificationsController extends Controller
                     continue;
                 }
 
+                // 必須列が空ならスキップ
                 $qualificationName = trim((string) ($row[$indexes['qualification_name']] ?? ''));
                 $domainName = trim((string) ($row[$indexes['domain_name']] ?? ''));
                 $subdomainName = trim((string) ($row[$indexes['subdomain_name']] ?? ''));
@@ -351,6 +369,7 @@ class AdminQualificationsController extends Controller
                     continue;
                 }
 
+                // 資格→分野→サブ分野を順に登録
                 $qualification = Qualification::firstOrCreate(
                     ['name' => $qualificationName],
                     ['is_active' => true],
@@ -366,6 +385,7 @@ class AdminQualificationsController extends Controller
                     ['is_active' => true],
                 );
 
+                // 追加/既存をカウント
                 if ($subdomain->wasRecentlyCreated) {
                     $added++;
                 } else {
@@ -379,6 +399,7 @@ class AdminQualificationsController extends Controller
             ]);
         }
 
+        // 有効な行がない場合のエラー
         if ($added === 0 && $duplicates === 0 && $skipped === 0) {
             return back()->with([
                 'toast_status' => 'error',
@@ -386,6 +407,7 @@ class AdminQualificationsController extends Controller
             ]);
         }
 
+        // 取り込み結果を表示
         $message = "追加{$added}件、既存{$duplicates}件、スキップ{$skipped}件";
 
         return back()->with([

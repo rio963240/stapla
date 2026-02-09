@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminBackupsController;
 use App\Http\Controllers\Admin\AdminQualificationsController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\DashboardController;
@@ -112,8 +113,11 @@ Route::middleware([
         // 管理画面：サブドメイン削除（AdminQualificationsController@destroySubdomain）
         Route::delete('/subdomains/{subdomain}', [AdminQualificationsController::class, 'destroySubdomain'])
             ->name('subdomains.destroy');
-        // 管理画面：バックアップ（admin.backupsビュー）
-        Route::view('/backups', 'admin.backups')->name('backups');
+        // 管理画面：バックアップ
+        Route::get('/backups', [AdminBackupsController::class, 'index'])->name('backups');
+        Route::post('/backups/manual', [AdminBackupsController::class, 'storeManual'])->name('backups.manual');
+        Route::put('/backups/settings', [AdminBackupsController::class, 'updateSettings'])
+            ->name('backups.settings');
         // 管理画面：ユーザー（admin.usersビュー）
         Route::view('/users', 'admin.users')->name('users');
     });
