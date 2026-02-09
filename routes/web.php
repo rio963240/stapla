@@ -82,6 +82,18 @@ Route::middleware([
 
         // 管理画面：資格一覧（AdminQualificationsController@index）
         Route::get('/qualifications', [AdminQualificationsController::class, 'index'])->name('qualifications');
+        // 管理画面：資格追加（AdminQualificationsController@storeQualification）
+        Route::post('/qualifications', [AdminQualificationsController::class, 'storeQualification'])
+            ->name('qualifications.store');
+        // 管理画面：ドメイン追加（AdminQualificationsController@storeDomain）
+        Route::post('/domains', [AdminQualificationsController::class, 'storeDomain'])
+            ->name('domains.store');
+        // 管理画面：サブドメイン追加（AdminQualificationsController@storeSubdomain）
+        Route::post('/subdomains', [AdminQualificationsController::class, 'storeSubdomain'])
+            ->name('subdomains.store');
+        // 管理画面：資格CSVインポート（AdminQualificationsController@importCsv）
+        Route::post('/qualifications/import', [AdminQualificationsController::class, 'importCsv'])
+            ->name('qualifications.import');
         // 管理画面：資格更新（AdminQualificationsController@updateQualification）
         Route::patch('/qualifications/{qualification}', [AdminQualificationsController::class, 'updateQualification'])
             ->name('qualifications.update');

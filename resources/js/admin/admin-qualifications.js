@@ -1,10 +1,29 @@
+// 管理画面（資格/分野/サブ分野）モーダルの初期化
 const initAdminQualifications = () => {
     const modal = document.querySelector('[data-admin-modal]');
     const deleteModal = document.querySelector('[data-admin-delete-modal]');
     const toast = document.getElementById('admin-toast');
 
+    const csvForm = document.querySelector('[data-admin-csv-form]');
+    const csvInput = document.querySelector('[data-admin-csv-input]');
+    const csvTrigger = document.querySelector('[data-admin-csv-trigger]');
+
+    // CSVアップロードのファイル選択と自動送信
+    if (csvForm && csvInput && csvTrigger) {
+        csvTrigger.addEventListener('click', () => {
+            csvInput.click();
+        });
+
+        csvInput.addEventListener('change', () => {
+            if (csvInput.files && csvInput.files.length > 0) {
+                csvForm.submit();
+            }
+        });
+    }
+
     if (!modal || !deleteModal) return;
 
+    // 編集/削除モーダル内の要素取得
     const editPanel = modal.querySelector('[data-admin-edit-panel]');
     const confirmPanel = modal.querySelector('[data-admin-confirm-panel]');
     const editForm = modal.querySelector('[data-admin-edit-form]');
@@ -36,24 +55,81 @@ const initAdminQualifications = () => {
     const submitButton = modal.querySelector('[data-admin-submit]');
     const deleteOpenButton = modal.querySelector('[data-admin-delete-open]');
 
+    const createModal = document.querySelector('[data-admin-create-modal]');
+    const createOpenButton = document.querySelector('[data-admin-create-open]');
+    const createForm = createModal?.querySelector('[data-admin-create-form]');
+    const createEditPanel = createModal?.querySelector('[data-admin-create-edit-panel]');
+    const createConfirmPanel = createModal?.querySelector('[data-admin-create-confirm-panel]');
+    const createNameInput = createModal?.querySelector('[data-admin-create-name-input]');
+    const createQualificationInput = createModal?.querySelector('[data-admin-create-qualification]');
+    const createDomainInput = createModal?.querySelector('[data-admin-create-domain]');
+    const createConfirmNameInput = createModal?.querySelector('[data-admin-create-confirm-name]');
+    const createConfirmQualificationInput = createModal?.querySelector('[data-admin-create-confirm-qualification]');
+    const createConfirmDomainInput = createModal?.querySelector('[data-admin-create-confirm-domain]');
+    const createConfirmOpenButton = createModal?.querySelector('[data-admin-create-confirm-open]');
+    const createConfirmBackButton = createModal?.querySelector('[data-admin-create-confirm-back]');
+
+    // 編集モーダルを閉じて初期状態に戻す
     const closeModal = () => {
         modal.classList.add('hidden');
         editPanel.classList.remove('hidden');
         confirmPanel.classList.add('hidden');
     };
 
+    // 削除モーダルを閉じる
     const closeDeleteModal = () => {
         deleteModal.classList.add('hidden');
     };
 
+    // 行の表示/非表示を制御
     const setRowVisibility = (row, isVisible) => {
         row.classList.toggle('hidden', !isVisible);
+        row.style.display = isVisible ? '' : 'none';
     };
 
+    // 入力値を安全にセット
     const setValue = (input, value) => {
+        if (!input) return;
         input.value = value || '';
     };
 
+    // 新規作成モーダルのイベント
+    if (createModal && createOpenButton && createForm && createEditPanel && createConfirmPanel) {
+        const closeCreateModal = () => {
+            createModal.classList.add('hidden');
+            createEditPanel.classList.remove('hidden');
+            createConfirmPanel.classList.add('hidden');
+        };
+
+        // 新規作成モーダルを開く
+        createOpenButton.addEventListener('click', () => {
+            createModal.classList.remove('hidden');
+            createEditPanel.classList.remove('hidden');
+            createConfirmPanel.classList.add('hidden');
+        });
+
+        // 入力内容を確認画面に反映
+        createConfirmOpenButton?.addEventListener('click', () => {
+            setValue(createConfirmNameInput, createNameInput?.value);
+            setValue(createConfirmQualificationInput, createQualificationInput?.value);
+            setValue(createConfirmDomainInput, createDomainInput?.value);
+            createEditPanel.classList.add('hidden');
+            createConfirmPanel.classList.remove('hidden');
+        });
+
+        // 確認画面から入力画面へ戻る
+        createConfirmBackButton?.addEventListener('click', () => {
+            createConfirmPanel.classList.add('hidden');
+            createEditPanel.classList.remove('hidden');
+        });
+
+        // 新規作成モーダルを閉じる
+        createModal.querySelectorAll('[data-admin-create-close]').forEach((button) => {
+            button.addEventListener('click', closeCreateModal);
+        });
+    }
+
+    // 対象種別に応じたラベル更新
     const setLabels = (type) => {
         const labelMap = {
             qualification: '資格名',
@@ -66,6 +142,7 @@ const initAdminQualifications = () => {
         deleteNameLabel.textContent = label;
     };
 
+    // タイトルの種別プレフィックス
     const setTitlePrefix = (type) => {
         if (type === 'qualification') return '資格';
         if (type === 'domain') return '分野';
@@ -73,6 +150,7 @@ const initAdminQualifications = () => {
         return '';
     };
 
+    // 編集モーダルをデータで開く
     const openEditModal = (data) => {
         const type = data.type;
         const name = data.name || '';
@@ -106,6 +184,7 @@ const initAdminQualifications = () => {
         modal.classList.remove('hidden');
     };
 
+    // 一覧の編集ボタンからモーダルを起動
     document.querySelectorAll('.js-admin-edit-trigger').forEach((button) => {
         button.addEventListener('click', () => {
             openEditModal({
@@ -119,33 +198,40 @@ const initAdminQualifications = () => {
         });
     });
 
+    // 編集内容の確認画面を開く
     confirmOpenButton.addEventListener('click', () => {
         setValue(confirmNameInput, nameInput.value);
         editPanel.classList.add('hidden');
         confirmPanel.classList.remove('hidden');
     });
 
+    // 確認画面から入力画面へ戻る
     confirmBackButton.addEventListener('click', () => {
         confirmPanel.classList.add('hidden');
         editPanel.classList.remove('hidden');
     });
 
+    // 編集フォーム送信
     submitButton.addEventListener('click', () => {
         editForm.submit();
     });
 
+    // 削除モーダルを開く
     deleteOpenButton.addEventListener('click', () => {
         deleteModal.classList.remove('hidden');
     });
 
+    // 編集モーダルの閉じるボタン
     modal.querySelectorAll('[data-admin-modal-close]').forEach((button) => {
         button.addEventListener('click', closeModal);
     });
 
+    // 削除モーダルの閉じるボタン
     deleteModal.querySelectorAll('[data-admin-delete-close]').forEach((button) => {
         button.addEventListener('click', closeDeleteModal);
     });
 
+    // 完了/エラートーストの表示
     if (toast) {
         const label = toast.querySelector('.admin-toast-label');
         const showToast = (status, message) => {
@@ -163,4 +249,5 @@ const initAdminQualifications = () => {
     }
 };
 
+// 初期化実行
 document.addEventListener('DOMContentLoaded', initAdminQualifications);
