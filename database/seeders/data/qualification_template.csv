@@ -1,117 +1,200 @@
 qualification_name,domain_name,subdomain_name
+AWS認定,Associate,AWS Certified Data Engineer – Associate
+AWS認定,Associate,AWS Certified Developer – Associate
+AWS認定,Associate,AWS Certified Machine Learning Engineer – Associate
+AWS認定,Associate,AWS Certified Solutions Architect – Associate
+AWS認定,Associate,AWS Certified SysOps Administrator – Associate
+AWS認定,Foundational,AWS Certified AI Practitioner
+AWS認定,Foundational,AWS Certified Cloud Practitioner
+AWS認定,Professional,AWS Certified DevOps Engineer – Professional
+AWS認定,Professional,AWS Certified Solutions Architect – Professional
+AWS認定,Specialty,AWS Certified Advanced Networking – Specialty
+AWS認定,Specialty,AWS Certified Data Analytics – Specialty
+AWS認定,Specialty,AWS Certified Database – Specialty
+AWS認定,Specialty,AWS Certified Machine Learning – Specialty
+AWS認定,Specialty,AWS Certified Security – Specialty
+CNCF認定,Associate,Certified Argo Project Associate (CAPA)
+CNCF認定,Associate,Cilium Certified Associate (CCA)
+CNCF認定,Associate,GitOps Certified Associate (CGOA)
+CNCF認定,Associate,Istio Certified Associate (ICA)
+CNCF認定,Associate,Kubernetes and Cloud Native Associate (KCNA)
+CNCF認定,Associate,Kubernetes and Cloud Security Associate (KCSA)
+CNCF認定,Associate,Prometheus Certified Associate (PCA)
+CNCF認定,Professional,Certified Kubernetes Administrator (CKA)
+CNCF認定,Professional,Certified Kubernetes Application Developer (CKAD)
+CNCF認定,Professional,Certified Kubernetes Security Specialist (CKS)
+Cisco認定,Associate,Cisco Certified Network Associate (CCNA)
+Cisco認定,Entry,Cisco Certified Support Technician (CCST) Networking
+Cisco認定,Expert,Cisco Certified Internetwork Expert (CCIE) Enterprise Infrastructure
+Cisco認定,Expert,Cisco Certified Internetwork Expert (CCIE) Enterprise Wireless
+Cisco認定,Professional,Cisco Certified Network Professional (CCNP) Enterprise
+CompTIA認定,Cloud,CompTIA Cloud+
+CompTIA認定,Core,CompTIA A+
+CompTIA認定,Core,CompTIA ITF+
+CompTIA認定,Cybersecurity,CompTIA CySA+
+CompTIA認定,Cybersecurity,CompTIA PenTest+
+CompTIA認定,Cybersecurity,CompTIA Security+
+CompTIA認定,Data,CompTIA Data+
+CompTIA認定,Infrastructure,CompTIA Network+
+CompTIA認定,Linux,CompTIA Linux+
+CompTIA認定,Project,CompTIA Project+
+Google Cloud認定,Associate,Associate Cloud Engineer
+Google Cloud認定,Foundational,Cloud Digital Leader
+Google Cloud認定,Professional,Professional Cloud Architect
+Google Cloud認定,Professional,Professional Cloud Database Engineer
+Google Cloud認定,Professional,Professional Cloud DevOps Engineer
+Google Cloud認定,Professional,Professional Cloud Developer
+Google Cloud認定,Professional,Professional Cloud Security Engineer
+Google Cloud認定,Professional,Professional Data Engineer
+Google Cloud認定,Professional,Professional Google Workspace Administrator
+HashiCorp認定,Infrastructure as Code,Terraform Associate
+HashiCorp認定,Security Automation,Vault Associate
+HashiCorp認定,Security Automation,Vault Operations Professional
+HashiCorp認定,Service Networking,Consul Associate
+ITサービスマネージャ,ITサービス管理,ITIL
+ITサービスマネージャ,ITサービス管理,SLA管理
+ITサービスマネージャ,ITサービス管理,サービス設計
+ITサービスマネージャ,ITサービス管理,サービス運用
+ITサービスマネージャ,運用管理,構成管理
+ITサービスマネージャ,運用管理,継続的改善
+ITサービスマネージャ,運用管理,障害管理
+ITストラテジスト,ストラテジ,ITガバナンス
+ITストラテジスト,ストラテジ,IT投資戦略
+ITストラテジスト,ストラテジ,業務改革（BPR）
+ITストラテジスト,ストラテジ,法務・コンプライアンス
+ITストラテジスト,ストラテジ,経営戦略立案
+ITストラテジスト,マネジメント,ITサービス戦略
+ITストラテジスト,マネジメント,プロジェクト統制
+ITパスポート,ストラテジ系,システム戦略
 ITパスポート,ストラテジ系,企業活動
 ITパスポート,ストラテジ系,法務
 ITパスポート,ストラテジ系,経営戦略
-ITパスポート,ストラテジ系,システム戦略
-ITパスポート,マネジメント系,システム開発技術（概要）
-ITパスポート,マネジメント系,プロジェクトマネジメント
-ITパスポート,マネジメント系,サービスマネジメント
-ITパスポート,テクノロジ系,基礎理論
 ITパスポート,テクノロジ系,アルゴリズムとプログラミング
 ITパスポート,テクノロジ系,コンピュータ構成要素
 ITパスポート,テクノロジ系,システム構成要素
-ITパスポート,テクノロジ系,ソフトウェア
-ITパスポート,テクノロジ系,ハードウェア
-ITパスポート,テクノロジ系,ネットワーク
 ITパスポート,テクノロジ系,セキュリティ
-基本情報技術者,テクノロジ系,基礎理論
-基本情報技術者,テクノロジ系,アルゴリズムとデータ構造
-基本情報技術者,テクノロジ系,プログラミング
-基本情報技術者,テクノロジ系,コンピュータ構成要素
-基本情報技術者,テクノロジ系,オペレーティングシステム
-基本情報技術者,テクノロジ系,ソフトウェア
-基本情報技術者,テクノロジ系,データベース
-基本情報技術者,テクノロジ系,ネットワーク
-基本情報技術者,テクノロジ系,セキュリティ
-基本情報技術者,マネジメント系,プロジェクトマネジメント
-基本情報技術者,マネジメント系,サービスマネジメント
-基本情報技術者,マネジメント系,システム監査
-基本情報技術者,ストラテジ系,システム戦略
-基本情報技術者,ストラテジ系,経営戦略
-基本情報技術者,ストラテジ系,企業活動
-基本情報技術者,ストラテジ系,法務
-応用情報技術者,テクノロジ系,基礎理論
-応用情報技術者,テクノロジ系,アルゴリズム
-応用情報技術者,テクノロジ系,データ構造
-応用情報技術者,テクノロジ系,コンピュータアーキテクチャ
-応用情報技術者,テクノロジ系,オペレーティングシステム
-応用情報技術者,テクノロジ系,ソフトウェア工学
-応用情報技術者,テクノロジ系,データベース
-応用情報技術者,テクノロジ系,ネットワーク
-応用情報技術者,テクノロジ系,情報セキュリティ
-応用情報技術者,テクノロジ系,組込みシステム
-応用情報技術者,テクノロジ系,システム開発技術
-応用情報技術者,マネジメント系,プロジェクトマネジメント
-応用情報技術者,マネジメント系,サービスマネジメント
-応用情報技術者,マネジメント系,システム監査
-応用情報技術者,ストラテジ系,システム戦略
-応用情報技術者,ストラテジ系,経営戦略
-応用情報技術者,ストラテジ系,企業活動
-応用情報技術者,ストラテジ系,法務
-応用情報技術者,ストラテジ系,標準化
-ITストラテジスト,ストラテジ,経営戦略立案
-ITストラテジスト,ストラテジ,IT投資戦略
-ITストラテジスト,ストラテジ,業務改革（BPR）
-ITストラテジスト,ストラテジ,ITガバナンス
-ITストラテジスト,ストラテジ,法務・コンプライアンス
-ITストラテジスト,マネジメント,プロジェクト統制
-ITストラテジスト,マネジメント,ITサービス戦略
-システムアーキテクト,システム設計,要件定義
-システムアーキテクト,システム設計,システム方式設計
-システムアーキテクト,システム設計,アプリケーション設計
-システムアーキテクト,システム設計,非機能要件設計
-システムアーキテクト,テクノロジ,ソフトウェア設計
-システムアーキテクト,テクノロジ,データベース設計
-システムアーキテクト,テクノロジ,ネットワーク設計
-システムアーキテクト,テクノロジ,セキュリティ設計
-プロジェクトマネージャ,プロジェクト管理,スコープ管理
-プロジェクトマネージャ,プロジェクト管理,スケジュール管理
-プロジェクトマネージャ,プロジェクト管理,コスト管理
-プロジェクトマネージャ,プロジェクト管理,リスク管理
-プロジェクトマネージャ,プロジェクト管理,品質管理
-プロジェクトマネージャ,プロジェクト管理,調達管理
-プロジェクトマネージャ,組織・契約,組織マネジメント
-プロジェクトマネージャ,組織・契約,契約・法務
-ネットワークスペシャリスト,ネットワーク技術,TCP/IP
-ネットワークスペシャリスト,ネットワーク技術,ルーティング
-ネットワークスペシャリスト,ネットワーク技術,スイッチング
-ネットワークスペシャリスト,ネットワーク技術,WAN/LAN
-ネットワークスペシャリスト,ネットワーク技術,無線ネットワーク
-ネットワークスペシャリスト,設計・運用,ネットワーク設計
-ネットワークスペシャリスト,設計・運用,パフォーマンス設計
-ネットワークスペシャリスト,設計・運用,障害対応
-ネットワークスペシャリスト,設計・運用,運用管理
-ネットワークスペシャリスト,セキュリティ,ネットワークセキュリティ
-ネットワークスペシャリスト,セキュリティ,暗号技術
-ネットワークスペシャリスト,セキュリティ,認証・認可
-データベーススペシャリスト,データベース技術,データモデル
-データベーススペシャリスト,データベース技術,正規化
-データベーススペシャリスト,データベース技術,SQL
-データベーススペシャリスト,データベース技術,トランザクション管理
-データベーススペシャリスト,データベース技術,排他制御
-データベーススペシャリスト,設計・運用,論理設計
-データベーススペシャリスト,設計・運用,物理設計
-データベーススペシャリスト,設計・運用,パフォーマンスチューニング
-データベーススペシャリスト,設計・運用,バックアップ・リカバリ
-情報処理安全確保支援士,セキュリティ技術,暗号
-情報処理安全確保支援士,セキュリティ技術,認証技術
-情報処理安全確保支援士,セキュリティ技術,ネットワークセキュリティ
-情報処理安全確保支援士,セキュリティ技術,Webセキュリティ
-情報処理安全確保支援士,セキュリティ技術,マルウェア対策
-情報処理安全確保支援士,管理・運用,セキュリティポリシー
-情報処理安全確保支援士,管理・運用,インシデント対応
-情報処理安全確保支援士,管理・運用,リスクマネジメント
-情報処理安全確保支援士,管理・運用,法務・標準
-ITサービスマネージャ,ITサービス管理,ITIL
-ITサービスマネージャ,ITサービス管理,サービス設計
-ITサービスマネージャ,ITサービス管理,サービス運用
-ITサービスマネージャ,ITサービス管理,SLA管理
-ITサービスマネージャ,運用管理,障害管理
-ITサービスマネージャ,運用管理,構成管理
-ITサービスマネージャ,運用管理,継続的改善
+ITパスポート,テクノロジ系,ソフトウェア
+ITパスポート,テクノロジ系,ネットワーク
+ITパスポート,テクノロジ系,ハードウェア
+ITパスポート,テクノロジ系,基礎理論
+ITパスポート,マネジメント系,サービスマネジメント
+ITパスポート,マネジメント系,システム開発技術（概要）
+ITパスポート,マネジメント系,プロジェクトマネジメント
+LPI認定,Entry,Linux Essentials
+LPI認定,Professional,LPIC-1
+LPI認定,Professional,LPIC-2
+LPI認定,Professional,LPIC-3 High Availability and Storage Clusters
+LPI認定,Professional,LPIC-3 Security
+LPI認定,Professional,LPIC-3 Virtualization and Containerization
+Microsoft Azure認定,Associate,AZ-104: Azure Administrator Associate
+Microsoft Azure認定,Associate,AZ-204: Azure Developer Associate
+Microsoft Azure認定,Associate,AZ-500: Azure Security Engineer Associate
+Microsoft Azure認定,Associate,AZ-700: Azure Network Engineer Associate
+Microsoft Azure認定,Expert,AZ-305: Azure Solutions Architect Expert
+Microsoft Azure認定,Expert,AZ-400: DevOps Engineer Expert
+Microsoft Azure認定,Fundamentals,AI-900: Microsoft Azure AI Fundamentals
+Microsoft Azure認定,Fundamentals,AZ-900: Microsoft Azure Fundamentals
+Microsoft Azure認定,Fundamentals,DP-900: Microsoft Azure Data Fundamentals
+Microsoft Azure認定,Fundamentals,"SC-900: Microsoft Security, Compliance, and Identity Fundamentals"
+Oracle認定,Cloud (OCI),Oracle Cloud Infrastructure 2025 AI Foundations Associate
+Oracle認定,Cloud (OCI),Oracle Cloud Infrastructure 2025 Cloud Ops Professional
+Oracle認定,Cloud (OCI),Oracle Cloud Infrastructure 2025 Foundations Associate
+Oracle認定,Cloud (OCI),Oracle Cloud Infrastructure 2025 Generative AI Professional
+Oracle認定,Cloud (OCI),Oracle Cloud Infrastructure 2025 Networking Professional
+Oracle認定,Cloud (OCI),Oracle Cloud Infrastructure 2025 Observability Professional
+Oracle認定,Cloud (OCI),Oracle Cloud Infrastructure 2025 Security Professional
+Oracle認定,Data,Oracle Data Platform 2025 Certified Foundations Associate
+Oracle認定,Database,Oracle AI Autonomous Database 2025 Certified Professional
+Red Hat認定,Architect,Red Hat Certified Architect (RHCA)
+Red Hat認定,Automation,Red Hat Certified Specialist in Developing Automation with Ansible Automation Platform
+Red Hat認定,Core,Red Hat Certified Engineer (RHCE)
+Red Hat認定,Core,Red Hat Certified System Administrator (RHCSA)
+Red Hat認定,OpenShift,Red Hat Certified OpenShift Administrator
+Red Hat認定,Specialist,Red Hat Certified Specialist in Containers and Kubernetes
 エンベデッドシステムスペシャリスト,組込み技術,ハードウェア制御
 エンベデッドシステムスペシャリスト,組込み技術,リアルタイムOS
 エンベデッドシステムスペシャリスト,組込み技術,組込みソフトウェア設計
-エンベデッドシステムスペシャリスト,開発管理,要件定義
 エンベデッドシステムスペシャリスト,開発管理,品質管理
 エンベデッドシステムスペシャリスト,開発管理,安全設計
+エンベデッドシステムスペシャリスト,開発管理,要件定義
+システムアーキテクト,システム設計,アプリケーション設計
+システムアーキテクト,システム設計,システム方式設計
+システムアーキテクト,システム設計,要件定義
+システムアーキテクト,システム設計,非機能要件設計
+システムアーキテクト,テクノロジ,セキュリティ設計
+システムアーキテクト,テクノロジ,ソフトウェア設計
+システムアーキテクト,テクノロジ,データベース設計
+システムアーキテクト,テクノロジ,ネットワーク設計
+データベーススペシャリスト,データベース技術,SQL
+データベーススペシャリスト,データベース技術,データモデル
+データベーススペシャリスト,データベース技術,トランザクション管理
+データベーススペシャリスト,データベース技術,排他制御
+データベーススペシャリスト,データベース技術,正規化
+データベーススペシャリスト,設計・運用,バックアップ・リカバリ
+データベーススペシャリスト,設計・運用,パフォーマンスチューニング
+データベーススペシャリスト,設計・運用,物理設計
+データベーススペシャリスト,設計・運用,論理設計
+ネットワークスペシャリスト,セキュリティ,ネットワークセキュリティ
+ネットワークスペシャリスト,セキュリティ,暗号技術
+ネットワークスペシャリスト,セキュリティ,認証・認可
+ネットワークスペシャリスト,ネットワーク技術,TCP/IP
+ネットワークスペシャリスト,ネットワーク技術,WAN/LAN
+ネットワークスペシャリスト,ネットワーク技術,スイッチング
+ネットワークスペシャリスト,ネットワーク技術,ルーティング
+ネットワークスペシャリスト,ネットワーク技術,無線ネットワーク
+ネットワークスペシャリスト,設計・運用,ネットワーク設計
+ネットワークスペシャリスト,設計・運用,パフォーマンス設計
+ネットワークスペシャリスト,設計・運用,運用管理
+ネットワークスペシャリスト,設計・運用,障害対応
+プロジェクトマネージャ,プロジェクト管理,コスト管理
+プロジェクトマネージャ,プロジェクト管理,スケジュール管理
+プロジェクトマネージャ,プロジェクト管理,スコープ管理
+プロジェクトマネージャ,プロジェクト管理,リスク管理
+プロジェクトマネージャ,プロジェクト管理,品質管理
+プロジェクトマネージャ,プロジェクト管理,調達管理
+プロジェクトマネージャ,組織・契約,契約・法務
+プロジェクトマネージャ,組織・契約,組織マネジメント
+基本情報技術者,ストラテジ系,システム戦略
+基本情報技術者,ストラテジ系,企業活動
+基本情報技術者,ストラテジ系,法務
+基本情報技術者,ストラテジ系,経営戦略
+基本情報技術者,テクノロジ系,アルゴリズムとデータ構造
+基本情報技術者,テクノロジ系,オペレーティングシステム
+基本情報技術者,テクノロジ系,コンピュータ構成要素
+基本情報技術者,テクノロジ系,セキュリティ
+基本情報技術者,テクノロジ系,ソフトウェア
+基本情報技術者,テクノロジ系,データベース
+基本情報技術者,テクノロジ系,ネットワーク
+基本情報技術者,テクノロジ系,プログラミング
+基本情報技術者,テクノロジ系,基礎理論
+基本情報技術者,マネジメント系,サービスマネジメント
+基本情報技術者,マネジメント系,システム監査
+基本情報技術者,マネジメント系,プロジェクトマネジメント
+応用情報技術者,ストラテジ系,システム戦略
+応用情報技術者,ストラテジ系,企業活動
+応用情報技術者,ストラテジ系,標準化
+応用情報技術者,ストラテジ系,法務
+応用情報技術者,ストラテジ系,経営戦略
+応用情報技術者,テクノロジ系,アルゴリズム
+応用情報技術者,テクノロジ系,オペレーティングシステム
+応用情報技術者,テクノロジ系,コンピュータアーキテクチャ
+応用情報技術者,テクノロジ系,システム開発技術
+応用情報技術者,テクノロジ系,ソフトウェア工学
+応用情報技術者,テクノロジ系,データベース
+応用情報技術者,テクノロジ系,データ構造
+応用情報技術者,テクノロジ系,ネットワーク
+応用情報技術者,テクノロジ系,基礎理論
+応用情報技術者,テクノロジ系,情報セキュリティ
+応用情報技術者,テクノロジ系,組込みシステム
+応用情報技術者,マネジメント系,サービスマネジメント
+応用情報技術者,マネジメント系,システム監査
+応用情報技術者,マネジメント系,プロジェクトマネジメント
+情報処理安全確保支援士,セキュリティ技術,Webセキュリティ
+情報処理安全確保支援士,セキュリティ技術,ネットワークセキュリティ
+情報処理安全確保支援士,セキュリティ技術,マルウェア対策
+情報処理安全確保支援士,セキュリティ技術,暗号
+情報処理安全確保支援士,セキュリティ技術,認証技術
+情報処理安全確保支援士,管理・運用,インシデント対応
+情報処理安全確保支援士,管理・運用,セキュリティポリシー
+情報処理安全確保支援士,管理・運用,リスクマネジメント
+情報処理安全確保支援士,管理・運用,法務・標準

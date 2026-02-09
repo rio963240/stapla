@@ -11,7 +11,11 @@ const initAdminQualifications = () => {
     // CSVアップロードのファイル選択と自動送信
     if (csvForm && csvInput && csvTrigger) {
         csvTrigger.addEventListener('click', () => {
-            csvInput.click();
+            const message =
+                'CSVのヘッダーは "qualification_name,domain_name,subdomain_name" が必須です。続けますか？';
+            if (window.confirm(message)) {
+                csvInput.click();
+            }
         });
 
         csvInput.addEventListener('change', () => {
