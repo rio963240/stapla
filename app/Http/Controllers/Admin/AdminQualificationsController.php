@@ -3,6 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AdminDomainStoreRequest;
+use App\Http\Requests\Admin\AdminQualificationNameRequest;
+use App\Http\Requests\Admin\AdminQualificationsImportRequest;
+use App\Http\Requests\Admin\AdminSubdomainStoreRequest;
 use App\Models\Qualification;
 use App\Models\QualificationDomain;
 use App\Models\QualificationSubdomain;
@@ -69,12 +73,10 @@ class AdminQualificationsController extends Controller
         ));
     }
 
-    public function updateQualification(Request $request, Qualification $qualification): RedirectResponse
+    public function updateQualification(AdminQualificationNameRequest $request, Qualification $qualification): RedirectResponse
     {
         // 資格名の更新
-        $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-        ]);
+        $data = $request->validated();
 
         try {
             $qualification->update([
@@ -93,12 +95,10 @@ class AdminQualificationsController extends Controller
         ]);
     }
 
-    public function updateDomain(Request $request, QualificationDomain $domain): RedirectResponse
+    public function updateDomain(AdminQualificationNameRequest $request, QualificationDomain $domain): RedirectResponse
     {
         // 分野名の更新
-        $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-        ]);
+        $data = $request->validated();
 
         try {
             $domain->update([
@@ -117,12 +117,10 @@ class AdminQualificationsController extends Controller
         ]);
     }
 
-    public function updateSubdomain(Request $request, QualificationSubdomain $subdomain): RedirectResponse
+    public function updateSubdomain(AdminQualificationNameRequest $request, QualificationSubdomain $subdomain): RedirectResponse
     {
         // サブ分野名の更新
-        $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-        ]);
+        $data = $request->validated();
 
         try {
             $subdomain->update([
@@ -195,12 +193,10 @@ class AdminQualificationsController extends Controller
         ]);
     }
 
-    public function storeQualification(Request $request): RedirectResponse
+    public function storeQualification(AdminQualificationNameRequest $request): RedirectResponse
     {
         // 資格の新規登録
-        $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-        ]);
+        $data = $request->validated();
 
         try {
             $qualification = Qualification::firstOrCreate(
@@ -227,13 +223,10 @@ class AdminQualificationsController extends Controller
         ]);
     }
 
-    public function storeDomain(Request $request): RedirectResponse
+    public function storeDomain(AdminDomainStoreRequest $request): RedirectResponse
     {
         // 分野の新規登録
-        $data = $request->validate([
-            'qualification_id' => ['required', 'integer', 'exists:qualification,qualification_id'],
-            'name' => ['required', 'string', 'max:255'],
-        ]);
+        $data = $request->validated();
 
         try {
             $domain = QualificationDomain::firstOrCreate(
@@ -263,14 +256,10 @@ class AdminQualificationsController extends Controller
         ]);
     }
 
-    public function storeSubdomain(Request $request): RedirectResponse
+    public function storeSubdomain(AdminSubdomainStoreRequest $request): RedirectResponse
     {
         // サブ分野の新規登録
-        $data = $request->validate([
-            'qualification_id' => ['required', 'integer', 'exists:qualification,qualification_id'],
-            'qualification_domains_id' => ['required', 'integer', 'exists:qualification_domains,qualification_domains_id'],
-            'name' => ['required', 'string', 'max:255'],
-        ]);
+        $data = $request->validated();
 
         // 資格と分野の整合性チェック
         $domain = QualificationDomain::query()
@@ -313,12 +302,10 @@ class AdminQualificationsController extends Controller
         ]);
     }
 
-    public function importCsv(Request $request): RedirectResponse
+    public function importCsv(AdminQualificationsImportRequest $request): RedirectResponse
     {
         // CSVアップロードのバリデーション
-        $data = $request->validate([
-            'csv_file' => ['required', 'file', 'mimes:csv,txt'],
-        ]);
+        $data = $request->validated();
 
         $file = $data['csv_file'];
         $added = 0;

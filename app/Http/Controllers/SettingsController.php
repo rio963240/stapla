@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SettingsDestroyRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Fortify\Contracts\UpdatesUserPasswords;
@@ -73,7 +74,7 @@ class SettingsController extends Controller
     }
 
     // アカウント削除
-    public function destroy(Request $request)
+    public function destroy(SettingsDestroyRequest $request)
     {
         $user = $request->user();
         // パスワード未設定ユーザーは削除確認を通せないため明示的に返す
@@ -92,15 +93,7 @@ class SettingsController extends Controller
             ]);
         }
 
-        $request->validate(
-            [
-                'password' => ['required', 'current_password'],
-            ],
-            [
-                'password.required' => 'パスワードを入力してください。',
-                'password.current_password' => 'パスワードが正しくありません。',
-            ]
-        );
+        $request->validated();
 
         // Webガードでログアウトしてからアカウント削除
         Auth::guard('web')->logout();

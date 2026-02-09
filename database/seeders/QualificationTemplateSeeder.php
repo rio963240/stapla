@@ -16,16 +16,19 @@ class QualificationTemplateSeeder extends Seeder
      */
     public function run(): void
     {
+        // CSVの存在チェック
         $path = base_path('database/seeders/data/qualification_template.csv');
         if (!file_exists($path)) {
             throw new RuntimeException("CSV not found: {$path}");
         }
 
+        // CSVから有効行を読み込み
         $rows = $this->readCsvRows($path);
         if ($rows === []) {
             return;
         }
 
+        // 一括登録はトランザクションで実施
         DB::transaction(function () use ($rows) {
             $now = now();
 
@@ -33,12 +36,14 @@ class QualificationTemplateSeeder extends Seeder
             $domainByQualification = [];
             $subdomainByQualificationDomain = [];
 
+            // 資格/分野/サブ分野の重複を排除しながら収集
             foreach ($rows as [$qualificationName, $domainName, $subdomainName]) {
                 $qualificationNames[$qualificationName] = true;
                 $domainByQualification[$qualificationName][$domainName] = true;
                 $subdomainByQualificationDomain[$qualificationName . '|' . $domainName][$subdomainName] = true;
             }
 
+            // 資格の一括登録（既存は更新）
             $qualificationNames = array_keys($qualificationNames);
             $qualificationRows = array_map(
                 fn ($name) => [
@@ -52,11 +57,13 @@ class QualificationTemplateSeeder extends Seeder
 
             Qualification::upsert($qualificationRows, ['name'], ['is_active', 'updated_at']);
 
+            // 資格名 → ID のマップ作成
             $qualificationMap = Qualification::query()
                 ->whereIn('name', $qualificationNames)
                 ->get()
                 ->keyBy('name');
 
+            // 分野の一括登録データ作成
             $domainRows = [];
             foreach ($domainByQualification as $qualificationName => $domainNames) {
                 $qualification = $qualificationMap->get($qualificationName);
@@ -75,6 +82,7 @@ class QualificationTemplateSeeder extends Seeder
                 }
             }
 
+            // 分野の一括登録（既存は更新）
             if ($domainRows !== []) {
                 QualificationDomain::upsert(
                     $domainRows,
@@ -83,6 +91,7 @@ class QualificationTemplateSeeder extends Seeder
                 );
             }
 
+            // 資格IDと分野名から分野IDを引けるようにマップ化
             $qualificationIds = $qualificationMap->pluck('qualification_id')->all();
             $domainMap = QualificationDomain::query()
                 ->whereIn('qualification_id', $qualificationIds)
@@ -93,6 +102,7 @@ class QualificationTemplateSeeder extends Seeder
                     ]
                 );
 
+            // サブ分野の一括登録データ作成
             $subdomainRows = [];
             foreach ($subdomainByQualificationDomain as $qualificationDomainKey => $subdomainNames) {
                 [$qualificationName, $domainName] = explode('|', $qualificationDomainKey, 2);
@@ -117,6 +127,7 @@ class QualificationTemplateSeeder extends Seeder
                 }
             }
 
+            // サブ分野の一括登録（既存は更新）
             if ($subdomainRows !== []) {
                 QualificationSubdomain::upsert(
                     $subdomainRows,
@@ -132,6 +143,7 @@ class QualificationTemplateSeeder extends Seeder
      */
     private function readCsvRows(string $path): array
     {
+        // CSVを読み込み、有効な行だけを抽出
         $handle = fopen($path, 'rb');
         if ($handle === false) {
             throw new RuntimeException("Failed to open CSV: {$path}");

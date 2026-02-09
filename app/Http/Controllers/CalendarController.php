@@ -2,22 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CalendarEventsRequest;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class CalendarController extends Controller
 {
-    public function events(Request $request): JsonResponse
+    public function events(CalendarEventsRequest $request): JsonResponse
     {
         // 入力パラメータのバリデーション
-        $request->validate([
-            'start' => ['required', 'date'],
-            'end' => ['required', 'date'],
-            'view' => ['nullable', 'string'],
-        ]);
+        $request->validated();
 
         // ビュー種別で月/週の返却内容を切り替えるための基礎情報を準備
         $userId = $request->user()->id;

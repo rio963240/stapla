@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PlanRescheduleDataRequest;
+use App\Http\Requests\PlanRescheduleStoreRequest;
 use App\Models\StudyPlan;
 use App\Models\StudyPlanItem;
 use App\Models\Todo;
@@ -12,18 +14,15 @@ use App\Models\UserQualificationTarget;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class PlanRescheduleController extends Controller
 {
     // リスケ画面表示用の初期データを返す
-    public function data(Request $request): JsonResponse
+    public function data(PlanRescheduleDataRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'target_id' => ['required', 'integer'],
-        ]);
+        $validated = $request->validated();
 
         $userId = $request->user()->id;
         $targetId = (int) $validated['target_id'];
@@ -110,20 +109,9 @@ class PlanRescheduleController extends Controller
         ]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(PlanRescheduleStoreRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'target_id' => ['required', 'integer'],
-            'reschedule_start_date' => ['required', 'date'],
-            'daily_study_time' => ['required', 'integer', 'min:1', 'max:999'],
-            'buffer_rate' => ['required', 'integer', 'min:0', 'max:99'],
-            'no_study_days' => ['array'],
-            'no_study_days.*' => ['date'],
-            'weight_type' => ['required', 'string', 'in:domain,subdomain'],
-            'weights' => ['required', 'array', 'min:1'],
-            'weights.*.id' => ['required', 'integer'],
-            'weights.*.weight' => ['required', 'integer', 'min:1', 'max:999'],
-        ]);
+        $validated = $request->validated();
 
         $userId = $request->user()->id;
         $targetId = (int) $validated['target_id'];

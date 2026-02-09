@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StudyRecordStoreRequest;
 use App\Models\StudyRecord;
 use App\Models\Todo;
 use Illuminate\Http\JsonResponse;
@@ -86,16 +87,10 @@ class StudyRecordController extends Controller
         ]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StudyRecordStoreRequest $request): JsonResponse
     {
         // 入力値のバリデーション
-        $validated = $request->validate([
-            'todo_id' => ['required', 'integer', 'exists:todo,todo_id'],
-            'memo' => ['nullable', 'string', 'max:2000'],
-            'records' => ['required', 'array', 'min:1'],
-            'records.*.study_plan_items_id' => ['required', 'integer'],
-            'records.*.actual_minutes' => ['required', 'integer', 'min:0', 'max:1440'],
-        ]);
+        $validated = $request->validated();
 
         $todoId = (int) $validated['todo_id'];
         $userId = $request->user()->id;

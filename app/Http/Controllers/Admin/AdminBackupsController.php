@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AdminBackupSettingsRequest;
 use App\Models\BackupFile;
 use App\Models\BackupSetting;
 use Illuminate\Http\JsonResponse;
@@ -17,6 +18,7 @@ class AdminBackupsController extends Controller
 {
     public function index()
     {
+        // 設定と最新バックアップ一覧を取得して画面表示
         $setting = BackupSetting::firstOrCreate(['settings_key' => 'default']);
         $backupFiles = BackupFile::query()
             ->orderByDesc('created_at')
@@ -41,15 +43,14 @@ class AdminBackupsController extends Controller
 
     public function storeManual(Request $request): JsonResponse
     {
+        // 手動バックアップ作成
         return $this->createBackup(false);
     }
 
-    public function updateSettings(Request $request): JsonResponse
+    public function updateSettings(AdminBackupSettingsRequest $request): JsonResponse
     {
-        $data = $request->validate([
-            'is_enabled' => ['required', 'boolean'],
-            'run_time' => ['required', 'date_format:H:i'],
-        ]);
+        // 自動バックアップ設定を更新
+        $data = $request->validated();
 
         $setting = BackupSetting::firstOrCreate(['settings_key' => 'default']);
         $setting->is_enabled = (bool) $data['is_enabled'];
@@ -68,6 +69,7 @@ class AdminBackupsController extends Controller
 
     private function createBackup(bool $isAuto): JsonResponse
     {
+        // 保存先ディスクとファイル名を決定
         $diskName = config('backup.disk', 'local');
         $backupPath = trim(config('backup.path', 'backups'), '/');
         $disk = Storage::disk($diskName);
@@ -76,6 +78,7 @@ class AdminBackupsController extends Controller
         $fileName = "backup_{$timestamp}.sql";
         $relativePath = $backupPath . '/' . $fileName;
 
+        // 一時ファイルの保存先を準備
         $tempDir = storage_path('app/private/backup-temp');
         if (!is_dir($tempDir)) {
             mkdir($tempDir, 0755, true);
@@ -88,6 +91,7 @@ class AdminBackupsController extends Controller
         $size = 0;
 
         try {
+            // DBダンプを作成し、ストレージへ保存
             $this->dumpDatabase($tempPath);
             $size = filesize($tempPath) ?: 0;
 
@@ -105,11 +109,13 @@ class AdminBackupsController extends Controller
             $message = $exception->getMessage() ?: 'バックアップに失敗しました';
             $errorDetail = $exception->getMessage();
         } finally {
+            // 一時ファイルを削除
             if (file_exists($tempPath)) {
                 unlink($tempPath);
             }
         }
 
+        // バックアップ履歴を保存
         $backup = new BackupFile();
         $backup->is_auto = $isAuto;
         $backup->file_name = $success ? $fileName : '-';
@@ -129,11 +135,13 @@ class AdminBackupsController extends Controller
 
     private function dumpDatabase(string $outputPath): void
     {
+        // 接続ドライバに応じてダンプ方法を分岐
         $connection = config('database.default');
         $config = config("database.connections.{$connection}", []);
         $driver = $config['driver'] ?? '';
 
         if ($driver === 'sqlite') {
+            // SQLiteはDBファイルをコピー
             $databasePath = $config['database'] ?? null;
             if (!$databasePath || !file_exists($databasePath)) {
                 throw new RuntimeException('SQLiteのデータベースファイルが見つかりません');
@@ -145,6 +153,7 @@ class AdminBackupsController extends Controller
         }
 
         if ($driver === 'pgsql') {
+            // PostgreSQLはpg_dumpでエクスポート
             $host = $config['host'] ?? '127.0.0.1';
             $port = $config['port'] ?? 5432;
             $username = $config['username'] ?? '';
@@ -155,6 +164,7 @@ class AdminBackupsController extends Controller
                 throw new RuntimeException('データベース名が未設定です');
             }
 
+            // pg_dumpのパス解決
             $pgdump = config('backup.pgdump_path', 'pg_dump');
             if (!is_executable($pgdump)) {
                 $resolved = $this->resolveBinary('pg_dump');
@@ -166,6 +176,7 @@ class AdminBackupsController extends Controller
                     throw new RuntimeException('pg_dumpが見つかりません。PostgreSQLクライアントをインストールしてください。');
                 }
             }
+            // pg_dumpの実行コマンド
             $command = [
                 $pgdump,
                 '--format=plain',
@@ -183,6 +194,7 @@ class AdminBackupsController extends Controller
                 $env['PGPASSWORD'] = $password;
             }
 
+            // 実行とエラーチェック
             $process = new Process($command, null, $env, null, 120);
             $process->run();
 
@@ -192,10 +204,12 @@ class AdminBackupsController extends Controller
             return;
         }
 
+        // MySQL/MariaDB以外は未対応
         if (!in_array($driver, ['mysql', 'mariadb'], true)) {
             throw new RuntimeException("このDBドライバ({$driver})はバックアップに未対応です");
         }
 
+        // MySQL/MariaDBはmysqldumpでエクスポート
         $host = $config['host'] ?? '127.0.0.1';
         $port = $config['port'] ?? 3306;
         $username = $config['username'] ?? '';
@@ -207,6 +221,7 @@ class AdminBackupsController extends Controller
         }
 
         $mysqldump = config('backup.mysqldump_path', 'mysqldump');
+        // mysqldumpの実行コマンド
         $command = [
             $mysqldump,
             '--single-transaction',
@@ -224,6 +239,7 @@ class AdminBackupsController extends Controller
             $env['MYSQL_PWD'] = $password;
         }
 
+        // 実行とエラーチェック
         $process = new Process($command, null, $env, null, 120);
         $process->run();
 
@@ -234,6 +250,7 @@ class AdminBackupsController extends Controller
 
     private function formatBackupItem(BackupFile $file): array
     {
+        // 一覧表示用の整形
         return [
             'created_at' => $file->created_at?->format('Y/m/d H:i'),
             'type_label' => $file->is_auto ? '自動' : '手動',
@@ -246,6 +263,7 @@ class AdminBackupsController extends Controller
 
     private function formatBytes(int $bytes): string
     {
+        // バイト数を見やすい単位へ変換
         if ($bytes < 1024) {
             return $bytes . 'B';
         }
@@ -260,6 +278,7 @@ class AdminBackupsController extends Controller
 
     private function resolveBinary(string $binary): ?string
     {
+        // 実行ファイルのパスを解決
         $process = Process::fromShellCommandline('command -v ' . escapeshellarg($binary));
         $process->run();
         if (!$process->isSuccessful()) {

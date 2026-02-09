@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\QualificationSubdomain;
+use App\Http\Requests\PlanRegisterSubdomainRequest;
 use App\Models\StudyPlan;
 use App\Models\StudyPlanItem;
 use App\Models\Todo;
@@ -12,59 +12,14 @@ use App\Models\UserSubdomainPreference;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class PlanRegisterSubdomainController extends Controller
 {
-    public function store(Request $request): JsonResponse
+    public function store(PlanRegisterSubdomainRequest $request): JsonResponse
     {
-        $validated = $request->validate(
-            [
-                'start_date' => ['required', 'date'],
-                'exam_date' => ['required', 'date', 'after:start_date'],
-                'qualification_id' => ['required', 'integer', 'exists:qualification,qualification_id'],
-                'daily_study_time' => ['required', 'integer', 'min:1', 'max:999'],
-                'buffer_rate' => ['required', 'integer', 'min:0', 'max:99'],
-                'subdomains' => ['required', 'array', 'min:1'],
-                'subdomains.*.id' => ['required', 'integer', 'exists:qualification_subdomains,qualification_subdomains_id'],
-                'subdomains.*.weight' => ['required', 'integer', 'min:1', 'max:999'],
-                'no_study_days' => ['array'],
-                'no_study_days.*' => ['date'],
-            ],
-            [
-                'exam_date.after' => '受験日は勉強開始日以降の日付を入力してください。',
-            ],
-        );
-
-        $startDate = Carbon::parse($validated['start_date'])->startOfDay();
-        $examDate = Carbon::parse($validated['exam_date'])->startOfDay();
-        if ($examDate->lt($startDate->copy()->addDays(7))) {
-            throw ValidationException::withMessages([
-                'exam_date' => ['登録は一週間以上からです。'],
-            ]);
-        }
-
-        // 資格とサブ分野の整合性チェック用
-        $qualificationId = (int) $validated['qualification_id'];
-        $subdomainIds = collect($validated['subdomains'])->pluck('id')->unique()->values();
-        $subdomainsCount = QualificationSubdomain::query()
-            ->join(
-                'qualification_domains',
-                'qualification_subdomains.qualification_domains_id',
-                '=',
-                'qualification_domains.qualification_domains_id',
-            )
-            ->where('qualification_domains.qualification_id', $qualificationId)
-            ->whereIn('qualification_subdomains.qualification_subdomains_id', $subdomainIds)
-            ->count();
-
-        if ($subdomainsCount !== $subdomainIds->count()) {
-            throw ValidationException::withMessages([
-                'subdomains' => ['資格に紐づかないサブ分野が含まれています。'],
-            ]);
-        }
+        $validated = $request->validated();
 
         return DB::transaction(function () use ($request, $validated): JsonResponse {
             $user = $request->user();
@@ -174,11 +129,6 @@ class PlanRegisterSubdomainController extends Controller
             $planCapacity = (int) floor($totalCapacity * (1 - ((int) $validated['buffer_rate']) / 100));
 
             $totalWeight = collect($validated['subdomains'])->sum('weight');
-            if ($totalWeight <= 0) {
-                throw ValidationException::withMessages([
-                    'subdomains' => ['重みの合計が0です。'],
-                ]);
-            }
 
             // サブ分野別の1日あたり学習時間（切り捨て）
             $dailyMinutes = [];

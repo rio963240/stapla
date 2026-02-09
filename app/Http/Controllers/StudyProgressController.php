@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StudyProgressDataRequest;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -47,14 +48,10 @@ class StudyProgressController extends Controller
         ]);
     }
 
-    public function data(Request $request): JsonResponse
+    public function data(StudyProgressDataRequest $request): JsonResponse
     {
         // フロントの再取得用API（期間や対象変更時）
-        $validated = $request->validate([
-            'target_id' => ['required', 'integer'],
-            'start' => ['nullable', 'date'],
-            'end' => ['nullable', 'date'],
-        ]);
+        $validated = $request->validated();
 
         $userId = $request->user()->id;
         $targets = $this->fetchTargets($userId);
