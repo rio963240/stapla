@@ -20,6 +20,8 @@ export default defineConfig({
                 'resources/css/home/profile-menu.css',
                 'resources/css/settings.css',
                 'resources/js/settings.js',
+                'resources/css/admin/admin-qualifications.css',
+                'resources/js/admin/admin-qualifications.js',
             ],
             refresh: true,
         }),

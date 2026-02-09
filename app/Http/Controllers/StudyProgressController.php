@@ -17,10 +17,13 @@ class StudyProgressController extends Controller
         $targets = $this->fetchTargets($userId);
         $selectedTarget = $this->selectTarget($targets, $request->query('target_id'));
 
+        $isAdmin = $request->routeIs('admin.*');
+
         if (!$selectedTarget) {
             return view('study-progress', [
                 'targets' => collect(),
                 'initialData' => $this->emptyData(),
+                'isAdmin' => $isAdmin,
             ]);
         }
 
@@ -40,6 +43,7 @@ class StudyProgressController extends Controller
         return view('study-progress', [
             'targets' => $targets,
             'initialData' => $data,
+            'isAdmin' => $isAdmin,
         ]);
     }
 

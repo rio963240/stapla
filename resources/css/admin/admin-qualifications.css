@@ -1,0 +1,47 @@
+@import "../home/plan-register-modal.css";
+
+.admin-qualification-panel {
+    max-width: 540px;
+}
+
+.admin-qualification-panel .modal-actions {
+    justify-content: center;
+}
+
+.admin-danger-button {
+    border-color: #ef4444;
+    background-color: #ef4444;
+    color: #fff;
+}
+
+.admin-toast-stack {
+    position: fixed;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    z-index: 70;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.admin-toast {
+    min-width: 220px;
+    border-radius: 9999px;
+    background-color: #111827;
+    color: #fff;
+    padding: 0.65rem 1.25rem;
+    font-size: 0.9rem;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.2);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.admin-toast.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.admin-toast.is-error {
+    background-color: #b91c1c;
+}
