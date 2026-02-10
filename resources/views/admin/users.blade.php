@@ -103,60 +103,8 @@
                     </div>
                 </div>
 
-                {{-- 編集画面 --}}
-                <div id="admin-users-edit" class="admin-users-edit is-hidden">
-                    <h2 class="admin-users-panel-title">ユーザー編集</h2>
-                    <div class="admin-users-edit-info">
-                        <p><strong>名前:</strong> <span data-admin-edit-name></span></p>
-                        <p><strong>メール:</strong> <span data-admin-edit-email></span></p>
-                    </div>
-                    <form class="admin-users-edit-form" data-admin-users-edit-form>
-                        @csrf
-                        <input type="hidden" name="user_id" data-admin-edit-user-id>
-                        <div class="admin-users-form-group">
-                            <label for="admin-edit-role">権限:</label>
-                            <select id="admin-edit-role" name="is_admin" class="admin-users-select"
-                                data-admin-edit-role>
-                                <option value="0">一般</option>
-                                <option value="1">管理者</option>
-                            </select>
-                        </div>
-                        <div class="admin-users-form-group">
-                            <label for="admin-edit-status">状態:</label>
-                            <select id="admin-edit-status" name="is_active" class="admin-users-select"
-                                data-admin-edit-status>
-                                <option value="0">停止</option>
-                                <option value="1">有効</option>
-                            </select>
-                        </div>
-                        <div class="admin-users-form-group">
-                            <label for="admin-edit-password">パスワード:</label>
-                            <input type="password" id="admin-edit-password" name="password"
-                                class="admin-users-input" placeholder="変更する場合のみ入力"
-                                data-admin-edit-password autocomplete="new-password">
-                        </div>
-                        <div class="admin-users-form-actions">
-                            <button type="submit" class="admin-button-primary" data-admin-users-confirm>確認</button>
-                            <button type="button" class="admin-button-secondary" data-admin-users-cancel>キャンセル</button>
-                        </div>
-                    </form>
-                </div>
-
-                {{-- 確認画面 --}}
-                <div id="admin-users-confirm" class="admin-users-confirm is-hidden">
-                    <h2 class="admin-users-panel-title">ユーザー編集</h2>
-                    <div class="admin-users-confirm-info">
-                        <p><strong>名前:</strong> <span data-admin-confirm-name></span></p>
-                        <p><strong>メール:</strong> <span data-admin-confirm-email></span></p>
-                        <p><strong>権限:</strong> <span data-admin-confirm-role></span></p>
-                        <p><strong>状態:</strong> <span data-admin-confirm-status></span></p>
-                        <p><strong>パスワード:</strong> <span data-admin-confirm-password></span></p>
-                    </div>
-                    <div class="admin-users-form-actions">
-                        <button type="button" class="admin-button-primary" data-admin-users-update>更新</button>
-                        <button type="button" class="admin-button-secondary" data-admin-users-back>戻る</button>
-                    </div>
-                </div>
+                @include('admin.users.edit')
+                @include('admin.users.confirm')
             </section>
         </div>
     </div>

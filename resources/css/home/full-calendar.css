@@ -10,8 +10,21 @@
     background-color: rgba(59, 130, 246, 0.08);
 }
 
+/* 月表示：土曜セル同士の横線を消し、縦に繋がって見えるようにする */
+.fc .fc-dayGridMonth-view .fc-day-sat {
+    border-top-color: transparent !important;
+}
+
 .fc .fc-day-sun {
     background-color: rgba(239, 68, 68, 0.08);
+}
+
+/* 月表示：土曜・日曜セル内のフレーム等を透過にし、セル背景が欠けないようにする */
+.fc .fc-dayGridMonth-view .fc-day-sat .fc-daygrid-day-frame,
+.fc .fc-dayGridMonth-view .fc-day-sat .fc-daygrid-day-events,
+.fc .fc-dayGridMonth-view .fc-day-sun .fc-daygrid-day-frame,
+.fc .fc-dayGridMonth-view .fc-day-sun .fc-daygrid-day-events {
+    background: transparent;
 }
 
 /* 週表示（dayGridWeek）のイベントをGoogleカレンダー風に */
@@ -23,6 +36,12 @@
     box-shadow: none;
     max-width: 100%;
     overflow: hidden;
+}
+
+/* 月表示では全イベントを半透明にし、土曜・日曜のセル背景が欠けずに見えるようにする（複数日イベントは別レイヤー描画のため） */
+.fc .fc-dayGridMonth-view .fc-daygrid-event,
+.fc .fc-dayGridMonth-view .fc-daygrid-event .fc-event-main {
+    background-color: rgba(89, 176, 131, 0.82) !important;
 }
 
 /* 月表示の横棒に間隔をつける */
@@ -134,7 +153,24 @@
 }
 
 /* 月表示の縦スクロールバーと日付の重なり回避（週表示には影響させない） */
-.fc .fc-dayGridMonth-view .fc-scroller-harness {
+/* .fc .fc-dayGridMonth-view .fc-scroller-harness {
+    position: relative;
     padding-right: 16px;
     box-sizing: border-box;
-}
+} */
+
+/* 右端16px（スクロールバー用）を土曜と同じ色で塗り、左端に縦線を引きテーブル罫線と繋がって見えるようにする */
+/* .fc .fc-dayGridMonth-view .fc-scroller-harness::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 16px;
+    background-color: rgba(59, 130, 246, 0.08);
+    border-left: 1px solid var(--fc-border-color, #e2e8f0);
+    pointer-events: none;
+} */
+
+/* 月表示：土曜セルも他曜日と同様に右ボーダーを表示し、グリッドが繋がって見えるようにする */
+/* （右端ストリップとの二重線を避けるため、ストリップ側で border-left を使う場合は .fc-scroller-harness::after で調整） */

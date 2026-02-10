@@ -347,7 +347,7 @@ const initDeleteAccountModal = () => {
         } finally {
             if (submitButton) {
                 submitButton.disabled = false;
-                submitButton.textContent = originalText || 'DELETE ACCOUNT';
+                submitButton.textContent = originalText || '削除する';
             }
         }
     });

@@ -179,30 +179,102 @@
 
 .admin-users-edit,
 .admin-users-confirm {
-    max-width: 480px;
+    max-width: 560px;
+}
+
+.admin-users-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 1.25rem;
+    padding: 0.35rem 0;
+    font-size: 0.9rem;
+    color: #4b5563;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.admin-users-back-link:hover {
+    color: #111827;
+}
+
+.admin-users-back-link-icon {
+    font-size: 1rem;
 }
 
 .admin-users-panel-title {
-    font-size: 1.1rem;
+    font-size: 1.25rem;
     font-weight: 600;
     color: #111827;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
 }
 
-.admin-users-edit-info,
-.admin-users-confirm-info {
+/* カード共通 */
+.admin-users-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    background: #fff;
+    margin-bottom: 1.5rem;
+}
+
+.admin-users-edit-card:last-of-type {
+    margin-bottom: 0;
+}
+
+.admin-users-card-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+}
+
+.admin-users-card-desc {
+    font-size: 0.85rem;
+    color: #9ca3af;
     margin-bottom: 1.25rem;
+}
+
+/* ユーザー情報（表示のみ） */
+.admin-users-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.25rem;
+}
+
+.admin-users-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 1rem;
+    background: #f9fafb;
+    border-radius: 0.5rem;
+    border: 1px solid #f3f4f6;
+}
+
+.admin-users-info-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+.admin-users-info-value {
     font-size: 0.95rem;
-    color: #374151;
+    font-weight: 500;
+    color: #111827;
+    word-break: break-all;
 }
 
-.admin-users-edit-info p,
-.admin-users-confirm-info p {
-    margin-bottom: 0.5rem;
-}
-
+/* 編集フォーム */
 .admin-users-form-group {
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.admin-users-form-group:last-of-type {
+    margin-bottom: 0;
 }
 
 .admin-users-form-group label {
@@ -210,21 +282,70 @@
     font-size: 0.9rem;
     font-weight: 500;
     color: #374151;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.5rem;
+}
+
+.admin-users-form-hint {
+    font-size: 0.8rem;
+    color: #9ca3af;
+    margin-top: 0.35rem;
 }
 
 .admin-users-select,
 .admin-users-input {
     width: 100%;
-    max-width: 280px;
+    max-width: 320px;
     border: 1px solid #d1d5db;
     border-radius: 0.5rem;
-    padding: 0.45rem 0.75rem;
+    padding: 0.5rem 0.75rem;
     font-size: 0.9rem;
+}
+
+.admin-users-select:focus,
+.admin-users-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
 .admin-users-form-actions {
     display: flex;
     gap: 0.75rem;
-    margin-top: 1.25rem;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #f3f4f6;
+}
+
+/* 確認画面 */
+.admin-users-confirm-list {
+    margin: 0;
+}
+
+.admin-users-confirm-row {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 0.95rem;
+}
+
+.admin-users-confirm-row:last-of-type {
+    border-bottom: none;
+}
+
+.admin-users-confirm-row dt {
+    margin: 0;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+.admin-users-confirm-row dd {
+    margin: 0;
+    color: #111827;
+    word-break: break-all;
+}
+
+.admin-users-confirm-actions {
+    margin-top: 1.5rem;
 }

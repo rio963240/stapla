@@ -1,3 +1,4 @@
+// 管理画面（ユーザー管理）UIの初期化
 const initAdminUsers = () => {
     const listEl = document.getElementById('admin-users-list');
     const editEl = document.getElementById('admin-users-edit');
@@ -6,12 +7,14 @@ const initAdminUsers = () => {
     const toast = document.querySelector('[data-admin-users-toast]');
     const toastLabel = toast?.querySelector('.admin-toast-label');
 
+    // 表示ビュー（一覧/編集/確認）の切り替え
     const showView = (view) => {
         listEl?.classList.toggle('is-hidden', view !== 'list');
         editEl?.classList.toggle('is-hidden', view !== 'edit');
         confirmEl?.classList.toggle('is-hidden', view !== 'confirm');
     };
 
+    // トースト表示
     const showToast = (message, status = 'success') => {
         if (!toast || !toastLabel) return;
         toastLabel.textContent = message;
@@ -20,10 +23,11 @@ const initAdminUsers = () => {
         window.setTimeout(() => toast.classList.remove('is-visible'), 3500);
     };
 
+    // CSRFトークン取得
     const getCsrfToken = () =>
         document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
-    // 編集ボタン
+    // 編集ボタン：行データをフォームに反映
     document.querySelectorAll('[data-admin-users-edit]').forEach((btn) => {
         btn.addEventListener('click', () => {
             const row = btn.closest('tr');
@@ -46,12 +50,12 @@ const initAdminUsers = () => {
         });
     });
 
-    // キャンセル
+    // キャンセル：一覧に戻る
     document.querySelector('[data-admin-users-cancel]')?.addEventListener('click', () => {
         showView('list');
     });
 
-    // 確認
+    // 確認：入力内容を確認画面に反映
     editForm?.addEventListener('submit', (e) => {
         e.preventDefault();
         const name = document.querySelector('[data-admin-edit-name]').textContent;
@@ -81,12 +85,12 @@ const initAdminUsers = () => {
         showView('confirm');
     });
 
-    // 戻る
+    // 戻る：確認画面から編集へ
     document.querySelector('[data-admin-users-back]')?.addEventListener('click', () => {
         showView('edit');
     });
 
-    // 更新
+    // 更新：Ajaxで保存し結果に応じて通知
     document.querySelector('[data-admin-users-update]')?.addEventListener('click', async () => {
         const userId = confirmEl?.dataset?.pendingUserId;
         const pendingJson = confirmEl?.dataset?.pendingData;
@@ -142,6 +146,7 @@ const initAdminUsers = () => {
     });
 };
 
+// DOM読み込みに合わせて初期化
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initAdminUsers);
 } else {

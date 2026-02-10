@@ -1,6 +1,6 @@
 <x-app-layout :show-navigation="false">
     @push('styles')
-        @vite('resources/css/study-progress.css')
+        @vite('resources/css/home/study-progress.css')
         @vite('resources/css/home/profile-menu.css')
     @endpush
 
@@ -114,6 +114,6 @@
         <script>
             window.studyProgressInitialData = @json($initialData);
         </script>
-        @vite('resources/js/study-progress.js')
+        @vite('resources/js/home/study-progress.js')
     @endpush
 </x-app-layout>

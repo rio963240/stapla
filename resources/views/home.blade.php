@@ -1,7 +1,7 @@
 <x-app-layout :show-navigation="false">
     @push('styles')
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css">
-        @vite('resources/css/home.css')
+        @vite('resources/css/home/home.css')
     @endpush
 
     @php($isAdmin = $isAdmin ?? request()->routeIs('admin.*'))
@@ -21,6 +21,6 @@
 
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
-        @vite('resources/js/home.js')
+        @vite('resources/js/home/home.js')
     @endpush
 </x-app-layout>

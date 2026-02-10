@@ -1,3 +1,4 @@
+// 管理画面（バックアップ）UIの初期化
 const initAdminBackups = () => {
     const toast = document.querySelector('[data-backup-toast]');
     const toastLabel = toast?.querySelector('.admin-toast-label');
@@ -15,6 +16,7 @@ const initAdminBackups = () => {
     const dateFilter = document.querySelector('[data-backup-sort-date]');
     const tableBody = document.querySelector('[data-backup-table-body]');
 
+    // 表示用の日時フォーマット
     const formatDate = (date) => {
         const pad = (value) => String(value).padStart(2, '0');
         return `${date.getFullYear()}/${pad(date.getMonth() + 1)}/${pad(date.getDate())} ${pad(
@@ -22,9 +24,11 @@ const initAdminBackups = () => {
         )}:${pad(date.getMinutes())}`;
     };
 
+    // CSRFトークン取得
     const getCsrfToken = () =>
         document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
+    // トースト表示
     const showToast = (message, status = 'success') => {
         if (!toast || !toastLabel) return;
         toastLabel.textContent = message;
@@ -33,6 +37,7 @@ const initAdminBackups = () => {
         window.setTimeout(() => toast.classList.remove('is-visible'), 3500);
     };
 
+    // 自動バックアップのON/OFF表示反映
     const syncAutoState = () => {
         if (!toggleInput || !timeSelect) return;
         const isOn = toggleInput.checked;
@@ -47,6 +52,7 @@ const initAdminBackups = () => {
         if (autoSummary) autoSummary.textContent = label;
     };
 
+    // テーブルの日時ソート用パース
     const parseDateValue = (value) => {
         const normalized = value.replace(/\//g, '-');
         const parsed = new Date(normalized);
@@ -56,6 +62,7 @@ const initAdminBackups = () => {
         return parsed;
     };
 
+    // ステータス/日付フィルタを適用
     const applyTableFilter = () => {
         if (!tableBody) return;
         const statusValue = statusFilter?.value ?? 'all';
@@ -79,6 +86,7 @@ const initAdminBackups = () => {
             .forEach((row) => tableBody.appendChild(row));
     };
 
+    // 最新バックアップ行をテーブル先頭に追加
     const appendBackupRow = (item) => {
         if (!tableBody || !item) return;
         const emptyRow = tableBody.querySelector('[data-backup-empty]');
@@ -121,6 +129,7 @@ const initAdminBackups = () => {
         tableBody.prepend(row);
     };
 
+    // 手動バックアップ実行ボタン
     if (manualButton) {
         manualButton.addEventListener('click', async () => {
             const url = manualButton.dataset.backupManualUrl;
@@ -152,6 +161,7 @@ const initAdminBackups = () => {
         });
     }
 
+    // 自動設定の切替
     toggleInput?.addEventListener('change', syncAutoState);
     timeSelect?.addEventListener('change', syncAutoState);
     saveButton?.addEventListener('click', async () => {
@@ -180,9 +190,11 @@ const initAdminBackups = () => {
         }
     });
 
+    // フィルタ変更
     statusFilter?.addEventListener('change', applyTableFilter);
     dateFilter?.addEventListener('change', applyTableFilter);
 
+    // 行のアクション（ダウンロード/削除/再実行）
     tableBody?.addEventListener('click', async (event) => {
         const button = event.target.closest('[data-backup-action]');
         if (!button) return;
@@ -247,8 +259,10 @@ const initAdminBackups = () => {
         }
     });
 
+    // 初期状態の反映
     syncAutoState();
     applyTableFilter();
 };
 
+// DOM読み込み後に初期化
 document.addEventListener('DOMContentLoaded', initAdminBackups);

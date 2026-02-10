@@ -1,6 +1,7 @@
 /* ------------------------------ */
 /* 実績入力モーダル */
 /* ------------------------------ */
+/* モーダル全体のオーバーレイ */
 .study-record-popover {
     position: fixed;
     inset: 0;
@@ -8,10 +9,12 @@
     pointer-events: none;
 }
 
+/* 非表示状態 */
 .study-record-popover.is-hidden {
     display: none;
 }
 
+/* ポップオーバー本体 */
 .study-record-popover-panel {
     position: relative;
     background: #f3f4f6;
@@ -26,10 +29,12 @@
     overflow: hidden;
 }
 
+/* サイズ調整用ラッパー */
 .study-record-panel {
     width: min(560px, 100%);
 }
 
+/* 閉じるボタン */
 .study-record-popover-close {
     position: absolute;
     top: 0.75rem;
@@ -47,6 +52,7 @@
     color: #374151;
 }
 
+/* ステップコンテンツ */
 .study-record-step {
     display: flex;
     flex-direction: column;
@@ -57,10 +63,12 @@
     overflow: hidden;
 }
 
+/* ステップ非表示 */
 .study-record-step.hidden {
     display: none;
 }
 
+/* タイトル/日付の表示 */
 .study-record-meta {
     margin-top: 0.75rem;
     text-align: center;
@@ -71,12 +79,14 @@
     gap: 0.2rem;
 }
 
+/* タイトル文字 */
 .study-record-title {
     font-weight: 600;
     font-size: 1.2rem;
     color: #111827;
 }
 
+/* フォームのスクロール領域 */
 .study-record-form {
     margin-top: 1.25rem;
     overflow-y: auto;
@@ -85,16 +95,19 @@
     min-height: 0;
 }
 
+/* アクションボタン配置 */
 .study-record-step .modal-actions {
     margin-top: auto;
 }
 
+/* リスト全体 */
 .study-record-list {
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
 }
 
+/* 各行のレイアウト */
 .study-record-row {
     display: flex;
     align-items: center;
@@ -104,27 +117,32 @@
     background-color: transparent;
 }
 
+/* 入力部のインライン配置 */
 .study-record-inline {
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
+/* ラベル文字 */
 .study-record-label {
     font-weight: 600;
     color: #111827;
 }
 
+/* 補足テキスト */
 .study-record-note {
     font-size: 0.85rem;
     color: #6b7280;
 }
 
+/* メモ入力 */
 .study-record-textarea {
     resize: vertical;
     min-height: 90px;
 }
 
+/* 空表示 */
 .study-record-empty {
     text-align: center;
     color: #6b7280;
