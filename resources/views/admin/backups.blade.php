@@ -10,6 +10,7 @@
         $autoSettingLabel = $setting['is_enabled']
             ? "ON（毎日 {$setting['run_time']} 実行）"
             : 'OFF';
+        $storageUsageLabel = $storageUsageLabel ?? '-';
     @endphp
     @push('styles')
         @vite('resources/css/admin/admin-backups.css')
@@ -22,7 +23,7 @@
             <section class="flex-1 rounded-lg bg-white p-6 shadow-sm overflow-auto">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-500">バックアップ管理</p>
+                        {{-- <p class="text-sm text-gray-500">バックアップ管理</p> --}}
                         <h1 class="text-xl font-semibold text-gray-800">バックアップ</h1>
                     </div>
                     <div class="text-xs text-gray-400">最終更新: <span
@@ -118,6 +119,7 @@
                     <div class="admin-backup-summary">
                         <div>最終バックアップ: <strong data-backup-latest>{{ $latestBackupAt }}</strong></div>
                         <div>自動バックアップ: <strong data-backup-auto-summary>{{ $autoSettingLabel }}</strong></div>
+                        <div>ストレージ使用量: <strong>{{ $storageUsageLabel }}</strong></div>
                     </div>
 
                     <div class="admin-backup-table">
@@ -135,7 +137,8 @@
                             <tbody data-backup-table-body>
                                 @forelse ($backupItems as $item)
                                     <tr data-status="{{ $item['status_key'] ?? 'failed' }}"
-                                        data-created="{{ $item['created_at'] ?? '' }}">
+                                        data-created="{{ $item['created_at'] ?? '' }}"
+                                        data-backup-id="{{ $item['id'] ?? '' }}">
                                         <td>{{ $item['created_at'] ?? '-' }}</td>
                                         <td>{{ $item['type_label'] ?? '-' }}</td>
                                         <td>
@@ -145,10 +148,26 @@
                                         <td class="admin-backup-file">{{ $item['file_name'] ?? '-' }}</td>
                                         <td>{{ $item['size_label'] ?? '-' }}</td>
                                         <td>
-                                            <button type="button" class="admin-button-link"
-                                                data-backup-action="{{ ($item['file_name'] ?? '-') !== '-' ? 'download' : 'retry' }}">
-                                                {{ ($item['file_name'] ?? '-') !== '-' ? '削除' : '再実行' }}
-                                            </button>
+                                            @if (($item['status_key'] ?? '') === 'success')
+                                                <span class="admin-backup-actions">
+                                                    <button type="button" class="admin-button-link"
+                                                        data-backup-action="download"
+                                                        data-backup-url="{{ $item['download_url'] ?? '' }}">
+                                                        ダウンロード
+                                                    </button>
+                                                    <button type="button" class="admin-button-link"
+                                                        data-backup-action="delete"
+                                                        data-backup-url="{{ $item['delete_url'] ?? '' }}">
+                                                        削除
+                                                    </button>
+                                                </span>
+                                            @else
+                                                <button type="button" class="admin-button-link"
+                                                    data-backup-action="retry"
+                                                    data-backup-url="{{ $item['retry_url'] ?? '' }}">
+                                                    再実行
+                                                </button>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty

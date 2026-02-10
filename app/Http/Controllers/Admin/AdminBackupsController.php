@@ -6,16 +6,21 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdminBackupSettingsRequest;
 use App\Models\BackupFile;
 use App\Models\BackupSetting;
+use App\Services\BackupService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
-use RuntimeException;
-use Symfony\Component\Process\Process;
-use Throwable;
 
 class AdminBackupsController extends Controller
 {
+    private BackupService $backupService;
+
+    public function __construct(BackupService $backupService)
+    {
+        $this->backupService = $backupService;
+    }
+
     public function index()
     {
         // 設定と最新バックアップ一覧を取得して画面表示
@@ -27,6 +32,8 @@ class AdminBackupsController extends Controller
 
         $backupItems = $backupFiles->map(fn (BackupFile $file) => $this->formatBackupItem($file))->all();
         $latestBackupAt = $backupFiles->first()?->created_at?->format('Y/m/d H:i');
+        $storageUsageBytes = (int) $backupFiles->where('is_success', true)->sum('size');
+        $storageUsageLabel = $this->formatBytes($storageUsageBytes);
 
         return view('admin.backups', [
             'backupItems' => $backupItems,
@@ -38,13 +45,15 @@ class AdminBackupsController extends Controller
                 'frequency' => $setting->frequency ?? 'daily',
             ],
             'latestBackupAt' => $latestBackupAt,
+            'storageUsageLabel' => $storageUsageLabel,
         ]);
     }
 
     public function storeManual(Request $request): JsonResponse
     {
         // 手動バックアップ作成
-        return $this->createBackup(false);
+        $result = $this->backupService->runBackup(false);
+        return $this->buildBackupResponse($result);
     }
 
     public function updateSettings(AdminBackupSettingsRequest $request): JsonResponse
@@ -67,197 +76,75 @@ class AdminBackupsController extends Controller
         ]);
     }
 
-    private function createBackup(bool $isAuto): JsonResponse
+    public function retry(BackupFile $backupFile): JsonResponse
     {
-        // 保存先ディスクとファイル名を決定
-        $diskName = config('backup.disk', 'local');
-        $backupPath = trim(config('backup.path', 'backups'), '/');
-        $disk = Storage::disk($diskName);
-
-        $timestamp = now()->format('Ymd_His');
-        $fileName = "backup_{$timestamp}.sql";
-        $relativePath = $backupPath . '/' . $fileName;
-
-        // 一時ファイルの保存先を準備
-        $tempDir = storage_path('app/private/backup-temp');
-        if (!is_dir($tempDir)) {
-            mkdir($tempDir, 0755, true);
-        }
-        $tempPath = $tempDir . '/' . $fileName;
-
-        $success = false;
-        $message = 'バックアップに失敗しました';
-        $errorDetail = null;
-        $size = 0;
-
-        try {
-            // DBダンプを作成し、ストレージへ保存
-            $this->dumpDatabase($tempPath);
-            $size = filesize($tempPath) ?: 0;
-
-            $stream = fopen($tempPath, 'r');
-            if (!$stream) {
-                throw new RuntimeException('バックアップファイルの読み込みに失敗しました');
-            }
-            $disk->put($relativePath, $stream);
-            fclose($stream);
-
-            $success = true;
-            $message = 'バックアップを作成しました';
-        } catch (Throwable $exception) {
-            $success = false;
-            $message = $exception->getMessage() ?: 'バックアップに失敗しました';
-            $errorDetail = $exception->getMessage();
-        } finally {
-            // 一時ファイルを削除
-            if (file_exists($tempPath)) {
-                unlink($tempPath);
-            }
-        }
-
-        // バックアップ履歴を保存
-        $backup = new BackupFile();
-        $backup->is_auto = $isAuto;
-        $backup->file_name = $success ? $fileName : '-';
-        $backup->file_path = $success ? $relativePath : '';
-        $backup->is_success = $success;
-        $backup->size = $success ? $size : 0;
-        $backup->save();
-
-        return response()->json([
-            'status' => $success ? 'success' : 'error',
-            'message' => $message,
-            'error' => $errorDetail,
-            'item' => $this->formatBackupItem($backup),
-            'latest_at' => $backup->created_at?->format('Y/m/d H:i'),
-        ], $success ? 200 : 500);
+        // 失敗したバックアップの再実行
+        $result = $this->backupService->runBackup((bool) $backupFile->is_auto);
+        return $this->buildBackupResponse($result);
     }
 
-    private function dumpDatabase(string $outputPath): void
+    public function download(BackupFile $backupFile)
     {
-        // 接続ドライバに応じてダンプ方法を分岐
-        $connection = config('database.default');
-        $config = config("database.connections.{$connection}", []);
-        $driver = $config['driver'] ?? '';
-
-        if ($driver === 'sqlite') {
-            // SQLiteはDBファイルをコピー
-            $databasePath = $config['database'] ?? null;
-            if (!$databasePath || !file_exists($databasePath)) {
-                throw new RuntimeException('SQLiteのデータベースファイルが見つかりません');
-            }
-            if (!copy($databasePath, $outputPath)) {
-                throw new RuntimeException('SQLiteバックアップのコピーに失敗しました');
-            }
-            return;
+        if (!$backupFile->is_success || !$backupFile->file_path) {
+            abort(404);
         }
 
-        if ($driver === 'pgsql') {
-            // PostgreSQLはpg_dumpでエクスポート
-            $host = $config['host'] ?? '127.0.0.1';
-            $port = $config['port'] ?? 5432;
-            $username = $config['username'] ?? '';
-            $password = $config['password'] ?? '';
-            $database = $config['database'] ?? '';
+        $diskName = config('backup.disk', 'local');
+        $disk = Storage::disk($diskName);
 
-            if ($database === '') {
-                throw new RuntimeException('データベース名が未設定です');
+        if (!$disk->exists($backupFile->file_path)) {
+            abort(404);
+        }
+
+        $stream = $disk->readStream($backupFile->file_path);
+        if ($stream === false) {
+            abort(404);
+        }
+
+        return response()->streamDownload(
+            fn () => fpassthru($stream),
+            $backupFile->file_name
+        );
+    }
+
+    public function destroy(BackupFile $backupFile): JsonResponse
+    {
+        $diskName = config('backup.disk', 'local');
+        $disk = Storage::disk($diskName);
+
+        if ($backupFile->file_path && $disk->exists($backupFile->file_path)) {
+            if (!$disk->delete($backupFile->file_path)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'バックアップファイルの削除に失敗しました',
+                ], 500);
             }
-
-            // pg_dumpのパス解決
-            $pgdump = config('backup.pgdump_path', 'pg_dump');
-            if (!is_executable($pgdump)) {
-                $resolved = $this->resolveBinary('pg_dump');
-                if ($resolved) {
-                    $pgdump = $resolved;
-                } elseif ($pgdump !== 'pg_dump') {
-                    throw new RuntimeException("pg_dumpが見つかりません。BACKUP_PGDUMP_PATH={$pgdump} を確認してください。");
-                } else {
-                    throw new RuntimeException('pg_dumpが見つかりません。PostgreSQLクライアントをインストールしてください。');
-                }
-            }
-            // pg_dumpの実行コマンド
-            $command = [
-                $pgdump,
-                '--format=plain',
-                '--no-owner',
-                '--no-privileges',
-                "--host={$host}",
-                "--port={$port}",
-                "--username={$username}",
-                "--file={$outputPath}",
-                $database,
-            ];
-
-            $env = [];
-            if ($password !== '') {
-                $env['PGPASSWORD'] = $password;
-            }
-
-            // 実行とエラーチェック
-            $process = new Process($command, null, $env, null, 120);
-            $process->run();
-
-            if (!$process->isSuccessful()) {
-                throw new RuntimeException($process->getErrorOutput() ?: 'pg_dumpに失敗しました');
-            }
-            return;
         }
 
-        // MySQL/MariaDB以外は未対応
-        if (!in_array($driver, ['mysql', 'mariadb'], true)) {
-            throw new RuntimeException("このDBドライバ({$driver})はバックアップに未対応です");
-        }
+        $backupFile->delete();
 
-        // MySQL/MariaDBはmysqldumpでエクスポート
-        $host = $config['host'] ?? '127.0.0.1';
-        $port = $config['port'] ?? 3306;
-        $username = $config['username'] ?? '';
-        $password = $config['password'] ?? '';
-        $database = $config['database'] ?? '';
-
-        if ($database === '') {
-            throw new RuntimeException('データベース名が未設定です');
-        }
-
-        $mysqldump = config('backup.mysqldump_path', 'mysqldump');
-        // mysqldumpの実行コマンド
-        $command = [
-            $mysqldump,
-            '--single-transaction',
-            '--quick',
-            '--lock-tables=false',
-            "--host={$host}",
-            "--port={$port}",
-            "--user={$username}",
-            "--result-file={$outputPath}",
-            $database,
-        ];
-
-        $env = [];
-        if ($password !== '') {
-            $env['MYSQL_PWD'] = $password;
-        }
-
-        // 実行とエラーチェック
-        $process = new Process($command, null, $env, null, 120);
-        $process->run();
-
-        if (!$process->isSuccessful()) {
-            throw new RuntimeException($process->getErrorOutput() ?: 'mysqldumpに失敗しました');
-        }
+        return response()->json([
+            'status' => 'success',
+            'message' => 'バックアップを削除しました',
+        ]);
     }
 
     private function formatBackupItem(BackupFile $file): array
     {
         // 一覧表示用の整形
         return [
+            'id' => $file->backup_files_id,
             'created_at' => $file->created_at?->format('Y/m/d H:i'),
             'type_label' => $file->is_auto ? '自動' : '手動',
             'status_label' => $file->is_success ? '成功' : '失敗',
             'status_key' => $file->is_success ? 'success' : 'failed',
             'file_name' => $file->file_name ?: '-',
             'size_label' => $file->size ? $this->formatBytes($file->size) : '-',
+            'download_url' => $file->is_success
+                ? route('admin.backups.download', $file)
+                : null,
+            'delete_url' => route('admin.backups.destroy', $file),
+            'retry_url' => route('admin.backups.retry', $file),
         ];
     }
 
@@ -276,15 +163,17 @@ class AdminBackupsController extends Controller
         return number_format($bytes / (1024 * 1024 * 1024), 2) . 'GB';
     }
 
-    private function resolveBinary(string $binary): ?string
+    private function buildBackupResponse(array $result): JsonResponse
     {
-        // 実行ファイルのパスを解決
-        $process = Process::fromShellCommandline('command -v ' . escapeshellarg($binary));
-        $process->run();
-        if (!$process->isSuccessful()) {
-            return null;
-        }
-        $path = trim($process->getOutput());
-        return $path !== '' ? $path : null;
+        $backup = $result['backup'];
+        $success = (bool) $result['success'];
+
+        return response()->json([
+            'status' => $success ? 'success' : 'error',
+            'message' => $result['message'],
+            'error' => $result['error'],
+            'item' => $this->formatBackupItem($backup),
+            'latest_at' => $backup->created_at?->format('Y/m/d H:i'),
+        ], $success ? 200 : 500);
     }
 }

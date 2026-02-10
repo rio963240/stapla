@@ -24,6 +24,8 @@ export default defineConfig({
                 'resources/js/admin/admin-qualifications.js',
                 'resources/css/admin/admin-backups.css',
                 'resources/js/admin/admin-backups.js',
+                'resources/css/admin/admin-users.css',
+                'resources/js/admin/admin-users.js',
             ],
             refresh: true,
         }),

@@ -88,6 +88,26 @@ const initAdminBackups = () => {
         const row = document.createElement('tr');
         row.dataset.status = item.status_key || 'failed';
         row.dataset.created = item.created_at || '';
+        if (item.id) {
+            row.dataset.backupId = item.id;
+        }
+        const actionButtons =
+            item.status_key === 'success'
+                ? `
+            <span class="admin-backup-actions">
+                <button type="button" class="admin-button-link" data-backup-action="download" data-backup-url="${
+                    item.download_url || ''
+                }">ダウンロード</button>
+                <button type="button" class="admin-button-link" data-backup-action="delete" data-backup-url="${
+                    item.delete_url || ''
+                }">削除</button>
+            </span>
+        `
+                : `
+            <button type="button" class="admin-button-link" data-backup-action="retry" data-backup-url="${
+                item.retry_url || ''
+            }">再実行</button>
+        `;
         row.innerHTML = `
             <td>${item.created_at || '-'}</td>
             <td>${item.type_label || '-'}</td>
@@ -96,7 +116,7 @@ const initAdminBackups = () => {
         }</span></td>
             <td class="admin-backup-file">${item.file_name || '-'}</td>
             <td>${item.size_label || '-'}</td>
-            <td><button type="button" class="admin-button-link" data-backup-action="download">削除</button></td>
+            <td>${actionButtons}</td>
         `;
         tableBody.prepend(row);
     };
@@ -162,6 +182,70 @@ const initAdminBackups = () => {
 
     statusFilter?.addEventListener('change', applyTableFilter);
     dateFilter?.addEventListener('change', applyTableFilter);
+
+    tableBody?.addEventListener('click', async (event) => {
+        const button = event.target.closest('[data-backup-action]');
+        if (!button) return;
+        const action = button.dataset.backupAction;
+        const url = button.dataset.backupUrl;
+        if (!action || !url) return;
+
+        if (action === 'download') {
+            window.location.href = url;
+            return;
+        }
+
+        button.disabled = true;
+
+        try {
+            if (action === 'delete') {
+                const response = await fetch(url, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': getCsrfToken(),
+                        Accept: 'application/json',
+                    },
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data?.message || '削除に失敗しました');
+                }
+                const row = button.closest('tr');
+                row?.remove();
+                if (tableBody && tableBody.querySelectorAll('tr').length === 0) {
+                    const emptyRow = document.createElement('tr');
+                    emptyRow.dataset.backupEmpty = 'true';
+                    emptyRow.innerHTML =
+                        '<td colspan="6" class="text-center text-gray-500 py-6">バックアップ履歴がありません。</td>';
+                    tableBody.appendChild(emptyRow);
+                }
+                showToast(data.message || 'バックアップを削除しました');
+            }
+
+            if (action === 'retry') {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': getCsrfToken(),
+                        Accept: 'application/json',
+                    },
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data?.message || '再実行に失敗しました');
+                }
+                const formatted = data.latest_at || formatDate(new Date());
+                if (lastUpdated) lastUpdated.textContent = formatted;
+                if (latestBackup) latestBackup.textContent = formatted;
+                appendBackupRow(data.item);
+                showToast(data.message || 'バックアップを作成しました');
+            }
+        } catch (error) {
+            showToast(error.message || '操作に失敗しました', 'error');
+        } finally {
+            button.disabled = false;
+        }
+    });
 
     syncAutoState();
     applyTableFilter();

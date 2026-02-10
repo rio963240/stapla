@@ -12,12 +12,26 @@ use App\Models\QualificationDomain;
 use App\Models\QualificationSubdomain;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use RuntimeException;
 use SplFileObject;
 use Throwable;
 
 class AdminQualificationsController extends Controller
 {
+    public function downloadTemplate(): StreamedResponse
+    {
+        return response()->streamDownload(function () {
+            $handle = fopen('php://output', 'w');
+            if ($handle === false) {
+                return;
+            }
+            fclose($handle);
+        }, 'qualification_template.csv', [
+            'Content-Type' => 'text/csv',
+        ]);
+    }
+
     public function index(Request $request)
     {
         // クエリに応じて表示対象（資格/分野/サブ分野）を切り替える

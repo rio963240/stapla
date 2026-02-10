@@ -194,7 +194,7 @@
 }
 
 .admin-backup-table th {
-    text-align: left;
+    text-align: center;
     background: #f9fafb;
     color: #6b7280;
     font-weight: 600;
@@ -205,11 +205,13 @@
     padding: 0.75rem;
     border-top: 1px solid #e5e7eb;
     color: #374151;
+    text-align: center;
 }
 
 .admin-backup-file {
     color: #111827;
     font-weight: 500;
+    text-align: left;
 }
 
 .admin-backup-status {
@@ -231,6 +233,16 @@
     background: #fee2e2;
     color: #991b1b;
 }
+
+.admin-backup-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    justify-content: center;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
 
 .admin-toast-stack {
     position: fixed;

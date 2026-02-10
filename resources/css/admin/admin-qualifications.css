@@ -8,6 +8,22 @@
     justify-content: center;
 }
 
+.admin-qualification-table {
+    table-layout: fixed;
+}
+
+.admin-qualification-table th.admin-table-action,
+.admin-qualification-table td.admin-table-action {
+    width: 140px;
+}
+
+.admin-qualification-table td.admin-table-action > a,
+.admin-qualification-table td.admin-table-action > button {
+    min-width: 96px;
+    display: inline-flex;
+    justify-content: center;
+}
+
 .admin-danger-button {
     border-color: #ef4444;
     background-color: #ef4444;

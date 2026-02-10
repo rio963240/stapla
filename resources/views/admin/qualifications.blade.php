@@ -12,7 +12,7 @@
             <section class="flex-1 rounded-lg bg-white p-6 shadow-sm overflow-auto">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-500">資格情報管理</p>
+                        {{-- <p class="text-sm text-gray-500">資格情報管理</p> --}}
                         <h1 class="text-xl font-semibold text-gray-800">
                             @if ($mode === 'qualification')
                                 資格情報一覧
@@ -24,6 +24,10 @@
                         </h1>
                     </div>
                     <div class="flex items-center gap-2">
+                        <a href="{{ route('admin.qualifications.template') }}"
+                            class="rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                            テンプレートDL
+                        </a>
                         <form method="POST" action="{{ route('admin.qualifications.import') }}"
                             enctype="multipart/form-data" class="flex items-center gap-2" data-admin-csv-form>
                             @csrf
@@ -59,7 +63,7 @@
                 </div>
 
                 <div class="mt-6 overflow-hidden rounded-lg border border-gray-200">
-                    <table class="min-w-full divide-y divide-gray-200 text-sm">
+                    <table class="admin-qualification-table min-w-full divide-y divide-gray-200 text-sm">
                         <thead class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
                             <tr>
                                 <th class="px-4 py-3">
@@ -71,8 +75,8 @@
                                         サブ分野
                                     @endif
                                 </th>
-                                <th class="px-4 py-3 text-center">編集</th>
-                                <th class="px-4 py-3 text-center">
+                                <th class="px-4 py-3 text-center admin-table-action">編集</th>
+                                <th class="px-4 py-3 text-center admin-table-action">
                                     @if ($mode === 'qualification')
                                         分野へ
                                     @elseif ($mode === 'domain')
@@ -88,7 +92,7 @@
                                 @forelse ($qualifications as $item)
                                     <tr>
                                         <td class="px-4 py-3 font-medium text-gray-800">{{ $item->name }}</td>
-                                        <td class="px-4 py-3 text-center">
+                                        <td class="px-4 py-3 text-center admin-table-action">
                                             <button type="button"
                                                 class="rounded-md border border-gray-300 px-3 py-1 text-gray-700 hover:bg-gray-50 js-admin-edit-trigger"
                                                 data-type="qualification"
@@ -98,7 +102,7 @@
                                                 編集
                                             </button>
                                         </td>
-                                        <td class="px-4 py-3 text-center">
+                                        <td class="px-4 py-3 text-center admin-table-action">
                                             <a class="rounded-md border border-gray-300 px-3 py-1 text-gray-700 hover:bg-gray-50"
                                                 href="{{ route('admin.qualifications', ['qualification_id' => $item->qualification_id]) }}">
                                                 分野へ
@@ -114,7 +118,7 @@
                                 @forelse ($domains as $item)
                                     <tr>
                                         <td class="px-4 py-3 font-medium text-gray-800">{{ $item->name }}</td>
-                                        <td class="px-4 py-3 text-center">
+                                        <td class="px-4 py-3 text-center admin-table-action">
                                             <button type="button"
                                                 class="rounded-md border border-gray-300 px-3 py-1 text-gray-700 hover:bg-gray-50 js-admin-edit-trigger"
                                                 data-type="domain"
@@ -125,7 +129,7 @@
                                                 編集
                                             </button>
                                         </td>
-                                        <td class="px-4 py-3 text-center">
+                                        <td class="px-4 py-3 text-center admin-table-action">
                                             <a class="rounded-md border border-gray-300 px-3 py-1 text-gray-700 hover:bg-gray-50"
                                                 href="{{ route('admin.qualifications', ['qualification_id' => $qualification?->qualification_id, 'domain_id' => $item->qualification_domains_id]) }}">
                                                 サブ分野へ
@@ -141,7 +145,7 @@
                                 @forelse ($subdomains as $item)
                                     <tr>
                                         <td class="px-4 py-3 font-medium text-gray-800">{{ $item->name }}</td>
-                                        <td class="px-4 py-3 text-center">
+                                        <td class="px-4 py-3 text-center admin-table-action">
                                             <button type="button"
                                                 class="rounded-md border border-gray-300 px-3 py-1 text-gray-700 hover:bg-gray-50 js-admin-edit-trigger"
                                                 data-type="subdomain"
@@ -153,7 +157,7 @@
                                                 編集
                                             </button>
                                         </td>
-                                        <td class="px-4 py-3 text-center text-gray-400">-</td>
+                                        <td class="px-4 py-3 text-center text-gray-400 admin-table-action">-</td>
                                     </tr>
                                 @empty
                                     <tr>

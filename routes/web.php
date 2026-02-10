@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminBackupsController;
 use App\Http\Controllers\Admin\AdminQualificationsController;
+use App\Http\Controllers\Admin\AdminUsersController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
@@ -83,6 +84,9 @@ Route::middleware([
 
         // 管理画面：資格一覧（AdminQualificationsController@index）
         Route::get('/qualifications', [AdminQualificationsController::class, 'index'])->name('qualifications');
+        // 管理画面：CSVテンプレート（AdminQualificationsController@downloadTemplate）
+        Route::get('/qualifications/template', [AdminQualificationsController::class, 'downloadTemplate'])
+            ->name('qualifications.template');
         // 管理画面：資格追加（AdminQualificationsController@storeQualification）
         Route::post('/qualifications', [AdminQualificationsController::class, 'storeQualification'])
             ->name('qualifications.store');
@@ -118,8 +122,15 @@ Route::middleware([
         Route::post('/backups/manual', [AdminBackupsController::class, 'storeManual'])->name('backups.manual');
         Route::put('/backups/settings', [AdminBackupsController::class, 'updateSettings'])
             ->name('backups.settings');
-        // 管理画面：ユーザー（admin.usersビュー）
-        Route::view('/users', 'admin.users')->name('users');
+        Route::post('/backups/{backupFile}/retry', [AdminBackupsController::class, 'retry'])
+            ->name('backups.retry');
+        Route::get('/backups/{backupFile}/download', [AdminBackupsController::class, 'download'])
+            ->name('backups.download');
+        Route::delete('/backups/{backupFile}', [AdminBackupsController::class, 'destroy'])
+            ->name('backups.destroy');
+        // 管理画面：ユーザー
+        Route::get('/users', [AdminUsersController::class, 'index'])->name('users');
+        Route::put('/users/{user}', [AdminUsersController::class, 'update'])->name('users.update');
     });
 
     // TODO単位の学習記録表示（StudyRecordController@showTodo）
