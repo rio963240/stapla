@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminBackupsController;
 use App\Http\Controllers\Admin\AdminQualificationsController;
 use App\Http\Controllers\Admin\AdminUsersController;
+use App\Http\Controllers\Auth\LoginViaEmailController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
@@ -22,6 +23,11 @@ Route::get('/', function () {
         ? redirect()->route('home')
         : redirect()->route('login');
 });
+
+// メール内ワンクリックログイン（署名付き・有効期限24時間・1回限り）
+Route::get('/login-via-email/{user}', LoginViaEmailController::class)
+    ->name('login-via-email')
+    ->middleware('signed');
 
 Route::middleware([
     'auth:sanctum',

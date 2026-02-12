@@ -8,17 +8,29 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\URL;
 
 class RegistrationCompleteMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
+     * メール内ワンクリックログイン用の署名付きURL（有効24時間）。
+     */
+    public string $loginUrl;
+
+    /**
      * Create a new message instance.
      */
     public function __construct(
         public User $user
-    ) {}
+    ) {
+        $this->loginUrl = URL::temporarySignedRoute(
+            'login-via-email',
+            now()->addHours(24),
+            ['user' => $user->id]
+        );
+    }
 
     /**
      * Get the message envelope.
