@@ -13,11 +13,14 @@ use App\Http\Controllers\QualificationController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\StudyProgressController;
 use App\Http\Controllers\StudyRecordController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-// トップ（welcomeビュー）
+// トップ：未ログインはログイン画面へ、ログイン済みはホームへ
 Route::get('/', function () {
-    return view('welcome');
+    return Auth::check()
+        ? redirect()->route('home')
+        : redirect()->route('login');
 });
 
 Route::middleware([

@@ -19,9 +19,11 @@ class DatabaseSeeder extends Seeder
 
         $this->call(QualificationTemplateSeeder::class);
 
+        // 初期ユーザー（ローカルでは管理者として作成し管理画面を利用可能にする）
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
+            'is_admin' => app()->environment('local'),
         ]);
     }
 }
