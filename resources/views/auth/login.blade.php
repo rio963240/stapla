@@ -10,7 +10,7 @@
 
         @session('status')
             <div class="mb-4 text-sm font-medium text-green-600">
-                {{ $value }}
+                {{ __($value) }}
             </div>
         @endsession
 

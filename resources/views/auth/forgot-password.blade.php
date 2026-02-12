@@ -15,7 +15,7 @@
 
         @session('status')
             <div class="mb-4 font-medium text-sm text-green-600">
-                {{ $value }}
+                {{ __($value) }}
             </div>
         @endsession
 
@@ -26,11 +26,11 @@
 
             <div class="block">
                 <x-label for="email" value="{{ __('メールアドレス') }}" />
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
+                <x-input id="email" class="mt-1 block w-full border-orange-300 px-4 py-2.5 text-base focus:border-orange-400 focus:ring-orange-400" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
             </div>
 
             <div class="flex items-center justify-end mt-4">
-                <x-button>
+                <x-button class="bg-orange-500 hover:bg-orange-600 focus:bg-orange-600 active:bg-orange-700 focus:ring-orange-400">
                     {{ __('メールを送信') }}
                 </x-button>
             </div>

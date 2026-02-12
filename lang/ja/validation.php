@@ -21,6 +21,12 @@ return [
     'string' => ':attribute は文字列で入力してください。',
     'unique' => 'その:attributeは既に使用されています。',
 
+    'custom' => [
+        'email' => [
+            'unique' => 'このメールアドレスは既に登録されています。',
+        ],
+    ],
+
     'attributes' => [
         'name' => '名前',
         'email' => 'メールアドレス',
