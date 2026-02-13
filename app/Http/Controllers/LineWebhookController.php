@@ -36,6 +36,8 @@ class LineWebhookController extends Controller
             return response('', 200);
         }
 
+        Log::channel('single')->info('LINE webhook received', ['event_count' => count($payload['events'])]);
+
         foreach ($payload['events'] as $event) {
             $this->handleEvent($event);
         }
@@ -95,11 +97,13 @@ class LineWebhookController extends Controller
                 $message = $event['message'] ?? [];
                 if (($message['type'] ?? '') === 'text') {
                     $replyToken = $event['replyToken'] ?? '';
-                    $this->handleTextMessage(
-                        trim((string) ($message['text'] ?? '')),
-                        $lineUserId,
-                        $replyToken
-                    );
+                    $text = (string) ($message['text'] ?? '');
+                    Log::channel('single')->info('LINE text message', [
+                        'line_user_id' => $lineUserId,
+                        'reply_token_set' => $replyToken !== '',
+                        'text_length' => strlen($text),
+                    ]);
+                    $this->handleTextMessage($text, $lineUserId, $replyToken);
                 }
                 break;
         }
@@ -107,24 +111,32 @@ class LineWebhookController extends Controller
 
     /**
      * テキストメッセージ: 連携トークンと一致すれば line_user_id を紐づけ、完了メッセージを返信する
+     * コードはトリム・半角化・大文字化して比較する（コピペや入力ゆれに対応）
      */
     private function handleTextMessage(string $text, string $lineUserId, string $replyToken): void
     {
-        if ($text === '') {
+        $normalized = $this->normalizeLinkCode(trim($text));
+        if ($normalized === '') {
+            Log::channel('single')->debug('LINE link code empty after normalize');
             return;
         }
 
-        $account = LineAccount::where('line_link_token', $text)
+        $account = LineAccount::where('line_link_token', $normalized)
             ->whereNull('line_user_id')
             ->first();
 
         if (!$account) {
+            Log::channel('single')->warning('LINE link code not found or already linked', [
+                'normalized_length' => strlen($normalized),
+                'pending_tokens_count' => LineAccount::whereNull('line_user_id')->whereNotNull('line_link_token')->count(),
+            ]);
             return;
         }
 
         // 他ユーザーが既にこの line_user_id を使っていないか確認
         $exists = LineAccount::where('line_user_id', $lineUserId)->whereKeyNot($account->line_accounts_id)->exists();
         if ($exists) {
+            Log::channel('single')->warning('LINE user already linked to another account', ['line_user_id' => $lineUserId]);
             return;
         }
 
@@ -134,10 +146,29 @@ class LineWebhookController extends Controller
             'is_linked' => true,
         ]);
 
+        Log::channel('single')->info('LINE link completed', ['user_id' => $account->user_id, 'line_user_id' => $lineUserId]);
+
         // 連携完了をユーザーに返信
         if ($replyToken !== '') {
             $line = new LineMessagingService();
-            $line->replyText($replyToken, '連携が完了しました！設定した時間に通知をお届けします。');
+            $ok = $line->replyText($replyToken, '連携が完了しました！設定した時間に通知をお届けします。');
+            if (!$ok) {
+                Log::channel('single')->warning('LINE reply after link failed', ['line_user_id' => $lineUserId]);
+            }
         }
+    }
+
+    /**
+     * 連携コードを比較用に正規化（トリム・半角英数・大文字）
+     */
+    private function normalizeLinkCode(string $value): string
+    {
+        $value = trim($value);
+        if ($value === '') {
+            return '';
+        }
+        $half = mb_convert_kana($value, 'a', 'UTF-8'); // 全角英数→半角
+
+        return strtoupper($half);
     }
 }
