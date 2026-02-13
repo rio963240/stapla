@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Middleware\LineWebhookRawBody;
 use App\Models\LineAccount;
+use App\Services\LineMessagingService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
@@ -93,16 +94,21 @@ class LineWebhookController extends Controller
             case 'message':
                 $message = $event['message'] ?? [];
                 if (($message['type'] ?? '') === 'text') {
-                    $this->handleTextMessage(trim((string) ($message['text'] ?? '')), $lineUserId);
+                    $replyToken = $event['replyToken'] ?? '';
+                    $this->handleTextMessage(
+                        trim((string) ($message['text'] ?? '')),
+                        $lineUserId,
+                        $replyToken
+                    );
                 }
                 break;
         }
     }
 
     /**
-     * テキストメッセージ: 連携トークンと一致すれば line_user_id を紐づける
+     * テキストメッセージ: 連携トークンと一致すれば line_user_id を紐づけ、完了メッセージを返信する
      */
-    private function handleTextMessage(string $text, string $lineUserId): void
+    private function handleTextMessage(string $text, string $lineUserId, string $replyToken): void
     {
         if ($text === '') {
             return;
@@ -127,5 +133,11 @@ class LineWebhookController extends Controller
             'line_link_token' => null,
             'is_linked' => true,
         ]);
+
+        // 連携完了をユーザーに返信
+        if ($replyToken !== '') {
+            $line = new LineMessagingService();
+            $line->replyText($replyToken, '連携が完了しました！設定した時間に通知をお届けします。');
+        }
     }
 }
