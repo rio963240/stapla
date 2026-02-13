@@ -46,6 +46,8 @@ Route::middleware([
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
     // LINE連携開始（連携コード発行）
     Route::post('/settings/line-link', [SettingsController::class, 'startLineLink'])->name('settings.line-link');
+    // 通知設定保存（LINE通知時間）
+    Route::put('/settings/notifications', [SettingsController::class, 'updateNotifications'])->name('settings.notifications.update');
     // 基本情報更新（SettingsController@updateBasic）
     Route::put('/settings/basic', [SettingsController::class, 'updateBasic'])
         ->name('settings.basic.update');

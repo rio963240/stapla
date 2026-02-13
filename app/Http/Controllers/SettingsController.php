@@ -6,6 +6,8 @@ use App\Http\Requests\SettingsDestroyRequest;
 use App\Models\LineAccount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Contracts\UpdatesUserPasswords;
 use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
@@ -24,24 +26,71 @@ class SettingsController extends Controller
         ]);
     }
 
-    // LINE連携を開始（連携コードを発行）
+    // LINE連携を開始（連携コード発行・QR表示用）
     public function startLineLink(Request $request)
     {
         $user = $request->user();
         $token = Str::upper(Str::random(8));
 
-        LineAccount::updateOrCreate(
-            ['user_id' => $user->id],
-            [
-                'line_link_token' => $token,
-                'line_user_id' => null,
-                'is_linked' => false,
-            ],
-        );
+        try {
+            DB::transaction(function () use ($user, $token) {
+                $account = LineAccount::firstOrNew(['user_id' => $user->id]);
+                $account->line_link_token = $token;
+                $account->line_user_id = null;
+                $account->is_linked = false;
+                $account->save();
+            });
+        } catch (\Throwable $e) {
+            Log::error('LINE link start failed.', ['user_id' => $user->id, 'exception' => $e->getMessage()]);
+
+            return redirect()
+                ->route('settings')
+                ->with('error', 'LINE連携の準備に失敗しました。しばらく経ってから再度お試しください。');
+        }
 
         return redirect()
             ->route('settings')
             ->with('line_link_token', $token);
+    }
+
+    // 通知設定（LINE通知のON/OFF・朝・夜の時間）を保存
+    public function updateNotifications(Request $request)
+    {
+        $request->validate([
+            'line_notify_enabled' => 'nullable|boolean',
+            'line_morning_at' => 'required|string|regex:/^\d{2}:\d{2}$/',
+            'line_evening_at' => 'required|string|regex:/^\d{2}:\d{2}$/',
+        ]);
+
+        $user = $request->user();
+        $morning = $request->input('line_morning_at', '07:00');
+        $evening = $request->input('line_evening_at', '21:00');
+
+        try {
+            $account = LineAccount::firstOrNew(['user_id' => $user->id]);
+            $account->notification_morning_at = $morning;
+            $account->notification_evening_at = $evening;
+            if (!$account->exists) {
+                $account->line_link_token = null;
+                $account->line_user_id = null;
+                $account->is_linked = false;
+            }
+            $account->save();
+        } catch (\Throwable $e) {
+            Log::error('Notification settings save failed.', ['user_id' => $user->id, 'exception' => $e->getMessage()]);
+            if ($request->expectsJson()) {
+                return response()->json(['message' => '保存に失敗しました'], 422);
+            }
+            return redirect()->route('settings')->with('error', '通知設定の保存に失敗しました。');
+        }
+
+        if ($request->expectsJson()) {
+            return response()->json(['status' => 'notifications-updated']);
+        }
+
+        return redirect()
+            ->route('settings')
+            ->with('status', 'notifications-updated');
     }
 
     // 基本情報（名前・アイコン）更新

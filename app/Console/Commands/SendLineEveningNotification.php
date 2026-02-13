@@ -15,7 +15,10 @@ class SendLineEveningNotification extends Command
 
     public function handle(LineMessagingService $line): int
     {
+        $currentTime = \Carbon\Carbon::now('Asia/Tokyo')->format('H:i');
+
         $accounts = LineAccount::whereNotNull('line_user_id')
+            ->where('notification_evening_at', $currentTime)
             ->with('user')
             ->get();
 

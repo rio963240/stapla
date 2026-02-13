@@ -12,6 +12,11 @@
 
     <div class="settings-page">
         <div class="settings-container">
+            @if (session('error'))
+                <div class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg" role="alert">
+                    {{ session('error') }}
+                </div>
+            @endif
             {{-- 基本情報（名前・アイコン）更新フォーム --}}
             <form method="POST" action="{{ route('settings.basic.update') }}" enctype="multipart/form-data">
                 @csrf
@@ -50,31 +55,41 @@
                 </section>
             </form>
 
-            {{-- 通知設定（LINE連携・UIのみ） --}}
-            <section class="settings-card">
-                <div class="settings-card-header">
-                    <h3 class="settings-card-title">通知設定</h3>
-                    <button type="button" class="settings-save-button" data-toast-status="success"
-                        data-toast-message="通知設定を保存しました">
-                        保存
-                    </button>
-                </div>
-                <div class="settings-card-body settings-notify">
-                    <div class="settings-qr-block">
-                        <p class="settings-label">LINE連携</p>
-                        @if ($lineAccount?->line_user_id ?? false)
-                            <p class="settings-muted">LINEと連携済みです。朝・夜の通知をお届けします。</p>
-                        @else
-                            @if ($lineLinkToken ?? null)
-                                <p class="settings-label mt-2">以下のコードをスタプラのLINE公式アカウントに送信してください</p>
+            {{-- 通知設定（LINE連携・通知時間保存） --}}
+            @php
+                $lineMorning = $lineAccount?->notification_morning_at ?? '08:00';
+                $lineEvening = $lineAccount?->notification_evening_at ?? '20:00';
+                $lineSection = ($lineAccount?->line_user_id ?? false) ? 'linked' : (($lineLinkToken ?? null) ? 'token' : 'start');
+                $lineAddFriendUrl = config('services.line.add_friend_url', '');
+            @endphp
+            <form method="POST" action="{{ route('settings.notifications.update') }}" id="settings-notifications-form">
+                @csrf
+                @method('PUT')
+                <section class="settings-card">
+                    <div class="settings-card-header">
+                        <h3 class="settings-card-title">通知設定</h3>
+                        <button type="submit" class="settings-save-button">
+                            保存
+                        </button>
+                    </div>
+                    <div class="settings-card-body settings-notify">
+                        <div class="settings-qr-block">
+                            <p class="settings-label">LINE連携</p>
+                            @if ($lineSection === 'linked')
+                                <p class="settings-muted">LINEと連携済みです。朝・夜の通知をお届けします。</p>
+                            @elseif ($lineSection === 'token')
+                                <p class="settings-label mt-2">QRコードを読み取るか、下のボタンから友だち追加してください</p>
+                                <img src="{{ asset(config('services.line.qr_image', 'images/line-qr.png')) }}" alt="LINE友だち追加QRコード"
+                                    class="mt-2 w-40 h-40 object-contain border border-gray-200 rounded-lg" />
+                                <p class="settings-label mt-3">友だち追加後、以下のコードを送信してください</p>
                                 <p class="text-lg font-mono font-bold my-2">{{ $lineLinkToken }}</p>
-                                @if (config('services.line.add_friend_url'))
-                                    <a href="{{ config('services.line.add_friend_url') }}" target="_blank" rel="noopener"
-                                        class="inline-block mt-2 px-4 py-2 bg-[#06C755] text-white rounded-lg text-sm font-medium">
-                                        友だち追加はこちら
-                                    </a>
+                                @if ($lineAddFriendUrl !== '')
+                                <a href="{{ $lineAddFriendUrl }}" target="_blank" rel="noopener"
+                                    class="inline-block mt-2 px-4 py-2 bg-[#06C755] text-white rounded-lg text-sm font-medium">
+                                    友だち追加はこちら
+                                </a>
                                 @endif
-                                <p class="settings-muted mt-2">1. 上記ボタンで友だち追加 2. コードをそのまま送信</p>
+                                <p class="settings-muted mt-2">1. QRコードまたはボタンで友だち追加 2. コードをそのまま送信</p>
                             @else
                                 <form method="POST" action="{{ route('settings.line-link') }}" class="inline">
                                     @csrf
@@ -84,13 +99,12 @@
                                 </form>
                                 <p class="settings-muted mt-2">LINEで友だち追加して朝・夜の通知を受け取ります</p>
                             @endif
-                        @endif
-                    </div>
+                        </div>
 
                     <div class="settings-grid">
                         <label class="settings-label" for="line-notify">LINE通知</label>
                         <label class="settings-switch">
-                            <input id="line-notify" type="checkbox" checked data-time-toggle="line" />
+                            <input id="line-notify" name="line_notify_enabled" type="checkbox" value="1" checked data-time-toggle="line" />
                             <span class="settings-slider"></span>
                         </label>
 
@@ -99,22 +113,20 @@
                             <div class="settings-time-selects">
                                 <div class="settings-time-select">
                                     <span class="settings-time-tag">朝</span>
-                                    <select class="settings-select" aria-label="LINE通知 朝">
-                                        @for ($hour = 0; $hour < 24; $hour++)
-                                            @php($time = sprintf('%02d:00', $hour))
-                                            <option value="{{ $time }}" @selected($time === '08:00')>
-                                                {{ $time }}</option>
-                                        @endfor
+                                    <select class="settings-select" name="line_morning_at" aria-label="LINE通知 朝">
+                                        @foreach (range(0, 23) as $hour)
+                                            <option value="{{ sprintf('%02d:00', $hour) }}" @selected(sprintf('%02d:00', $hour) === $lineMorning)>
+                                                {{ sprintf('%02d:00', $hour) }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="settings-time-select">
                                     <span class="settings-time-tag">夜</span>
-                                    <select class="settings-select" aria-label="LINE通知 夜">
-                                        @for ($hour = 0; $hour < 24; $hour++)
-                                            @php($time = sprintf('%02d:00', $hour))
-                                            <option value="{{ $time }}" @selected($time === '20:00')>
-                                                {{ $time }}</option>
-                                        @endfor
+                                    <select class="settings-select" name="line_evening_at" aria-label="LINE通知 夜">
+                                        @foreach (range(0, 23) as $hour)
+                                            <option value="{{ sprintf('%02d:00', $hour) }}" @selected(sprintf('%02d:00', $hour) === $lineEvening)>
+                                                {{ sprintf('%02d:00', $hour) }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
@@ -132,21 +144,19 @@
                                 <div class="settings-time-select">
                                     <span class="settings-time-tag">朝</span>
                                     <select class="settings-select" aria-label="メール通知 朝">
-                                        @for ($hour = 0; $hour < 24; $hour++)
-                                            @php($time = sprintf('%02d:00', $hour))
-                                            <option value="{{ $time }}" @selected($time === '08:00')>
-                                                {{ $time }}</option>
-                                        @endfor
+                                        @foreach (range(0, 23) as $hour)
+                                            <option value="{{ sprintf('%02d:00', $hour) }}" @selected(sprintf('%02d:00', $hour) === '08:00')>
+                                                {{ sprintf('%02d:00', $hour) }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="settings-time-select">
                                     <span class="settings-time-tag">夜</span>
                                     <select class="settings-select" aria-label="メール通知 夜">
-                                        @for ($hour = 0; $hour < 24; $hour++)
-                                            @php($time = sprintf('%02d:00', $hour))
-                                            <option value="{{ $time }}" @selected($time === '20:00')>
-                                                {{ $time }}</option>
-                                        @endfor
+                                        @foreach (range(0, 23) as $hour)
+                                            <option value="{{ sprintf('%02d:00', $hour) }}" @selected(sprintf('%02d:00', $hour) === '20:00')>
+                                                {{ sprintf('%02d:00', $hour) }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
@@ -154,6 +164,7 @@
                     </div>
                 </div>
             </section>
+            </form>
 
             {{-- パスワード変更フォーム --}}
             <form method="POST" action="{{ route('settings.password.update') }}">
@@ -232,11 +243,15 @@
 
     {{-- 保存結果を通知するトースト --}}
     <div class="settings-toast-stack" aria-live="polite" aria-atomic="true">
+        @php
+            $toastShow = in_array(session('status'), ['basic-info-updated', 'notifications-updated'], true);
+            $toastMessage = session('status') === 'notifications-updated' ? '通知設定を保存しました' : '基本情報を保存しました';
+        @endphp
         <div id="settings-toast"
-            class="settings-toast {{ session('status') === 'basic-info-updated' ? 'is-visible' : '' }}"
-            role="status" data-toast-status="{{ session('status') === 'basic-info-updated' ? 'success' : '' }}"
-            data-toast-message="基本情報を保存しました"
-            data-toast-autoshow="{{ session('status') === 'basic-info-updated' ? 'true' : 'false' }}">
+            class="settings-toast {{ $toastShow ? 'is-visible' : '' }}"
+            role="status" data-toast-status="{{ $toastShow ? 'success' : '' }}"
+            data-toast-message="{{ $toastMessage }}"
+            data-toast-autoshow="{{ $toastShow ? 'true' : 'false' }}">
             <span class="settings-toast-label"></span>
         </div>
     </div>

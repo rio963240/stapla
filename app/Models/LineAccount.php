@@ -15,6 +15,8 @@ class LineAccount extends BaseModel
         'line_user_id',
         'line_link_token',
         'is_linked',
+        'notification_morning_at',
+        'notification_evening_at',
     ];
 
     public function user(): BelongsTo

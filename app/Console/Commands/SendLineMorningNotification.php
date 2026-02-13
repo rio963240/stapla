@@ -17,8 +17,10 @@ class SendLineMorningNotification extends Command
     public function handle(LineMessagingService $line): int
     {
         $today = Carbon::today()->toDateString();
+        $currentTime = Carbon::now('Asia/Tokyo')->format('H:i');
 
         $accounts = LineAccount::whereNotNull('line_user_id')
+            ->where('notification_morning_at', $currentTime)
             ->with('user')
             ->get();
 
