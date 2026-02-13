@@ -67,15 +67,10 @@ class SettingsController extends Controller
         $evening = $request->input('line_evening_at', '21:00');
 
         try {
-            $account = LineAccount::firstOrNew(['user_id' => $user->id]);
-            $account->notification_morning_at = $morning;
-            $account->notification_evening_at = $evening;
-            if (!$account->exists) {
-                $account->line_link_token = null;
-                $account->line_user_id = null;
-                $account->is_linked = false;
-            }
-            $account->save();
+            $user->line_morning_time = $morning;
+            $user->line_evening_time = $evening;
+            $user->line_notify_enabled = $request->boolean('line_notify_enabled');
+            $user->save();
         } catch (\Throwable $e) {
             Log::error('Notification settings save failed.', ['user_id' => $user->id, 'exception' => $e->getMessage()]);
             if ($request->expectsJson()) {

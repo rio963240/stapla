@@ -33,6 +33,9 @@ class User extends Authenticatable
         'password',
         'is_admin',
         'is_active',
+        'line_morning_time',
+        'line_evening_time',
+        'line_notify_enabled',
     ];
 
     /**

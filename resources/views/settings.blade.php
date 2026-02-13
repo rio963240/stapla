@@ -57,54 +57,56 @@
 
             {{-- 通知設定（LINE連携・通知時間保存） --}}
             @php
-                $lineMorning = $lineAccount?->notification_morning_at ?? '08:00';
-                $lineEvening = $lineAccount?->notification_evening_at ?? '20:00';
+                $user = auth()->user();
+                $lineMorning = $user?->line_morning_time ? \Carbon\Carbon::parse($user->line_morning_time)->format('H:i') : '08:00';
+                $lineEvening = $user?->line_evening_time ? \Carbon\Carbon::parse($user->line_evening_time)->format('H:i') : '20:00';
                 $lineSection = ($lineAccount?->line_user_id ?? false) ? 'linked' : (($lineLinkToken ?? null) ? 'token' : 'start');
                 $lineAddFriendUrl = config('services.line.add_friend_url', '');
             @endphp
-            <form method="POST" action="{{ route('settings.notifications.update') }}" id="settings-notifications-form">
-                @csrf
-                @method('PUT')
-                <section class="settings-card">
-                    <div class="settings-card-header">
-                        <h3 class="settings-card-title">通知設定</h3>
-                        <button type="submit" class="settings-save-button">
-                            保存
-                        </button>
-                    </div>
-                    <div class="settings-card-body settings-notify">
-                        <div class="settings-qr-block">
-                            <p class="settings-label">LINE連携</p>
-                            @if ($lineSection === 'linked')
-                                <p class="settings-muted">LINEと連携済みです。朝・夜の通知をお届けします。</p>
-                            @elseif ($lineSection === 'token')
-                                <p class="settings-label mt-2">QRコードを読み取るか、下のボタンから友だち追加してください</p>
-                                <img src="{{ asset(config('services.line.qr_image', 'images/line-qr.png')) }}" alt="LINE友だち追加QRコード"
-                                    class="mt-2 w-40 h-40 object-contain border border-gray-200 rounded-lg" />
-                                <p class="settings-label mt-3">友だち追加後、以下のコードを送信してください</p>
-                                <p class="text-lg font-mono font-bold my-2">{{ $lineLinkToken }}</p>
-                                @if ($lineAddFriendUrl !== '')
-                                <a href="{{ $lineAddFriendUrl }}" target="_blank" rel="noopener"
-                                    class="inline-block mt-2 px-4 py-2 bg-[#06C755] text-white rounded-lg text-sm font-medium">
-                                    友だち追加はこちら
-                                </a>
-                                @endif
-                                <p class="settings-muted mt-2">1. QRコードまたはボタンで友だち追加 2. コードをそのまま送信</p>
-                            @else
-                                <form method="POST" action="{{ route('settings.line-link') }}" class="inline">
-                                    @csrf
-                                    <button type="submit" class="settings-secondary-button">
-                                        LINE連携を開始
-                                    </button>
-                                </form>
-                                <p class="settings-muted mt-2">LINEで友だち追加して朝・夜の通知を受け取ります</p>
+            <section class="settings-card">
+                <div class="settings-card-header">
+                    <h3 class="settings-card-title">通知設定</h3>
+                    <button type="submit" form="settings-notifications-form" class="settings-save-button">
+                        保存
+                    </button>
+                </div>
+                <div class="settings-card-body settings-notify">
+                    {{-- LINE連携ブロック（フォームの外に出すことで「LINE連携を開始」が正しく line-link に送信される） --}}
+                    <div class="settings-qr-block">
+                        <p class="settings-label">LINE連携</p>
+                        @if ($lineSection === 'linked')
+                            <p class="settings-muted">LINEと連携済みです。朝・夜の通知をお届けします。</p>
+                        @elseif ($lineSection === 'token')
+                            <p class="settings-label mt-2">QRコードを読み取るか、下のボタンから友だち追加してください</p>
+                            <img src="{{ asset(config('services.line.qr_image', 'images/line-qr.png')) }}" alt="LINE友だち追加QRコード"
+                                class="mt-2 w-40 h-40 object-contain border border-gray-200 rounded-lg" />
+                            <p class="settings-label mt-3">友だち追加後、以下のコードを送信してください</p>
+                            <p class="text-lg font-mono font-bold my-2">{{ $lineLinkToken }}</p>
+                            @if ($lineAddFriendUrl !== '')
+                            <a href="{{ $lineAddFriendUrl }}" target="_blank" rel="noopener"
+                                class="inline-block mt-2 px-4 py-2 bg-[#06C755] text-white rounded-lg text-sm font-medium">
+                                友だち追加はこちら
+                            </a>
                             @endif
-                        </div>
+                            <p class="settings-muted mt-2">1. QRコードまたはボタンで友だち追加 2. コードをそのまま送信</p>
+                        @else
+                            <form method="POST" action="{{ route('settings.line-link') }}" class="inline">
+                                @csrf
+                                <button type="submit" class="settings-secondary-button">
+                                    LINE連携を開始
+                                </button>
+                            </form>
+                            <p class="settings-muted mt-2">LINEで友だち追加して朝・夜の通知を受け取ります</p>
+                        @endif
+                    </div>
 
+                    <form method="POST" action="{{ route('settings.notifications.update') }}" id="settings-notifications-form">
+                        @csrf
+                        @method('PUT')
                     <div class="settings-grid">
                         <label class="settings-label" for="line-notify">LINE通知</label>
                         <label class="settings-switch">
-                            <input id="line-notify" name="line_notify_enabled" type="checkbox" value="1" checked data-time-toggle="line" />
+                            <input id="line-notify" name="line_notify_enabled" type="checkbox" value="1" data-time-toggle="line" @checked($user->line_notify_enabled ?? false) />
                             <span class="settings-slider"></span>
                         </label>
 
@@ -162,9 +164,9 @@
                             </div>
                         </div>
                     </div>
+                    </form>
                 </div>
             </section>
-            </form>
 
             {{-- パスワード変更フォーム --}}
             <form method="POST" action="{{ route('settings.password.update') }}">

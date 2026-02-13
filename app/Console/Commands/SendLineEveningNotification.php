@@ -9,18 +9,29 @@ use Illuminate\Support\Facades\DB;
 
 class SendLineEveningNotification extends Command
 {
-    protected $signature = 'line:send-evening';
+    protected $signature = 'line:send-evening
+                            {--time= : 送信時刻のシミュレート（例: 20:00）。省略時は現在時刻で判定}
+                            {--user= : 指定したユーザーIDにのみ送信（テスト用。time と併用）}';
 
     protected $description = 'LINEで夜の通知（累積達成率・入力促進）を送信する';
 
     public function handle(LineMessagingService $line): int
     {
-        $currentTime = \Carbon\Carbon::now('Asia/Tokyo')->format('H:i');
+        $currentTime = $this->option('time') ?? \Carbon\Carbon::now('Asia/Tokyo')->format('H:i');
+        if ($currentTime !== null && strlen($currentTime) === 4) {
+            $currentTime = substr($currentTime, 0, 2) . ':' . substr($currentTime, 2, 2);
+        }
 
-        $accounts = LineAccount::whereNotNull('line_user_id')
-            ->where('notification_evening_at', $currentTime)
-            ->with('user')
-            ->get();
+        $query = LineAccount::whereNotNull('line_user_id')
+            ->whereHas('user', fn ($q) => $q->whereRaw('line_evening_time::text LIKE ?', [$currentTime . '%'])->where('line_notify_enabled', true));
+        if ($userId = $this->option('user')) {
+            $query->where('user_id', $userId);
+        }
+        $accounts = $query->with('user')->get();
+
+        if ($this->option('time')) {
+            $this->info("送信時刻を {$currentTime} としてシミュレートしています。");
+        }
 
         $inputUrl = url('/dashboard');
 
