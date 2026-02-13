@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LoginViaEmailController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LineWebhookController;
 use App\Http\Controllers\PlanRegisterController;
 use App\Http\Controllers\PlanRegisterSubdomainController;
 use App\Http\Controllers\PlanRescheduleController;
@@ -16,6 +17,9 @@ use App\Http\Controllers\StudyProgressController;
 use App\Http\Controllers\StudyRecordController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+
+// LINE Webhook（署名検証のため生ボディが必要なため CSRF 除外）
+Route::post('/line/webhook', LineWebhookController::class)->name('line.webhook');
 
 // トップ：未ログインはログイン画面へ、ログイン済みはホームへ
 Route::get('/', function () {
@@ -37,6 +41,8 @@ Route::middleware([
     // 設定ページ（表示・更新・削除）
     // 設定ページ（SettingsController@index）
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+    // LINE連携開始（連携コード発行）
+    Route::post('/settings/line-link', [SettingsController::class, 'startLineLink'])->name('settings.line-link');
     // 基本情報更新（SettingsController@updateBasic）
     Route::put('/settings/basic', [SettingsController::class, 'updateBasic'])
         ->name('settings.basic.update');

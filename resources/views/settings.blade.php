@@ -50,7 +50,7 @@
                 </section>
             </form>
 
-            {{-- 通知設定（UIのみ） --}}
+            {{-- 通知設定（LINE連携・UIのみ） --}}
             <section class="settings-card">
                 <div class="settings-card-header">
                     <h3 class="settings-card-title">通知設定</h3>
@@ -61,9 +61,30 @@
                 </div>
                 <div class="settings-card-body settings-notify">
                     <div class="settings-qr-block">
-                        <p class="settings-label">LINE QRコード</p>
-                        <img src="{{ asset('images/line-qr-dummy.svg') }}" alt="LINE QRコード" class="settings-qr-image" />
-                        <p class="settings-muted">LINEで友だち追加して通知を受け取ります</p>
+                        <p class="settings-label">LINE連携</p>
+                        @if ($lineAccount?->line_user_id ?? false)
+                            <p class="settings-muted">LINEと連携済みです。朝・夜の通知をお届けします。</p>
+                        @else
+                            @if ($lineLinkToken ?? null)
+                                <p class="settings-label mt-2">以下のコードをスタプラのLINE公式アカウントに送信してください</p>
+                                <p class="text-lg font-mono font-bold my-2">{{ $lineLinkToken }}</p>
+                                @if (config('services.line.add_friend_url'))
+                                    <a href="{{ config('services.line.add_friend_url') }}" target="_blank" rel="noopener"
+                                        class="inline-block mt-2 px-4 py-2 bg-[#06C755] text-white rounded-lg text-sm font-medium">
+                                        友だち追加はこちら
+                                    </a>
+                                @endif
+                                <p class="settings-muted mt-2">1. 上記ボタンで友だち追加 2. コードをそのまま送信</p>
+                            @else
+                                <form method="POST" action="{{ route('settings.line-link') }}" class="inline">
+                                    @csrf
+                                    <button type="submit" class="settings-secondary-button">
+                                        LINE連携を開始
+                                    </button>
+                                </form>
+                                <p class="settings-muted mt-2">LINEで友だち追加して朝・夜の通知を受け取ります</p>
+                            @endif
+                        @endif
                     </div>
 
                     <div class="settings-grid">

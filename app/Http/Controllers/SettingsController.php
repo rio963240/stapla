@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SettingsDestroyRequest;
+use App\Models\LineAccount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Laravel\Fortify\Contracts\UpdatesUserPasswords;
 use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
 
@@ -13,7 +15,33 @@ class SettingsController extends Controller
     // 設定画面の表示
     public function index()
     {
-        return view('settings');
+        $lineAccount = Auth::user()?->lineAccount;
+        $lineLinkToken = session('line_link_token');
+
+        return view('settings', [
+            'lineAccount' => $lineAccount,
+            'lineLinkToken' => $lineLinkToken,
+        ]);
+    }
+
+    // LINE連携を開始（連携コードを発行）
+    public function startLineLink(Request $request)
+    {
+        $user = $request->user();
+        $token = Str::upper(Str::random(8));
+
+        LineAccount::updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'line_link_token' => $token,
+                'line_user_id' => null,
+                'is_linked' => false,
+            ],
+        );
+
+        return redirect()
+            ->route('settings')
+            ->with('line_link_token', $token);
     }
 
     // 基本情報（名前・アイコン）更新

@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'line' => [
+        'channel_secret' => env('LINE_CHANNEL_SECRET'),
+        'channel_access_token' => env('LINE_CHANNEL_ACCESS_TOKEN'),
+        'add_friend_url' => env('LINE_ADD_FRIEND_URL', ''),
+    ],
+
 ];
