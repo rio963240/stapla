@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Middleware\LineWebhookRawBody;
 use App\Models\LineAccount;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -15,11 +16,16 @@ class LineWebhookController extends Controller
      */
     public function __invoke(Request $request): Response
     {
-        $rawBody = $request->getContent();
+        // 署名検証には必ず生ボディを使う（ミドルウェアで保持した生ボディを優先）
+        $rawBody = $request->attributes->get(LineWebhookRawBody::KEY) ?? $request->getContent();
         $signature = $request->header('X-Line-Signature', '');
 
         if (!$this->verifySignature($rawBody, $signature)) {
-            Log::warning('LINE webhook signature verification failed.');
+            Log::warning('LINE webhook signature verification failed.', [
+                'body_length' => strlen($rawBody),
+                'signature_length' => strlen($signature),
+                'secret_configured' => config('services.line.channel_secret') !== '',
+            ]);
 
             return response('', 403);
         }
@@ -38,18 +44,28 @@ class LineWebhookController extends Controller
 
     private function verifySignature(string $body, string $signature): bool
     {
+        $signature = trim($signature);
         if ($signature === '') {
             return false;
         }
 
-        $channelSecret = config('services.line.channel_secret', '');
+        // .env のコピペで改行・スペースが入ることがあるため trim
+        $channelSecret = trim(config('services.line.channel_secret', ''));
         if ($channelSecret === '') {
             return false;
         }
 
         $hash = base64_encode(hash_hmac('sha256', $body, $channelSecret, true));
 
-        return hash_equals($hash, $signature);
+        // LINE は複数署名をカンマ区切りで送る場合があるので、いずれか一致すれば OK
+        $signatures = array_map('trim', explode(',', $signature));
+        foreach ($signatures as $sig) {
+            if (hash_equals($hash, $sig)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function handleEvent(array $event): void

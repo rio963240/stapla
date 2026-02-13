@@ -8,6 +8,7 @@ use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LineWebhookController;
+use App\Http\Middleware\LineWebhookRawBody;
 use App\Http\Controllers\PlanRegisterController;
 use App\Http\Controllers\PlanRegisterSubdomainController;
 use App\Http\Controllers\PlanRescheduleController;
@@ -18,8 +19,10 @@ use App\Http\Controllers\StudyRecordController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-// LINE Webhook（署名検証のため生ボディが必要なため CSRF 除外）
-Route::post('/line/webhook', LineWebhookController::class)->name('line.webhook');
+// LINE Webhook（署名検証のため生ボディを保持・CSRF 除外）
+Route::post('/line/webhook', LineWebhookController::class)
+    ->middleware(LineWebhookRawBody::class)
+    ->name('line.webhook');
 
 // トップ：未ログインはログイン画面へ、ログイン済みはホームへ
 Route::get('/', function () {
