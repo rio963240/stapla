@@ -20,9 +20,7 @@ class SendLineMorningNotification extends Command
     {
         $today = Carbon::today()->toDateString();
         $currentTime = $this->option('time') ?? Carbon::now('Asia/Tokyo')->format('H:i');
-        if ($currentTime !== null && strlen($currentTime) === 4) {
-            $currentTime = substr($currentTime, 0, 2) . ':' . substr($currentTime, 2, 2);
-        }
+        $currentTime = $this->normalizeTimeOption($currentTime);
 
         $query = LineAccount::whereNotNull('line_user_id')
             ->whereHas('user', fn ($q) => $q->whereRaw('line_morning_time::text LIKE ?', [$currentTime . '%'])->where('line_notify_enabled', true));
@@ -82,5 +80,22 @@ class SendLineMorningNotification extends Command
         $this->info('Sent morning notifications to ' . $accounts->count() . ' user(s).');
 
         return self::SUCCESS;
+    }
+
+    /** オプションの時刻を HH:MM に正規化（6:41 → 06:41、0641 → 06:41） */
+    private function normalizeTimeOption(?string $time): string
+    {
+        if ($time === null || $time === '') {
+            return Carbon::now('Asia/Tokyo')->format('H:i');
+        }
+        $time = preg_replace('/\s+/', '', $time);
+        $time = preg_replace('/:+/', ':', $time);
+        if (strlen($time) === 4 && ctype_digit($time)) {
+            return substr($time, 0, 2) . ':' . substr($time, 2, 2);
+        }
+        if (preg_match('/^(\d{1,2}):(\d{1,2})/', $time, $m)) {
+            return sprintf('%02d:%02d', (int) $m[1], (int) $m[2]);
+        }
+        return $time;
     }
 }
