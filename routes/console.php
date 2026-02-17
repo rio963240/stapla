@@ -12,10 +12,10 @@ Schedule::command('backups:auto')
     ->everyMinute()
     ->withoutOverlapping();
 
-// LINE 朝・夜の通知（毎時0分に実行し、各ユーザーの設定時刻に一致する人に送信）
+// LINE 朝・夜の通知（毎分実行し、現在時刻と一致するユーザーにのみ送信。hourly()だと:00しか動かず09:30等が届かない）
 Schedule::command('line:send-morning')
-    ->hourly()
+    ->everyMinute()
     ->timezone('Asia/Tokyo');
 Schedule::command('line:send-evening')
-    ->hourly()
+    ->everyMinute()
     ->timezone('Asia/Tokyo');
