@@ -16,12 +16,21 @@
     border-color: #111827;
 }
 
-/* メニュー位置 */
+/* メニュー位置（PC: トリガーの右、スマホ: トリガーの上で統一） */
 .profile-menu {
     position: absolute;
     left: calc(100% + 1rem);
     bottom: 0;
     z-index: 50;
+}
+
+@media (max-width: 768px) {
+    .profile-menu {
+        left: 50%;
+        right: auto;
+        bottom: calc(100% + 0.75rem);
+        transform: translateX(-50%);
+    }
 }
 
 /* メニュー表示 */

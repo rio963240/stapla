@@ -3,7 +3,7 @@
     "validation.unique": "そのメールアドレスは既に登録されています。",
     "We have emailed your password reset link.": "パスワード再設定用のURLをメールで送信しました。",
 
-    "HOME": "ホーム",
+    "HOME": "HOME",
     "Manage Team": "チーム管理",
     "Team Settings": "チーム設定",
     "Create New Team": "新規チーム作成",

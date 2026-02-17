@@ -17,20 +17,16 @@
     @endpush
 
     <div class="h-screen bg-gray-100 overflow-hidden">
-        <div class="mx-auto flex h-[calc(100vh-3rem)] max-w-7xl gap-8 px-6 py-6 sm:px-6 lg:px-8">
-            @include('home.sidebar', ['context' => 'admin', 'isAdmin' => true])
+        <x-sidebar-layout context="admin" :is-admin="true">
+            @include('admin.backups._header')
 
-            <section class="flex-1 rounded-lg bg-white p-6 shadow-sm overflow-auto">
-                @include('admin.backups._header')
+            <div class="admin-backup-grid mt-6">
+                @include('admin.backups._manual-card')
+                @include('admin.backups._auto-card')
+            </div>
 
-                <div class="admin-backup-grid mt-6">
-                    @include('admin.backups._manual-card')
-                    @include('admin.backups._auto-card')
-                </div>
-
-                @include('admin.backups._history-card')
-            </section>
-        </div>
+            @include('admin.backups._history-card')
+        </x-sidebar-layout>
     </div>
 
     <div class="admin-toast-stack" aria-live="polite" aria-atomic="true">

@@ -8,11 +8,8 @@
     @endpush
 
     <div class="h-screen bg-gray-100 overflow-hidden">
-        <div class="mx-auto flex h-[calc(100vh-3rem)] max-w-7xl gap-8 px-6 py-6 sm:px-6 lg:px-8">
-            @include('home.sidebar', ['context' => 'admin', 'isAdmin' => true])
-
-            <section class="flex-1 rounded-lg bg-white p-6 shadow-sm overflow-auto">
-                <div class="admin-users-header">
+        <x-sidebar-layout context="admin" :is-admin="true">
+            <div class="admin-users-header">
                     <div>
                         {{-- <p class="text-sm text-gray-500">ユーザー管理</p> --}}
                         <h1 class="text-xl font-semibold text-gray-800">ユーザー管理</h1>
@@ -105,8 +102,7 @@
 
                 @include('admin.users.edit')
                 @include('admin.users.confirm')
-            </section>
-        </div>
+        </x-sidebar-layout>
     </div>
 
     <div class="admin-toast-stack" aria-live="polite" aria-atomic="true">

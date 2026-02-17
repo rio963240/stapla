@@ -252,9 +252,10 @@ const initPasswordForm = () => {
     });
 };
 
-// アカウント削除モーダルの開閉と削除実行
+// アカウント削除モーダルの開閉と削除実行（二段階確認）
 const initDeleteAccountModal = () => {
     const openButton = document.querySelector('[data-delete-modal-open]');
+    const confirmModal = document.querySelector('[data-delete-confirm-modal]');
     const modal = document.querySelector('[data-delete-modal]');
     if (!openButton || !modal) return;
 
@@ -270,8 +271,18 @@ const initDeleteAccountModal = () => {
         if (errorLabel) errorLabel.textContent = '';
     };
 
-    // モーダル表示
+    // 一段階目: 確認モーダルを表示
+    const openConfirmModal = () => {
+        if (confirmModal) confirmModal.classList.remove('is-hidden');
+    };
+
+    const closeConfirmModal = () => {
+        if (confirmModal) confirmModal.classList.add('is-hidden');
+    };
+
+    // 二段階目: パスワード入力モーダルを表示
     const openModal = () => {
+        closeConfirmModal();
         modal.classList.remove('is-hidden');
         resetForm();
         if (passwordInput) {
@@ -279,21 +290,36 @@ const initDeleteAccountModal = () => {
         }
     };
 
-    // モーダル非表示
     const closeModal = () => {
         modal.classList.add('is-hidden');
         resetForm();
     };
 
-    openButton.addEventListener('click', openModal);
+    // 「アカウントを削除」クリック → 一段階目の確認モーダルを表示
+    openButton.addEventListener('click', openConfirmModal);
+
+    // 一段階目: キャンセルで閉じる
+    if (confirmModal) {
+        confirmModal.querySelectorAll('[data-delete-confirm-close]').forEach((el) => {
+            el.addEventListener('click', closeConfirmModal);
+        });
+        const proceedButton = confirmModal.querySelector('[data-delete-confirm-proceed]');
+        if (proceedButton) {
+            proceedButton.addEventListener('click', openModal);
+        }
+    }
+
     closeButtons.forEach((button) => {
         button.addEventListener('click', closeModal);
     });
 
     document.addEventListener('keydown', (event) => {
         if (event.key !== 'Escape') return;
+        if (confirmModal && !confirmModal.classList.contains('is-hidden')) {
+            closeConfirmModal();
+            return;
+        }
         if (modal.classList.contains('is-hidden')) return;
-        // ESCキーでモーダルを閉じる
         closeModal();
     });
 
@@ -353,6 +379,46 @@ const initDeleteAccountModal = () => {
     });
 };
 
+// プロフィールメニューの開閉（サイドバー内のアイコン）
+const initProfileMenu = () => {
+    const triggers = document.querySelectorAll('.profile-menu-trigger');
+    triggers.forEach((trigger) => {
+        const menu = trigger.parentElement?.querySelector('.profile-menu');
+        if (!menu) return;
+
+        const closeMenu = () => {
+            menu.classList.add('hidden');
+            trigger.setAttribute('aria-expanded', 'false');
+        };
+
+        const openMenu = () => {
+            menu.classList.remove('hidden');
+            trigger.setAttribute('aria-expanded', 'true');
+        };
+
+        trigger.addEventListener('click', (event) => {
+            event.stopPropagation();
+            if (menu.classList.contains('hidden')) {
+                openMenu();
+            } else {
+                closeMenu();
+            }
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!menu.contains(event.target) && !trigger.contains(event.target)) {
+                closeMenu();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeMenu();
+            }
+        });
+    });
+};
+
 // DOM準備完了で初期化を実行
 const onReady = (callback) => {
     if (document.readyState === 'loading') {
@@ -368,4 +434,5 @@ onReady(() => {
     initBasicInfoForm();
     initPasswordForm();
     initDeleteAccountModal();
+    initProfileMenu();
 });

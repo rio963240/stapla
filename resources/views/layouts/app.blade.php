@@ -1,6 +1,11 @@
 @props([
     'showNavigation' => true,
 ])
+@php
+    // サイドバーレイアウトを使うページでは上側ナビを出さない（下のハンバーガーのみ）
+    $useSidebarLayout = request()->routeIs('home', 'study-progress', 'settings', 'admin.*');
+    $showTopNavigation = $showNavigation && ! $useSidebarLayout;
+@endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
@@ -25,7 +30,7 @@
         <x-banner />
 
         <div class="min-h-screen bg-gray-100">
-            @if ($showNavigation)
+            @if ($showTopNavigation)
                 @livewire('navigation-menu')
             @endif
 

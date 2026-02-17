@@ -295,41 +295,43 @@ const init = () => {
     applyButton.addEventListener('click', applyFilters);
 };
 
-// プロフィールメニューの開閉処理
+// プロフィールメニューの開閉処理（PC・スマホの両方のサイドバーに対応）
 const initProfileMenu = () => {
-    const trigger = document.getElementById('profile-menu-trigger');
-    const menu = document.getElementById('profile-menu');
-    if (!trigger || !menu) return;
+    const triggers = document.querySelectorAll('.profile-menu-trigger');
+    triggers.forEach((trigger) => {
+        const menu = trigger.parentElement?.querySelector('.profile-menu');
+        if (!menu) return;
 
-    const closeMenu = () => {
-        menu.classList.add('hidden');
-        trigger.setAttribute('aria-expanded', 'false');
-    };
+        const closeMenu = () => {
+            menu.classList.add('hidden');
+            trigger.setAttribute('aria-expanded', 'false');
+        };
 
-    const openMenu = () => {
-        menu.classList.remove('hidden');
-        trigger.setAttribute('aria-expanded', 'true');
-    };
+        const openMenu = () => {
+            menu.classList.remove('hidden');
+            trigger.setAttribute('aria-expanded', 'true');
+        };
 
-    trigger.addEventListener('click', (event) => {
-        event.stopPropagation();
-        if (menu.classList.contains('hidden')) {
-            openMenu();
-        } else {
-            closeMenu();
-        }
-    });
+        trigger.addEventListener('click', (event) => {
+            event.stopPropagation();
+            if (menu.classList.contains('hidden')) {
+                openMenu();
+            } else {
+                closeMenu();
+            }
+        });
 
-    document.addEventListener('click', (event) => {
-        if (!menu.contains(event.target) && !trigger.contains(event.target)) {
-            closeMenu();
-        }
-    });
+        document.addEventListener('click', (event) => {
+            if (!menu.contains(event.target) && !trigger.contains(event.target)) {
+                closeMenu();
+            }
+        });
 
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') {
-            closeMenu();
-        }
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeMenu();
+            }
+        });
     });
 };
 

@@ -1,6 +1,6 @@
-// 計画登録モーダル群の制御
+// 計画登録モーダル群の制御（PC・スマホの両方のサイドバーに対応）
 const initPlanRegisterModals = () => {
-    const trigger = document.getElementById('plan-register-trigger');
+    const triggers = document.querySelectorAll('.plan-register-trigger');
     const choiceDomainButton = document.getElementById('plan-register-choice-domain');
     const choiceSubdomainButton = document.getElementById('plan-register-choice-subdomain');
     const modalIds = [
@@ -27,8 +27,10 @@ const initPlanRegisterModals = () => {
         document.body.classList.add('overflow-hidden');
     };
 
-    // モーダルを開くトリガー
-    trigger?.addEventListener('click', () => openModal('plan-register-choice-modal'));
+    // モーダルを開くトリガー（複数ある場合はすべてにバインド）
+    triggers.forEach((trigger) => {
+        trigger.addEventListener('click', () => openModal('plan-register-choice-modal'));
+    });
     choiceDomainButton?.addEventListener('click', () => openModal('plan-register-domain-modal'));
     choiceSubdomainButton?.addEventListener('click', () =>
         openModal('plan-register-subdomain-modal'),

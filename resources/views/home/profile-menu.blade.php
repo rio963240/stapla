@@ -1,6 +1,5 @@
 <div class="relative flex items-center gap-3 px-3 pb-8">
     <button
-        id="profile-menu-trigger"
         type="button"
         class="profile-menu-trigger"
         aria-haspopup="true"
@@ -13,7 +12,6 @@
         />
     </button>
     <div
-        id="profile-menu"
         class="profile-menu hidden"
         role="dialog"
         aria-modal="false"

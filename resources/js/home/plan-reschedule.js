@@ -99,9 +99,9 @@ const fetchRescheduleData = async (targetId) => {
     return response.json();
 };
 
-// モーダルの開閉と対象資格変更時の反映
+// モーダルの開閉と対象資格変更時の反映（PC・スマホの両方のサイドバーに対応）
 const initPlanRescheduleModal = () => {
-    const trigger = document.getElementById('plan-reschedule-trigger');
+    const triggers = document.querySelectorAll('.plan-reschedule-trigger');
     const modal = document.getElementById('plan-reschedule-modal');
     if (!modal) return;
     const targetSelect = modal.querySelector('[data-reschedule-target]');
@@ -116,7 +116,9 @@ const initPlanRescheduleModal = () => {
         document.body.classList.remove('overflow-hidden');
     };
 
-    trigger?.addEventListener('click', open);
+    triggers.forEach((trigger) => {
+        trigger.addEventListener('click', open);
+    });
     modal.querySelectorAll('[data-reschedule-close]').forEach((button) => {
         button.addEventListener('click', close);
     });

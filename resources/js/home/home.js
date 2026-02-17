@@ -101,6 +101,18 @@ const initCalendar = () => {
             month: '月',
             week: '週',
         },
+        // 週表示の列ヘッダーは「日付(曜日)」のみ（月は出さない）
+        views: {
+            dayGridWeek: {
+                dayHeaderContent: (arg) => {
+                    const d = arg.date;
+                    const day = d.getDate();
+                    const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+                    const w = weekdays[d.getDay()];
+                    return `${day}(${w})`;
+                },
+            },
+        },
         eventClick: (info) => {
             if (info.view.type !== 'dayGridWeek') return;
             const todoId = info.event.extendedProps?.todoId;
@@ -135,46 +147,43 @@ import { initPlanRegisterSubdomain } from './plan-register-subdomain';
 // リスケジュール機能
 import { initPlanReschedule } from './plan-reschedule';
 
-// プロフィールメニューの開閉
+// プロフィールメニューの開閉（PC・スマホの両方のサイドバーに対応）
 const initProfileMenu = () => {
-    const trigger = document.getElementById('profile-menu-trigger');
-    const menu = document.getElementById('profile-menu');
-    if (!trigger || !menu) return;
+    const triggers = document.querySelectorAll('.profile-menu-trigger');
+    triggers.forEach((trigger) => {
+        const menu = trigger.parentElement?.querySelector('.profile-menu');
+        if (!menu) return;
 
-    // メニューを閉じる
-    const closeMenu = () => {
-        menu.classList.add('hidden');
-        trigger.setAttribute('aria-expanded', 'false');
-    };
+        const closeMenu = () => {
+            menu.classList.add('hidden');
+            trigger.setAttribute('aria-expanded', 'false');
+        };
 
-    // メニューを開く
-    const openMenu = () => {
-        menu.classList.remove('hidden');
-        trigger.setAttribute('aria-expanded', 'true');
-    };
+        const openMenu = () => {
+            menu.classList.remove('hidden');
+            trigger.setAttribute('aria-expanded', 'true');
+        };
 
-    // クリックでトグル
-    trigger.addEventListener('click', (event) => {
-        event.stopPropagation();
-        if (menu.classList.contains('hidden')) {
-            openMenu();
-        } else {
-            closeMenu();
-        }
-    });
+        trigger.addEventListener('click', (event) => {
+            event.stopPropagation();
+            if (menu.classList.contains('hidden')) {
+                openMenu();
+            } else {
+                closeMenu();
+            }
+        });
 
-    // 外側クリックで閉じる
-    document.addEventListener('click', (event) => {
-        if (!menu.contains(event.target) && !trigger.contains(event.target)) {
-            closeMenu();
-        }
-    });
+        document.addEventListener('click', (event) => {
+            if (!menu.contains(event.target) && !trigger.contains(event.target)) {
+                closeMenu();
+            }
+        });
 
-    // ESCで閉じる
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') {
-            closeMenu();
-        }
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeMenu();
+            }
+        });
     });
 };
 
@@ -190,7 +199,7 @@ const onReady = (callback) => {
 const openPlanRegisterFromQuery = () => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('open') !== 'plan-register') return;
-    const trigger = document.getElementById('plan-register-trigger');
+    const trigger = document.querySelector('.plan-register-trigger');
     if (trigger) {
         trigger.click();
     }
@@ -204,7 +213,7 @@ const openPlanRegisterFromQuery = () => {
 const openRescheduleFromQuery = () => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('open') !== 'reschedule') return;
-    const trigger = document.getElementById('plan-reschedule-trigger');
+    const trigger = document.querySelector('.plan-reschedule-trigger');
     if (trigger) {
         trigger.click();
     }

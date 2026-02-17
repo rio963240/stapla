@@ -10,12 +10,6 @@
         grid-template-columns: 1fr;
     }
 
-    .profile-menu {
-        left: 0;
-        right: auto;
-        bottom: calc(100% + 0.75rem);
-    }
-
     .profile-menu-card {
         width: 220px;
     }

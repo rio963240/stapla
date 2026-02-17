@@ -1,17 +1,15 @@
-<x-app-layout>
-    {{-- 設定画面専用のCSS --}}
+<x-app-layout :show-navigation="false">
+    {{-- 設定画面専用のCSS（サイドバーのプロフィールメニュー用も読み込み） --}}
     @push('styles')
         @vite('resources/css/settings.css')
+        @vite('resources/css/home/profile-menu.css')
     @endpush
 
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            設定
-        </h2>
-    </x-slot>
-
-    <div class="settings-page">
-        <div class="settings-container">
+    <div class="h-screen bg-gray-100 overflow-hidden">
+        <x-sidebar-layout context="settings" :is-admin="request()->routeIs('admin.*')">
+            <div class="settings-page">
+                <h2 class="settings-page-title">設定</h2>
+                <div class="settings-container">
             @if (session('error'))
                 <div class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg" role="alert">
                     {{ session('error') }}
@@ -213,8 +211,31 @@
             </section>
         </div>
     </div>
+        </x-sidebar-layout>
+    </div>
 
-    {{-- アカウント削除モーダル --}}
+    {{-- 一段階目: アカウント削除の事前確認 --}}
+    <div class="settings-modal is-hidden" data-delete-confirm-modal>
+        <div class="settings-modal-overlay" data-delete-confirm-close></div>
+        <div class="settings-modal-panel" role="dialog" aria-modal="true" aria-labelledby="delete-confirm-title">
+            <div class="settings-modal-header">
+                <h3 id="delete-confirm-title" class="settings-modal-title">アカウント削除の確認</h3>
+            </div>
+            <p class="settings-modal-text">
+                本当にアカウントを削除しますか？削除すると、登録したデータはすべて取り戻せません。
+            </p>
+            <div class="settings-modal-actions">
+                <button type="button" class="settings-confirm-no-button" data-delete-confirm-close>
+                    いいえ
+                </button>
+                <button type="button" class="settings-confirm-yes-button" data-delete-confirm-proceed>
+                    はい
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {{-- 二段階目: パスワード入力モーダル --}}
     <div class="settings-modal is-hidden" data-delete-modal>
         <div class="settings-modal-overlay" data-delete-modal-close></div>
         <div class="settings-modal-panel" role="dialog" aria-modal="true" aria-labelledby="delete-account-title">
