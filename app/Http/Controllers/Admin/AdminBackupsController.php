@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdminBackupSettingsRequest;
+use App\Jobs\RunBackupJob;
 use App\Models\BackupFile;
 use App\Models\BackupSetting;
 use App\Services\BackupService;
@@ -51,8 +52,18 @@ class AdminBackupsController extends Controller
 
     public function storeManual(Request $request): JsonResponse
     {
-        // 手動バックアップ作成
+        if (config('backup.async', false)) {
+            RunBackupJob::dispatch(false);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'バックアップを開始しました。数十秒後にページを更新して結果を確認してください。',
+                'async' => true,
+            ]);
+        }
+
         $result = $this->backupService->runBackup(false);
+
         return $this->buildBackupResponse($result);
     }
 
@@ -78,9 +89,35 @@ class AdminBackupsController extends Controller
 
     public function retry(BackupFile $backupFile): JsonResponse
     {
-        // 失敗したバックアップの再実行
+        if (config('backup.async', false)) {
+            RunBackupJob::dispatch((bool) $backupFile->is_auto);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'バックアップを再実行しました。数十秒後にページを更新して結果を確認してください。',
+                'async' => true,
+            ]);
+        }
+
         $result = $this->backupService->runBackup((bool) $backupFile->is_auto);
+
         return $this->buildBackupResponse($result);
+    }
+
+    public function list(Request $request): JsonResponse
+    {
+        $backupFiles = BackupFile::query()
+            ->orderByDesc('created_at')
+            ->limit(20)
+            ->get();
+
+        $backupItems = $backupFiles->map(fn (BackupFile $file) => $this->formatBackupItem($file))->all();
+        $latestBackupAt = $backupFiles->first()?->created_at?->format('Y/m/d H:i');
+
+        return response()->json([
+            'backupItems' => $backupItems,
+            'latestBackupAt' => $latestBackupAt,
+        ]);
     }
 
     public function download(BackupFile $backupFile)

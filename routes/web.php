@@ -151,6 +151,7 @@ Route::middleware([
             ->name('subdomains.destroy');
         // 管理画面：バックアップ
         Route::get('/backups', [AdminBackupsController::class, 'index'])->name('backups');
+        Route::get('/backups/list', [AdminBackupsController::class, 'list'])->name('backups.list');
         Route::post('/backups/manual', [AdminBackupsController::class, 'storeManual'])->name('backups.manual');
         Route::put('/backups/settings', [AdminBackupsController::class, 'updateSettings'])
             ->name('backups.settings');

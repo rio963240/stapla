@@ -1,4 +1,4 @@
-<section class="admin-backup-card mt-6">
+<section class="admin-backup-card mt-6" data-backup-list-url="{{ route('admin.backups.list') }}">
     <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
             <p class="text-xs text-gray-500">バックアップ一覧</p>

@@ -129,13 +129,43 @@ const initAdminBackups = () => {
         tableBody.prepend(row);
     };
 
+    // ポーリングでバックアップ一覧を更新（非同期バックアップ完了を検知）
+    const pollBackupList = (listUrl, initialLatest, maxAttempts = 24) => {
+        let attempts = 0;
+        const interval = setInterval(async () => {
+            attempts += 1;
+            if (attempts > maxAttempts) {
+                clearInterval(interval);
+                return;
+            }
+            try {
+                const res = await fetch(listUrl, { headers: { Accept: 'application/json' } });
+                const json = await res.json();
+                if (!json.backupItems?.length) return;
+                const newest = json.backupItems[0];
+                const newestDate = newest?.created_at || '';
+                if (newestDate !== initialLatest) {
+                    clearInterval(interval);
+                    if (lastUpdated) lastUpdated.textContent = json.latestBackupAt || newestDate;
+                    if (latestBackup) latestBackup.textContent = json.latestBackupAt || newestDate;
+                    appendBackupRow(newest);
+                    showToast('バックアップが完了しました');
+                }
+            } catch {
+                // ポーリング失敗時は無視
+            }
+        }, 5000);
+    };
+
     // 手動バックアップ実行ボタン
     if (manualButton) {
         manualButton.addEventListener('click', async () => {
             const url = manualButton.dataset.backupManualUrl;
+            const listUrl = manualButton.dataset.backupListUrl;
             if (!url) return;
             manualButton.disabled = true;
             showToast('バックアップを開始しました');
+            const initialLatest = latestBackup?.textContent?.trim() || '';
             try {
                 const response = await fetch(url, {
                     method: 'POST',
@@ -148,11 +178,16 @@ const initAdminBackups = () => {
                 if (!response.ok) {
                     throw new Error(data?.message || 'バックアップに失敗しました');
                 }
-                const formatted = data.latest_at || formatDate(new Date());
-                if (lastUpdated) lastUpdated.textContent = formatted;
-                if (latestBackup) latestBackup.textContent = formatted;
-                appendBackupRow(data.item);
-                showToast(data.message || 'バックアップを作成しました');
+                if (data.async && listUrl) {
+                    showToast(data.message || 'バックアップを開始しました。完了までお待ちください。');
+                    pollBackupList(listUrl, initialLatest);
+                } else {
+                    const formatted = data.latest_at || formatDate(new Date());
+                    if (lastUpdated) lastUpdated.textContent = formatted;
+                    if (latestBackup) latestBackup.textContent = formatted;
+                    if (data.item) appendBackupRow(data.item);
+                    showToast(data.message || 'バックアップを作成しました');
+                }
             } catch (error) {
                 showToast(error.message || 'バックアップに失敗しました', 'error');
             } finally {
@@ -246,11 +281,22 @@ const initAdminBackups = () => {
                 if (!response.ok) {
                     throw new Error(data?.message || '再実行に失敗しました');
                 }
-                const formatted = data.latest_at || formatDate(new Date());
-                if (lastUpdated) lastUpdated.textContent = formatted;
-                if (latestBackup) latestBackup.textContent = formatted;
-                appendBackupRow(data.item);
-                showToast(data.message || 'バックアップを作成しました');
+                if (data.async) {
+                    const listUrl = tableBody?.closest('[data-backup-list-url]')?.dataset?.backupListUrl;
+                    const initialLatest = latestBackup?.textContent?.trim() || '';
+                    if (listUrl) {
+                        showToast(data.message || 'バックアップを再実行しました。完了までお待ちください。');
+                        pollBackupList(listUrl, initialLatest);
+                    } else {
+                        showToast(data.message || 'バックアップを再実行しました。ページを更新してご確認ください。');
+                    }
+                } else {
+                    const formatted = data.latest_at || formatDate(new Date());
+                    if (lastUpdated) lastUpdated.textContent = formatted;
+                    if (latestBackup) latestBackup.textContent = formatted;
+                    appendBackupRow(data.item);
+                    showToast(data.message || 'バックアップを作成しました');
+                }
             }
         } catch (error) {
             showToast(error.message || '操作に失敗しました', 'error');
