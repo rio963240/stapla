@@ -123,4 +123,13 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Cron Secret Key (for /internal/cron/schedule)
+    |--------------------------------------------------------------------------
+    | Render 等で Shell が使えない場合、外部 cron からこの URL を叩いて
+    | schedule:run を実行する。key パラメータまたは X-Cron-Secret ヘッダで照合。
+    */
+    'cron_secret_key' => env('CRON_SECRET_KEY'),
+
 ];

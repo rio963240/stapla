@@ -16,8 +16,20 @@ use App\Http\Controllers\QualificationController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\StudyProgressController;
 use App\Http\Controllers\StudyRecordController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+
+// スケジュール実行用エンドポイント（Render 等で Shell が使えない場合、外部 cron から GET で叩く）
+Route::get('/internal/cron/schedule', function () {
+    $key = request()->query('key') ?? request()->header('X-Cron-Secret');
+    $secret = config('app.cron_secret_key');
+    if ($secret === null || $secret === '' || $key !== $secret) {
+        abort(403, 'Forbidden');
+    }
+    Artisan::call('schedule:run');
+    return response()->json(['ok' => true, 'message' => 'schedule:run executed'], 200);
+})->name('cron.schedule');
 
 // LINE Webhook（署名検証のため生ボディを保持・CSRF 除外）
 Route::post('/line/webhook', LineWebhookController::class)

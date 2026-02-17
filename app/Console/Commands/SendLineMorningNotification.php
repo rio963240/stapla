@@ -32,9 +32,30 @@ class SendLineMorningNotification extends Command
         if ($this->option('time')) {
             $this->info("送信時刻を {$currentTime} としてシミュレートしています。");
         }
+        if ($accounts->isEmpty()) {
+            $this->warn('送信対象のユーザーが0人です。以下を確認してください：');
+            $this->warn('  - line_accounts.line_user_id が NULL でない（LINE友だち追加・コード送信済み）');
+            $this->warn('  - users.line_notify_enabled が true');
+            $this->warn('  - users.line_morning_time が --time= で指定した時刻と一致（例: 08:00 なら --time=08:00）');
+            $this->warn('  - 本番の場合: cron で php artisan schedule:run が毎分実行されているか');
+        }
 
         foreach ($accounts as $account) {
             $userId = $account->user_id;
+
+            // 勉強不可日かどうか（いずれかの資格目標で今日が登録されていればお休みの日）
+            $isNoStudyDay = DB::table('user_no_study_days')
+                ->join('user_qualification_targets', 'user_no_study_days.user_qualification_targets_id', '=', 'user_qualification_targets.user_qualification_targets_id')
+                ->where('user_qualification_targets.user_id', $userId)
+                ->where('user_no_study_days.no_study_day', $today)
+                ->exists();
+
+            if ($isNoStudyDay) {
+                $body = "☀️ おはようございます！\n今日はお休みの日。ゆっくり過ごしましょう。";
+                $line->pushText($account->line_user_id, $body);
+                continue;
+            }
+
             $planRows = DB::table('todo')
                 ->join('study_plans', 'todo.study_plans_id', '=', 'study_plans.study_plans_id')
                 ->join(

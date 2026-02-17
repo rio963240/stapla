@@ -38,9 +38,23 @@ class SendLineEveningNotification extends Command
         }
 
         $inputUrl = url('/dashboard');
+        $today = \Carbon\Carbon::today('Asia/Tokyo')->toDateString();
 
         foreach ($accounts as $account) {
             $userId = $account->user_id;
+
+            // 勉強不可日かどうか（いずれかの資格目標で今日が登録されていればお休みの日）
+            $isNoStudyDay = DB::table('user_no_study_days')
+                ->join('user_qualification_targets', 'user_no_study_days.user_qualification_targets_id', '=', 'user_qualification_targets.user_qualification_targets_id')
+                ->where('user_qualification_targets.user_id', $userId)
+                ->where('user_no_study_days.no_study_day', $today)
+                ->exists();
+
+            if ($isNoStudyDay) {
+                $body = "🌙 今日はお休みの日でしたね。\n明日も無理せず、良い一日を。";
+                $line->pushText($account->line_user_id, $body);
+                continue;
+            }
 
             // アクティブな計画を1つ取得
             $target = DB::table('user_qualification_targets as uqt')
