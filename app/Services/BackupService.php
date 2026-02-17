@@ -93,6 +93,23 @@ class BackupService
             $username = $config['username'] ?? '';
             $password = $config['password'] ?? '';
             $database = $config['database'] ?? '';
+            $sslmode = $config['sslmode'] ?? null;
+
+            // DATABASE_URL が設定されている場合（Neon 等）、パースして接続情報を取得
+            $url = $config['url'] ?? env('DATABASE_URL');
+            if ($url) {
+                $parsed = parse_url($url);
+                if ($parsed !== false) {
+                    $host = $parsed['host'] ?? $host;
+                    $port = $parsed['port'] ?? 5432;
+                    $username = $parsed['user'] ?? $username;
+                    $password = $parsed['pass'] ?? $password;
+                    $database = trim($parsed['path'] ?? '', '/') ?: $database;
+                    $query = $parsed['query'] ?? '';
+                    parse_str($query, $params);
+                    $sslmode = $params['sslmode'] ?? $sslmode;
+                }
+            }
 
             if ($database === '') {
                 throw new RuntimeException('データベース名が未設定です');
@@ -125,6 +142,9 @@ class BackupService
             $env = [];
             if ($password !== '') {
                 $env['PGPASSWORD'] = $password;
+            }
+            if ($sslmode !== null && $sslmode !== '') {
+                $env['PGSSLMODE'] = $sslmode;
             }
 
             $process = new Process($command, null, $env, null, 120);
