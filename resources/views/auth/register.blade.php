@@ -23,6 +23,7 @@
 
             <div class="mt-4">
                 <x-label for="password" value="{{ __('パスワード') }}" />
+                <p class="mt-1 text-sm text-gray-600">半角英数字を含む8文字以上16文字以下で入力してください。</p>
                 <x-input id="password" class="mt-1 block w-full border-orange-300 px-4 py-2.5 text-base focus:border-orange-400 focus:ring-orange-400" type="password" name="password" required autocomplete="new-password" />
             </div>
 

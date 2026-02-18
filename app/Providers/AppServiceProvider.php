@@ -7,6 +7,7 @@ use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Rules\Password;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +24,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // パスワードは半角英数字を含む8文字以上16文字以下（管理画面の更新などで使用）
+        Password::defaults(function () {
+            return Password::min(8)->max(16)->letters()->numbers();
+        });
+
         Event::listen(Login::class, function (Login $event): void {
             User::where('id', $event->user->getAuthIdentifier())
                 ->update(['last_login_at' => now()]);
