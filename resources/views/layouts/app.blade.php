@@ -2,9 +2,8 @@
     'showNavigation' => true,
 ])
 @php
-    // サイドバーレイアウトを使うページでは上側ナビを出さない（下のハンバーガーのみ）
+    // サイドバーレイアウトを使うページ: PCでは横いっぱいのトップナビを表示、スマホでは出さない（ドロワーのみ）
     $useSidebarLayout = request()->routeIs('home', 'study-progress', 'settings', 'admin.*');
-    $showTopNavigation = $showNavigation && ! $useSidebarLayout;
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -26,11 +25,14 @@
         @livewireStyles
         @stack('styles')
     </head>
-    <body class="font-sans antialiased">
+    <body class="font-sans antialiased {{ $useSidebarLayout ? 'sidebar-layout-page' : '' }}">
         <x-banner />
 
         <div class="min-h-screen bg-gray-100">
-            @if ($showTopNavigation)
+            @if ($useSidebarLayout)
+                {{-- 共通ヘッダー（PC・スマホとも表示、スマホではハンバーガーでドロワーを開く） --}}
+                @livewire('navigation-menu')
+            @elseif ($showNavigation)
                 @livewire('navigation-menu')
             @endif
 

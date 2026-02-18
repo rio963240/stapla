@@ -9,6 +9,16 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * バックアップ非同期実行ジョブ
+ *
+ * backup.async が true のとき、手動バックアップ・再実行はこのジョブに投入され、
+ * HTTP は即座にレスポンスを返す。Render 等でリクエストタイムアウトを避けるため。
+ *
+ * キューは config('queue.default')（通常 database）を使用。
+ * Render で動かす場合は Background Worker で php artisan queue:work を実行するか、
+ * Web コンテナの CMD で apache と queue:work を両方起動する必要がある。
+ */
 class RunBackupJob implements ShouldQueue
 {
     use Dispatchable;

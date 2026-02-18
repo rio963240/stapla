@@ -8,7 +8,7 @@ class UserSubdomainPreference extends BaseModel
 {
     protected $table = 'user_subdomain_preferences';
     protected $primaryKey = 'user_subdomain_preferences_id';
-    public $timestamps = false; // ←timestamps無し
+    public $timestamps = false;
     protected $fillable = [
         'user_qualification_targets_id',
         'qualification_subdomains_id',

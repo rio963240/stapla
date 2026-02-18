@@ -140,8 +140,10 @@ const initQualificationDomains = () => {
     const qualificationSelect = document.querySelector('[data-qualification-select="domain"]');
     if (!qualificationSelect) return;
 
+    // 分野セレクトをまとめて取得
     const getDomainSelects = () => document.querySelectorAll('[data-domain-select="domain"]');
 
+    // セレクト用のoptionを構築
     const buildOptions = (domains) => {
         const fragment = document.createDocumentFragment();
         const placeholder = document.createElement('option');
@@ -159,6 +161,7 @@ const initQualificationDomains = () => {
         return fragment;
     };
 
+    // 全セレクトにoptionを反映
     const applyOptions = (domains) => {
         getDomainSelects().forEach((select) => {
             select.innerHTML = '';
@@ -166,6 +169,7 @@ const initQualificationDomains = () => {
         });
     };
 
+    // APIから分野を取得
     const fetchDomains = async (qualificationId) => {
         if (!qualificationId) {
             applyOptions([]);
@@ -185,6 +189,7 @@ const initQualificationDomains = () => {
         }
     };
 
+    // 資格変更時に分野を再取得
     qualificationSelect.addEventListener('change', (event) => {
         const target = event.target;
         if (!(target instanceof HTMLSelectElement)) return;
@@ -206,6 +211,7 @@ const initHelpPopovers = () => {
         popoverMap.set(trigger, popover);
     });
 
+    // すべてのポップオーバーを閉じる
     const closeAll = () => {
         popoverMap.forEach((popover, trigger) => {
             popover.classList.add('hidden');
@@ -214,6 +220,7 @@ const initHelpPopovers = () => {
     };
 
     popoverMap.forEach((popover, trigger) => {
+        // トリガークリックで開閉
         trigger.addEventListener('click', (event) => {
             event.stopPropagation();
             const isOpen = !popover.classList.contains('hidden');
@@ -225,6 +232,7 @@ const initHelpPopovers = () => {
         });
     });
 
+    // 画面外クリックで閉じる
     document.addEventListener('click', (event) => {
         const target = event.target;
         if (!(target instanceof HTMLElement)) return;
@@ -236,6 +244,7 @@ const initHelpPopovers = () => {
         closeAll();
     });
 
+    // ESCキーで閉じる
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') closeAll();
     });
@@ -253,6 +262,7 @@ const initPlanRegisterSubmit = () => {
     if (!submitButton) return;
 
     submitButton.addEventListener('click', async () => {
+        // 入力要素を取得
         const startInput = document.querySelector('[data-plan-start="domain"]');
         const examInput = document.querySelector('[data-plan-exam="domain"]');
         const qualificationSelect = document.querySelector('[data-qualification-select="domain"]');
@@ -318,11 +328,13 @@ const initPlanRegisterSubmit = () => {
             no_study_days: noStudyDays,
         };
 
+        // 送信中表示に切り替え
         const originalLabel = submitButton.textContent;
         submitButton.setAttribute('disabled', 'true');
         submitButton.textContent = '送信中...';
 
         try {
+            // 計画登録APIへ送信
             const response = await fetch('/plan-register/domain', {
                 method: 'POST',
                 headers: {
@@ -340,6 +352,7 @@ const initPlanRegisterSubmit = () => {
                 return;
             }
 
+            // エラーメッセージの整形
             const data = await response.json().catch(() => ({}));
             const message =
                 (data?.errors && Object.values(data.errors).flat()[0]) ||
@@ -349,12 +362,14 @@ const initPlanRegisterSubmit = () => {
         } catch (error) {
             alert('通信に失敗しました。');
         } finally {
+            // ボタン表示を元に戻す
             submitButton.removeAttribute('disabled');
             submitButton.textContent = originalLabel;
         }
     });
 };
 
+// 初期化（モーダル/入力/送信）
 export const initPlanRegister = () => {
     initPlanRegisterModals();
     initNoStudyChips();

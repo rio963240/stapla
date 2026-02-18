@@ -6,7 +6,7 @@
     @endpush
 
     <div class="h-screen bg-gray-100 overflow-hidden">
-        <x-sidebar-layout context="settings" :is-admin="request()->routeIs('admin.*')">
+        <x-sidebar-layout context="settings" :is-admin="auth()->user()?->is_admin ?? false">
             <div class="settings-page">
                 <h2 class="settings-page-title">設定</h2>
                 <div class="settings-container">
@@ -125,36 +125,6 @@
                                     <select class="settings-select" name="line_evening_at" aria-label="LINE通知 夜">
                                         @foreach (range(0, 23) as $hour)
                                             <option value="{{ sprintf('%02d:00', $hour) }}" @selected(sprintf('%02d:00', $hour) === $lineEvening)>
-                                                {{ sprintf('%02d:00', $hour) }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <label class="settings-label" for="mail-notify">メール通知</label>
-                        <label class="settings-switch">
-                            <input id="mail-notify" type="checkbox" data-time-toggle="mail" />
-                            <span class="settings-slider"></span>
-                        </label>
-
-                        <div class="settings-time-block is-hidden" data-time-block="mail">
-                            <p class="settings-label">メール通知時間</p>
-                            <div class="settings-time-selects">
-                                <div class="settings-time-select">
-                                    <span class="settings-time-tag">朝</span>
-                                    <select class="settings-select" aria-label="メール通知 朝">
-                                        @foreach (range(0, 23) as $hour)
-                                            <option value="{{ sprintf('%02d:00', $hour) }}" @selected(sprintf('%02d:00', $hour) === '08:00')>
-                                                {{ sprintf('%02d:00', $hour) }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="settings-time-select">
-                                    <span class="settings-time-tag">夜</span>
-                                    <select class="settings-select" aria-label="メール通知 夜">
-                                        @foreach (range(0, 23) as $hour)
-                                            <option value="{{ sprintf('%02d:00', $hour) }}" @selected(sprintf('%02d:00', $hour) === '20:00')>
                                                 {{ sprintf('%02d:00', $hour) }}</option>
                                         @endforeach
                                     </select>

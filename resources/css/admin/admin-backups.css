@@ -1,11 +1,13 @@
 @import "../home/plan-register-modal.css";
 
+/* カードのグリッドレイアウト */
 .admin-backup-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.5rem;
 }
 
+/* カード共通 */
 .admin-backup-card {
     border: 1px solid #e5e7eb;
     border-radius: 0.75rem;
@@ -13,6 +15,7 @@
     background: #fff;
 }
 
+/* カードタイトル */
 .admin-backup-title {
     margin-top: 0.25rem;
     font-size: 1.1rem;
@@ -20,12 +23,14 @@
     color: #111827;
 }
 
+/* カード説明文 */
 .admin-backup-desc {
     margin-top: 0.5rem;
     font-size: 0.9rem;
     color: #6b7280;
 }
 
+/* カード内の操作群 */
 .admin-backup-actions {
     margin-top: 1.25rem;
     display: flex;
@@ -33,6 +38,7 @@
     gap: 0.75rem;
 }
 
+/* ラベル＋入力の行 */
 .admin-backup-row {
     display: flex;
     align-items: center;
@@ -40,11 +46,13 @@
     flex-wrap: wrap;
 }
 
+/* ラベル文字 */
 .admin-backup-label {
     font-size: 0.85rem;
     color: #6b7280;
 }
 
+/* セレクトの共通スタイル */
 .admin-backup-select {
     border: 1px solid #d1d5db;
     border-radius: 0.5rem;
@@ -53,11 +61,13 @@
     background: #fff;
 }
 
+/* 補足テキスト */
 .admin-backup-hint {
     font-size: 0.85rem;
     color: #6b7280;
 }
 
+/* 管理画面ボタン */
 .admin-button-primary,
 .admin-button-secondary {
     border-radius: 0.5rem;
@@ -67,6 +77,7 @@
     border: 1px solid transparent;
 }
 
+/* メインボタン */
 .admin-button-primary {
     background: #111827;
     color: #fff;
@@ -76,6 +87,7 @@
     background: #1f2937;
 }
 
+/* サブボタン */
 .admin-button-secondary {
     border-color: #d1d5db;
     color: #374151;
@@ -86,11 +98,13 @@
     background: #f9fafb;
 }
 
+/* 無効状態 */
 .admin-button-secondary.is-disabled {
     opacity: 0.5;
     pointer-events: none;
 }
 
+/* リンク風ボタン */
 .admin-button-link {
     font-size: 0.85rem;
     color: #2563eb;
@@ -100,18 +114,21 @@
     text-decoration: underline;
 }
 
+/* スイッチ全体 */
 .admin-switch {
     position: relative;
     width: 56px;
     height: 30px;
 }
 
+/* スイッチの入力を隠す */
 .admin-switch input {
     opacity: 0;
     width: 0;
     height: 0;
 }
 
+/* スイッチのラベル */
 .admin-switch label {
     cursor: pointer;
     display: block;
@@ -120,6 +137,7 @@
     position: relative;
 }
 
+/* スイッチのトラック */
 .admin-switch-track {
     position: absolute;
     inset: 0;
@@ -128,6 +146,7 @@
     transition: background 0.2s ease;
 }
 
+/* スイッチのつまみ */
 .admin-switch-thumb {
     position: absolute;
     top: 4px;
@@ -140,20 +159,24 @@
     transition: transform 0.2s ease;
 }
 
+/* ON時のトラック色 */
 .admin-switch input:checked + label .admin-switch-track {
     background: #111827;
 }
 
+/* ON時のつまみ位置 */
 .admin-switch input:checked + label .admin-switch-thumb {
     transform: translateX(26px);
 }
 
+/* フィルタ群 */
 .admin-backup-filters {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
 }
 
+/* フィルタ単位 */
 .admin-filter {
     display: inline-flex;
     align-items: center;
@@ -162,6 +185,7 @@
     color: #6b7280;
 }
 
+/* フィルタのセレクト */
 .admin-filter-select {
     border: 1px solid #d1d5db;
     border-radius: 0.5rem;
@@ -170,6 +194,7 @@
     background: #fff;
 }
 
+/* バックアップ概要 */
 .admin-backup-summary {
     margin-top: 1rem;
     display: flex;
@@ -179,6 +204,7 @@
     color: #4b5563;
 }
 
+/* テーブルラッパー */
 .admin-backup-table {
     margin-top: 1rem;
     overflow: auto;
@@ -186,6 +212,7 @@
     border-radius: 0.75rem;
 }
 
+/* テーブル共通 */
 .admin-backup-table table {
     width: 100%;
     min-width: 640px;
@@ -193,6 +220,7 @@
     font-size: 0.9rem;
 }
 
+/* 見出しセル */
 .admin-backup-table th {
     text-align: center;
     background: #f9fafb;
@@ -201,6 +229,7 @@
     padding: 0.75rem;
 }
 
+/* 本文セル */
 .admin-backup-table td {
     padding: 0.75rem;
     border-top: 1px solid #e5e7eb;
@@ -208,12 +237,14 @@
     text-align: center;
 }
 
+/* ファイル名セル */
 .admin-backup-file {
     color: #111827;
     font-weight: 500;
     text-align: left;
 }
 
+/* ステータスバッジ */
 .admin-backup-status {
     display: inline-flex;
     align-items: center;
@@ -224,16 +255,19 @@
     font-weight: 600;
 }
 
+/* 成功 */
 .admin-backup-status--success {
     background: #dcfce7;
     color: #166534;
 }
 
+/* 失敗 */
 .admin-backup-status--failed {
     background: #fee2e2;
     color: #991b1b;
 }
 
+/* 行内アクション */
 .admin-backup-actions {
     display: inline-flex;
     align-items: center;
@@ -244,6 +278,7 @@
 }
 
 
+/* トーストの配置 */
 .admin-toast-stack {
     position: fixed;
     right: 1.5rem;
@@ -254,6 +289,7 @@
     gap: 0.75rem;
 }
 
+/* トースト本体 */
 .admin-toast {
     min-width: 220px;
     border-radius: 9999px;
@@ -267,11 +303,13 @@
     transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
+/* トースト表示状態 */
 .admin-toast.is-visible {
     opacity: 1;
     transform: translateY(0);
 }
 
+/* エラートースト */
 .admin-toast.is-error {
     background-color: #b91c1c;
 }

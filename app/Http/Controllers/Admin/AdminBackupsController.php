@@ -13,6 +13,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * 管理画面：バックアップ
+ *
+ * - index: バックアップ一覧・手動/自動設定の表示。backup_settings（1件）と backup_files（直近50件）を取得
+ * - storeManual: 手動バックアップ。backup.async が true のときは RunBackupJob をディスパッチして即返す
+ * - list: 一覧の JSON（非同期時のポーリング用）
+ * - updateSettings: 自動バックアップの ON/OFF と実行時刻を保存
+ * - retry: 失敗バックアップの再実行（同様に async の場合はキュー投入）
+ * - download: 成功したバックアップのファイルを config('backup.disk') からストリーム返却（R2 の場合は readStream）
+ * - destroy: ストレージ上のファイルを削除してから backup_files レコードを削除（R2 も Storage::disk()->delete で削除される）
+ */
 class AdminBackupsController extends Controller
 {
     private BackupService $backupService;

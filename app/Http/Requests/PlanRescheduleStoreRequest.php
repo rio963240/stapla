@@ -26,4 +26,12 @@ class PlanRescheduleStoreRequest extends FormRequest
             'weights.*.weight' => ['required', 'integer', 'min:1', 'max:999'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'weights.*.weight.min' => '重みは1以上で入力してください。',
+            'weights.*.weight.max' => '重みは999以下で入力してください。',
+        ];
+    }
 }

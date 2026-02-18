@@ -5,3 +5,8 @@
 [x-cloak] {
     display: none;
 }
+
+/* 共通ヘッダーを表示するページではサイドバー内の重複ヘッダーを非表示 */
+.sidebar-layout-page .sidebar-layout-mobile-header {
+    display: none !important;
+}

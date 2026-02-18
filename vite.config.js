@@ -26,6 +26,7 @@ export default defineConfig({
                 'resources/js/admin/admin-backups.js',
                 'resources/css/admin/admin-users.css',
                 'resources/js/admin/admin-users.js',
+                'resources/js/admin/profile-menu.js',
             ],
             refresh: true,
         }),

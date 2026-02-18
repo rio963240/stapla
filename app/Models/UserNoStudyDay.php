@@ -8,7 +8,7 @@ class UserNoStudyDay extends BaseModel
 {
     protected $table = 'user_no_study_days';
     protected $primaryKey = 'user_no_study_days_id';
-    public $timestamps = false; //テーブルは timestamps 無し
+    public $timestamps = false;
     // 勉強不可日の登録に使用
     protected $fillable = [
         'user_qualification_targets_id',

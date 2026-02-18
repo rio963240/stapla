@@ -22,11 +22,13 @@ class PlanRescheduleController extends Controller
     // リスケ画面表示用の初期データを返す
     public function data(PlanRescheduleDataRequest $request): JsonResponse
     {
+        // 入力値の取得とユーザー確認
         $validated = $request->validated();
 
         $userId = $request->user()->id;
         $targetId = (int) $validated['target_id'];
 
+        // 対象の資格目標を取得
         $target = UserQualificationTarget::query()
             ->where('user_qualification_targets_id', $targetId)
             ->where('user_id', $userId)
@@ -36,6 +38,7 @@ class PlanRescheduleController extends Controller
             return response()->json(['message' => 'not found'], 404);
         }
 
+        // 有効な計画が存在するか確認
         $activePlan = StudyPlan::query()
             ->where('user_qualification_targets_id', $targetId)
             ->where('is_active', true)
@@ -92,6 +95,7 @@ class PlanRescheduleController extends Controller
         $weights = $useSubdomain ? $subdomainWeights : $domainWeights;
         $weightType = $useSubdomain ? 'subdomain' : 'domain';
 
+        // 資格名を取得
         $qualificationName = DB::table('qualification')
             ->where('qualification_id', $target->qualification_id)
             ->value('name');
@@ -111,11 +115,13 @@ class PlanRescheduleController extends Controller
 
     public function store(PlanRescheduleStoreRequest $request): JsonResponse
     {
+        // 入力値の取得とユーザー確認
         $validated = $request->validated();
 
         $userId = $request->user()->id;
         $targetId = (int) $validated['target_id'];
 
+        // 対象の資格目標を取得
         $target = UserQualificationTarget::query()
             ->where('user_qualification_targets_id', $targetId)
             ->where('user_id', $userId)
@@ -125,6 +131,7 @@ class PlanRescheduleController extends Controller
             return response()->json(['message' => 'not found'], 404);
         }
 
+        // 有効な計画を取得
         $activePlan = StudyPlan::query()
             ->where('user_qualification_targets_id', $targetId)
             ->where('is_active', true)
@@ -136,6 +143,7 @@ class PlanRescheduleController extends Controller
             ]);
         }
 
+        // 再配分は複数テーブル更新のためトランザクション
         return DB::transaction(function () use ($target, $activePlan, $validated): JsonResponse {
             $timezone = 'Asia/Tokyo';
             $baseDate = Carbon::now($timezone)->startOfDay();
@@ -198,6 +206,7 @@ class PlanRescheduleController extends Controller
                 ]);
             }
 
+            // 予定合計と実績合計から残り学習時間を算出
             $plannedTotal = (int) DB::table('study_plan_items')
                 ->join('todo', 'study_plan_items.todo_id', '=', 'todo.todo_id')
                 ->where('todo.study_plans_id', $activePlan->study_plans_id)
@@ -224,6 +233,7 @@ class PlanRescheduleController extends Controller
                 ]);
             }
 
+            // 重みタイプとIDの整合性をチェック
             $useSubdomain = $validated['weight_type'] === 'subdomain';
             $payloadWeights = collect($validated['weights'] ?? []);
 
@@ -283,6 +293,7 @@ class PlanRescheduleController extends Controller
 
             $weights = $payloadWeights->values();
 
+            // 重み合計が0ならエラー
             $totalWeight = (int) $weights->sum('weight');
             if ($totalWeight <= 0) {
                 throw ValidationException::withMessages([
@@ -290,6 +301,7 @@ class PlanRescheduleController extends Controller
                 ]);
             }
 
+            // 分野ごとの残量と日次配分を算出
             $domainRemaining = [];
             $domainDaily = [];
             $allocated = 0;
@@ -313,6 +325,7 @@ class PlanRescheduleController extends Controller
                 $index += 1;
             }
 
+            // 再配分対象日の既存todoを削除
             Todo::query()
                 ->where('study_plans_id', $activePlan->study_plans_id)
                 ->where('date', '>=', $regenFrom->toDateString())
@@ -322,8 +335,10 @@ class PlanRescheduleController extends Controller
                 return response()->json(['study_plans_id' => $activePlan->study_plans_id]);
             }
 
+            // 日別・分野別の配分を組み立て
             $remainingMinutes = $remainingTotal;
             $allocations = [];
+            // 配分結果からtodoとstudy_plan_itemsを作成
             foreach ($days as $date) {
                 if ($remainingMinutes <= 0) {
                     break;

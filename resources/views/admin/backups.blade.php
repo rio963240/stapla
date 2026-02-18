@@ -14,6 +14,7 @@
     @endphp
     @push('styles')
         @vite('resources/css/admin/admin-backups.css')
+        @vite('resources/css/home/profile-menu.css')
     @endpush
 
     <div class="h-screen bg-gray-100 overflow-hidden">
@@ -37,5 +38,6 @@
 
     @push('scripts')
         @vite('resources/js/admin/admin-backups.js')
+        @vite('resources/js/admin/profile-menu.js')
     @endpush
 </x-app-layout>

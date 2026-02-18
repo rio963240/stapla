@@ -18,10 +18,12 @@ class SendLineMorningNotification extends Command
 
     public function handle(LineMessagingService $line): int
     {
+        // 今日の日付と送信時刻（オプション指定を含む）
         $today = Carbon::today()->toDateString();
         $currentTime = $this->option('time') ?? Carbon::now('Asia/Tokyo')->format('H:i');
         $currentTime = $this->normalizeTimeOption($currentTime);
 
+        // 送信対象のLINEアカウントを抽出
         $query = LineAccount::whereNotNull('line_user_id')
             ->whereHas('user', fn ($q) => $q->whereRaw('line_morning_time::text LIKE ?', [$currentTime . '%'])->where('line_notify_enabled', true));
         if ($userId = $this->option('user')) {
@@ -29,6 +31,7 @@ class SendLineMorningNotification extends Command
         }
         $accounts = $query->with('user')->get();
 
+        // テスト時刻シミュレートの案内
         if ($this->option('time')) {
             $this->info("送信時刻を {$currentTime} としてシミュレートしています。");
         }
@@ -51,11 +54,13 @@ class SendLineMorningNotification extends Command
                 ->exists();
 
             if ($isNoStudyDay) {
+                // お休み通知
                 $body = "☀️ おはようございます！\n今日はお休みの日。ゆっくり過ごしましょう。";
                 $line->pushText($account->line_user_id, $body);
                 continue;
             }
 
+            // 今日の予定（分野別の予定分数）を取得
             $planRows = DB::table('todo')
                 ->join('study_plans', 'todo.study_plans_id', '=', 'study_plans.study_plans_id')
                 ->join(
@@ -87,9 +92,11 @@ class SendLineMorningNotification extends Command
                 ->orderBy('domain_name')
                 ->get();
 
+            // 合計分数と行一覧を組み立て
             $totalMinutes = $planRows->sum('planned_minutes');
             $lines = $planRows->map(fn ($row) => '・' . ($row->domain_name ?? '未分類') . ' ' . (int) $row->planned_minutes . '分');
 
+            // 通知文の組み立て
             $body = "☀️ おはようございます！\n\n"
                 . "本日の予定：" . (int) $totalMinutes . "分\n"
                 . ($lines->isNotEmpty() ? $lines->implode("\n") . "\n\n" : "\n")
@@ -98,6 +105,7 @@ class SendLineMorningNotification extends Command
             $line->pushText($account->line_user_id, $body);
         }
 
+        // 送信結果のログ
         $this->info('Sent morning notifications to ' . $accounts->count() . ' user(s).');
 
         return self::SUCCESS;

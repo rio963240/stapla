@@ -8,10 +8,11 @@
 
 <div
     x-data="{ drawerOpen: false }"
+    x-on:open-drawer.window="drawerOpen = true"
     class="flex h-[calc(100vh-3rem)] max-w-7xl mx-auto flex-col md:flex-row gap-0 md:gap-8 px-0 md:px-6 py-0 md:py-6 sm:px-6 lg:px-8 overflow-x-hidden"
 >
-    {{-- スマホのみ: ヘッダー（ロゴ + ハンバーガー） --}}
-    <header class="md:hidden sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4 shadow-sm">
+    {{-- スマホのみ: ヘッダー（共通ヘッダーを使う場合は非表示） --}}
+    <header class="sidebar-layout-mobile-header md:hidden sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4 shadow-sm">
         <a href="{{ route($homeRoute) }}" class="flex items-center gap-2">
             <x-application-mark class="block h-8 w-auto" />
             <span class="text-lg font-medium text-gray-800">スタプラ</span>

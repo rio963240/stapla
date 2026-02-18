@@ -8,7 +8,7 @@ class UserDomainPreference extends BaseModel
 {
     protected $table = 'user_domain_preferences';
     protected $primaryKey = 'user_domain_preferences_id';
-    public $timestamps = false; // ←timestamps無し
+    public $timestamps = false;
     // 分野重みの登録に使用
     protected $fillable = [
         'user_qualification_targets_id',

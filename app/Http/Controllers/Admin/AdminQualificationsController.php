@@ -12,23 +12,23 @@ use App\Models\QualificationDomain;
 use App\Models\QualificationSubdomain;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use RuntimeException;
 use SplFileObject;
 use Throwable;
 
 class AdminQualificationsController extends Controller
 {
-    public function downloadTemplate(): StreamedResponse
+    public function downloadTemplate(): BinaryFileResponse
     {
-        return response()->streamDownload(function () {
-            $handle = fopen('php://output', 'w');
-            if ($handle === false) {
-                return;
-            }
-            fclose($handle);
-        }, 'qualification_template.csv', [
-            'Content-Type' => 'text/csv',
+        $path = storage_path('app/templates/qualification_template.csv');
+
+        if (!is_readable($path)) {
+            abort(404, 'テンプレートファイルが見つかりません');
+        }
+
+        return response()->download($path, 'qualification_template.csv', [
+            'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
     }
 

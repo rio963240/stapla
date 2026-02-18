@@ -10,26 +10,34 @@
             @endif
         </h1>
     </div>
-    <div class="flex items-center gap-2">
-        <a href="{{ route('admin.qualifications.template') }}"
-            class="rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-            テンプレートDL
-        </a>
-        <form method="POST" action="{{ route('admin.qualifications.import') }}"
-            enctype="multipart/form-data" class="flex items-center gap-2" data-admin-csv-form>
-            @csrf
-            <input type="file" name="csv_file" accept=".csv,text/csv" class="hidden"
-                data-admin-csv-input>
-            <button type="button"
-                class="rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                data-admin-csv-trigger>
-                CSVアップロード
-            </button>
-        </form>
+    <div class="flex flex-col items-end gap-2">
+        <div class="flex items-center gap-2">
+            <a href="{{ route('admin.qualifications.template') }}"
+                class="rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                テンプレートDL
+            </a>
+            <form method="POST" action="{{ route('admin.qualifications.import') }}"
+                enctype="multipart/form-data" class="flex items-center gap-2" data-admin-csv-form>
+                @csrf
+                <input type="file" name="csv_file" accept=".csv,text/csv" class="hidden"
+                    data-admin-csv-input>
+                <button type="button"
+                    class="rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    data-admin-csv-trigger>
+                    CSVアップロード
+                </button>
+            </form>
+        </div>
         <button type="button"
             class="rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
             data-admin-create-open>
-            追加
+            @if ($mode === 'qualification')
+                資格追加
+            @elseif ($mode === 'domain')
+                分野追加
+            @else
+                サブ分野追加
+            @endif
         </button>
     </div>
 </div>

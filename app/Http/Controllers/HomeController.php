@@ -11,11 +11,13 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
+        // 一般ユーザーのホーム表示
         return view('home', $this->buildViewData());
     }
 
     public function adminIndex(Request $request)
     {
+        // 管理者としてホーム表示（管理者フラグを付与）
         $data = $this->buildViewData();
         $data['isAdmin'] = true;
 
@@ -24,6 +26,7 @@ class HomeController extends Controller
 
     private function buildViewData(): array
     {
+        // 資格一覧（有効なもののみ）
         $qualifications = Qualification::query()
             ->where('is_active', true)
             ->orderBy('name')
@@ -32,6 +35,7 @@ class HomeController extends Controller
         $userId = Auth::id();
         $targets = collect();
         if ($userId) {
+            // ログインユーザーの目標資格とアクティブ計画を取得
             $targets = DB::table('user_qualification_targets as uqt')
                 ->join('qualification as q', 'uqt.qualification_id', '=', 'q.qualification_id')
                 ->leftJoin('study_plans as sp', function ($join) {
@@ -49,6 +53,7 @@ class HomeController extends Controller
                 ->get();
         }
 
+        // ビューに渡すデータをまとめる
         return compact('qualifications', 'targets');
     }
 }

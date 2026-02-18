@@ -25,6 +25,7 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // 今回はサービス登録なし
         //
     }
 
@@ -33,6 +34,7 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // 認証処理をカスタマイズ（メール小文字化・無効ユーザー排除）
         Fortify::authenticateUsing(function (Request $request) {
             $user = User::query()->where('email', Str::lower($request->input(Fortify::username())))->first();
             if (!$user || !Hash::check($request->password, $user->password)) {
@@ -44,12 +46,14 @@ class FortifyServiceProvider extends ServiceProvider
             return $user;
         });
 
+        // Fortifyのアクションを登録
         Fortify::createUsersUsing(CreateNewUser::class);
         Fortify::updateUserProfileInformationUsing(UpdateUserProfileInformation::class);
         Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::redirectUserForTwoFactorAuthenticationUsing(RedirectIfTwoFactorAuthenticatable::class);
 
+        // パスワード再設定メールの文面を差し替え
         ResetPassword::toMailUsing(function ($notifiable, string $token) {
             $url = url(route('password.reset', [
                 'token' => $token,
@@ -69,12 +73,14 @@ class FortifyServiceProvider extends ServiceProvider
                 ]);
         });
 
+        // ログイン試行のレート制限
         RateLimiter::for('login', function (Request $request) {
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
 
             return Limit::perMinute(5)->by($throttleKey);
         });
 
+        // 二要素認証のレート制限
         RateLimiter::for('two-factor', function (Request $request) {
             return Limit::perMinute(5)->by($request->session()->get('login.id'));
         });

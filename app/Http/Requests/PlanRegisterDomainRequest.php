@@ -11,11 +11,13 @@ class PlanRegisterDomainRequest extends FormRequest
 {
     public function authorize(): bool
     {
+        // ここでは認可条件なし（認証済み前提）
         return true;
     }
 
     public function rules(): array
     {
+        // 基本バリデーション
         return [
             'start_date' => ['required', 'date'],
             'exam_date' => ['required', 'date', 'after:start_date'],
@@ -32,13 +34,17 @@ class PlanRegisterDomainRequest extends FormRequest
 
     public function messages(): array
     {
+        // バリデーションメッセージの上書き
         return [
             'exam_date.after' => '受験日は勉強開始日以降の日付を入力してください。',
+            'domains.*.weight.min' => '分野の重みは1以上で入力してください。',
+            'domains.*.weight.max' => '分野の重みは999以下で入力してください。',
         ];
     }
 
     public function withValidator(Validator $validator): void
     {
+        // 追加ルール（日付・分野の整合性）
         $validator->after(function (Validator $validator): void {
             $startDate = $this->input('start_date');
             $examDate = $this->input('exam_date');
@@ -54,6 +60,7 @@ class PlanRegisterDomainRequest extends FormRequest
             if (is_array($domains)) {
                 $qualificationId = $this->input('qualification_id');
                 if ($qualificationId) {
+                    // 分野が資格に紐づいているかを検証
                     $domainIds = collect($domains)->pluck('id')->unique()->values();
                     if ($domainIds->isNotEmpty()) {
                         $domainsCount = QualificationDomain::query()
@@ -67,6 +74,7 @@ class PlanRegisterDomainRequest extends FormRequest
                     }
                 }
 
+                // 重みの合計が0でないことを確認
                 $totalWeight = collect($domains)->sum('weight');
                 if ($totalWeight <= 0) {
                     $validator->errors()->add('domains', '重みの合計が0です。');

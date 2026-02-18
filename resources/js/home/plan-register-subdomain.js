@@ -9,8 +9,10 @@ const initQualificationSubdomains = () => {
     const qualificationSelect = document.querySelector('[data-qualification-select="subdomain"]');
     if (!qualificationSelect) return;
 
+    // サブ分野セレクトをまとめて取得
     const getSubdomainSelects = () => document.querySelectorAll('[data-subdomain-select="subdomain"]');
 
+    // セレクト用のoptionを構築
     const buildOptions = (subdomains) => {
         const fragment = document.createDocumentFragment();
         const placeholder = document.createElement('option');
@@ -29,6 +31,7 @@ const initQualificationSubdomains = () => {
         return fragment;
     };
 
+    // 全セレクトにoptionを反映
     const applyOptions = (subdomains) => {
         getSubdomainSelects().forEach((select) => {
             select.innerHTML = '';
@@ -36,6 +39,7 @@ const initQualificationSubdomains = () => {
         });
     };
 
+    // APIからサブ分野を取得
     const fetchSubdomains = async (qualificationId) => {
         if (!qualificationId) {
             applyOptions([]);
@@ -55,6 +59,7 @@ const initQualificationSubdomains = () => {
         }
     };
 
+    // 資格変更時にサブ分野を再取得
     qualificationSelect.addEventListener('change', (event) => {
         const target = event.target;
         if (!(target instanceof HTMLSelectElement)) return;
@@ -68,6 +73,7 @@ const initPlanRegisterSubdomainSubmit = () => {
     if (!submitButton) return;
 
     submitButton.addEventListener('click', async () => {
+        // 入力要素を取得
         const startInput = document.querySelector('[data-plan-start="subdomain"]');
         const examInput = document.querySelector('[data-plan-exam="subdomain"]');
         const qualificationSelect = document.querySelector('[data-qualification-select="subdomain"]');
@@ -133,11 +139,13 @@ const initPlanRegisterSubdomainSubmit = () => {
             no_study_days: noStudyDays,
         };
 
+        // 送信中表示に切り替え
         const originalLabel = submitButton.textContent;
         submitButton.setAttribute('disabled', 'true');
         submitButton.textContent = '送信中...';
 
         try {
+            // 計画登録APIへ送信
             const response = await fetch('/plan-register/subdomain', {
                 method: 'POST',
                 headers: {
@@ -155,6 +163,7 @@ const initPlanRegisterSubdomainSubmit = () => {
                 return;
             }
 
+            // エラーメッセージの整形
             const data = await response.json().catch(() => ({}));
             const message =
                 (data?.errors && Object.values(data.errors).flat()[0]) ||
@@ -164,12 +173,14 @@ const initPlanRegisterSubdomainSubmit = () => {
         } catch (error) {
             alert('通信に失敗しました。');
         } finally {
+            // ボタン表示を元に戻す
             submitButton.removeAttribute('disabled');
             submitButton.textContent = originalLabel;
         }
     });
 };
 
+// 初期化（サブ分野取得と送信処理）
 export const initPlanRegisterSubdomain = () => {
     initQualificationSubdomains();
     initPlanRegisterSubdomainSubmit();

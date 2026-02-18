@@ -15,6 +15,7 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // 管理者ユーザーのみアクセスを許可
         $user = $request->user();
 
         if (!$user || !$user->is_admin) {

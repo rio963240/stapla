@@ -96,8 +96,9 @@ const initCalendar = () => {
             center: 'title',
             right: 'dayGridMonth,dayGridWeek',
         },
-        // ビュー切替ボタンの表示名
+        // ビュー切替・今日ボタンの表示名
         buttonText: {
+            today: '今日',
             month: '月',
             week: '週',
         },

@@ -11,11 +11,13 @@ class PlanRegisterSubdomainRequest extends FormRequest
 {
     public function authorize(): bool
     {
+        // ここでは認可条件なし（認証済み前提）
         return true;
     }
 
     public function rules(): array
     {
+        // 基本バリデーション
         return [
             'start_date' => ['required', 'date'],
             'exam_date' => ['required', 'date', 'after:start_date'],
@@ -32,13 +34,17 @@ class PlanRegisterSubdomainRequest extends FormRequest
 
     public function messages(): array
     {
+        // バリデーションメッセージの上書き
         return [
             'exam_date.after' => '受験日は勉強開始日以降の日付を入力してください。',
+            'subdomains.*.weight.min' => 'サブ分野の重みは1以上で入力してください。',
+            'subdomains.*.weight.max' => 'サブ分野の重みは999以下で入力してください。',
         ];
     }
 
     public function withValidator(Validator $validator): void
     {
+        // 追加ルール（日付・サブ分野の整合性）
         $validator->after(function (Validator $validator): void {
             $startDate = $this->input('start_date');
             $examDate = $this->input('exam_date');
@@ -54,6 +60,7 @@ class PlanRegisterSubdomainRequest extends FormRequest
             if (is_array($subdomains)) {
                 $qualificationId = $this->input('qualification_id');
                 if ($qualificationId) {
+                    // サブ分野が資格に紐づいているかを検証
                     $subdomainIds = collect($subdomains)->pluck('id')->unique()->values();
                     if ($subdomainIds->isNotEmpty()) {
                         $subdomainsCount = QualificationSubdomain::query()
@@ -73,6 +80,7 @@ class PlanRegisterSubdomainRequest extends FormRequest
                     }
                 }
 
+                // 重みの合計が0でないことを確認
                 $totalWeight = collect($subdomains)->sum('weight');
                 if ($totalWeight <= 0) {
                     $validator->errors()->add('subdomains', '重みの合計が0です。');

@@ -9,7 +9,7 @@ class StudyPlanItem extends BaseModel
 {
     protected $table = 'study_plan_items';
     protected $primaryKey = 'study_plan_items_id';
-    public $timestamps = false; // ←timestamps無し
+    public $timestamps = false;
 
     protected $fillable = [
         'todo_id',

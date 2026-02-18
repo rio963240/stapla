@@ -8,6 +8,17 @@ use App\Services\BackupService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 
+/**
+ * 自動バックアップ実行コマンド（backups:auto）
+ *
+ * routes/console.php で Schedule::command('backups:auto')->everyMinute() により毎分実行される。
+ * 外部 cron（cron-job.org 等）で /internal/cron/schedule を叩いている場合は、その都度 schedule:run が走り本コマンドが実行される。
+ *
+ * 処理内容:
+ * - backup_settings の is_enabled が false なら何もしない
+ * - run_time（例: 02:00）と現在時刻（H:i）が一致したときだけ BackupService::runBackup(true) を実行
+ * - 同一分に既に自動バックアップが実行済みなら二重実行を防ぐ
+ */
 class RunAutoBackup extends Command
 {
     protected $signature = 'backups:auto';

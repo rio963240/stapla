@@ -3,6 +3,7 @@
     @php($toastMessage = session('toast_message') ?? ($errors->any() ? $errors->first() : null))
     @push('styles')
         @vite('resources/css/admin/admin-qualifications.css')
+        @vite('resources/css/home/profile-menu.css')
     @endpush
     @php($isAdmin = true)
     <div class="h-screen bg-gray-100 overflow-hidden">
@@ -31,5 +32,6 @@
 
     @push('scripts')
         @vite('resources/js/admin/admin-qualifications.js')
+        @vite('resources/js/admin/profile-menu.js')
     @endpush
 </x-app-layout>

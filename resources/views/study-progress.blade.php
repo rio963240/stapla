@@ -25,20 +25,6 @@
                                 </select>
                             </div>
 
-                            <div class="study-progress-control">
-                                <label class="study-progress-label">期間選択</label>
-                                <div class="study-progress-date-range">
-                                    <input type="date" class="study-progress-date" data-study-progress-start
-                                        value="{{ $initialData['period_start'] ?? '' }}" />
-                                    <span class="study-progress-date-separator">〜</span>
-                                    <input type="date" class="study-progress-date" data-study-progress-end
-                                        value="{{ $initialData['period_end'] ?? '' }}" />
-                                    <button type="button" class="study-progress-apply" data-study-progress-apply>
-                                        更新
-                                    </button>
-                                </div>
-                            </div>
-
                             <div class="study-progress-summary" data-study-progress-summary>
                                 <div class="study-progress-summary-item">
                                     <span class="study-progress-summary-label">累積達成率</span>
@@ -90,6 +76,19 @@
                                         <span class="study-progress-legend-item is-good">100%以上</span>
                                         <span class="study-progress-legend-item is-mid">80%以上</span>
                                         <span class="study-progress-legend-item is-low">80%未満</span>
+                                    </div>
+                                </div>
+                                <div class="study-progress-period-control">
+                                    <label class="study-progress-label">期間選択</label>
+                                    <div class="study-progress-date-range">
+                                        <input type="date" class="study-progress-date" data-study-progress-start
+                                            value="{{ $initialData['period_start'] ?? '' }}" />
+                                        <span class="study-progress-date-separator">〜</span>
+                                        <input type="date" class="study-progress-date" data-study-progress-end
+                                            value="{{ $initialData['period_end'] ?? '' }}" />
+                                        <button type="button" class="study-progress-apply" data-study-progress-apply>
+                                            更新
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="study-progress-chart">

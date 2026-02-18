@@ -5,6 +5,7 @@
     @endphp
     @push('styles')
         @vite('resources/css/admin/admin-users.css')
+        @vite('resources/css/home/profile-menu.css')
     @endpush
 
     <div class="h-screen bg-gray-100 overflow-hidden">
@@ -116,5 +117,6 @@
             window.ADMIN_USERS_UPDATE_URL = "{{ url('admin/users') }}";
         </script>
         @vite('resources/js/admin/admin-users.js')
+        @vite('resources/js/admin/profile-menu.js')
     @endpush
 </x-app-layout>

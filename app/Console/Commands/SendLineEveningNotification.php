@@ -17,9 +17,11 @@ class SendLineEveningNotification extends Command
 
     public function handle(LineMessagingService $line): int
     {
+        // 現在時刻（またはオプション指定の時刻）を取得
         $currentTime = $this->option('time') ?? \Carbon\Carbon::now('Asia/Tokyo')->format('H:i');
         $currentTime = $this->normalizeTimeOption($currentTime);
 
+        // 送信対象のLINEアカウントを抽出
         $query = LineAccount::whereNotNull('line_user_id')
             ->whereHas('user', fn ($q) => $q->whereRaw('line_evening_time::text LIKE ?', [$currentTime . '%'])->where('line_notify_enabled', true));
         if ($userId = $this->option('user')) {
@@ -27,6 +29,7 @@ class SendLineEveningNotification extends Command
         }
         $accounts = $query->with('user')->get();
 
+        // テスト時の時刻シミュレート通知
         if ($this->option('time')) {
             $this->info("送信時刻を {$currentTime} としてシミュレートしています。");
         }
@@ -37,6 +40,7 @@ class SendLineEveningNotification extends Command
             $this->warn('  - users.line_evening_time が --time= で指定した時刻と一致（例: 20:00 なら --time=20:00）');
         }
 
+        // 入力画面URLと今日の日付
         $inputUrl = url('/dashboard');
         $today = \Carbon\Carbon::today('Asia/Tokyo')->toDateString();
 
@@ -51,6 +55,7 @@ class SendLineEveningNotification extends Command
                 ->exists();
 
             if ($isNoStudyDay) {
+                // お休み通知
                 $body = "🌙 今日はお休みの日でしたね。\n明日も無理せず、良い一日を。";
                 $line->pushText($account->line_user_id, $body);
                 continue;
@@ -71,6 +76,7 @@ class SendLineEveningNotification extends Command
 
             $rate = 0;
             if ($target && $target->plan_id) {
+                // 計画全体の累積達成率を算出
                 $totals = DB::table('todo')
                     ->join('study_plan_items', 'todo.todo_id', '=', 'study_plan_items.todo_id')
                     ->leftJoin('study_records', function ($join) {
@@ -85,6 +91,7 @@ class SendLineEveningNotification extends Command
                 $rate = $planned > 0 ? round(($actual / $planned) * 100, 0) : 0;
             }
 
+            // 通知文の組み立て
             $body = "🌙 今日の学習はどうでしたか？\n\n"
                 . "現在の累積達成率：" . $rate . "%\n\n"
                 . "実績を入力するとグラフが更新されます。\n"
@@ -94,6 +101,7 @@ class SendLineEveningNotification extends Command
             $line->pushText($account->line_user_id, $body);
         }
 
+        // 送信結果のログ
         $this->info('Sent evening notifications to ' . $accounts->count() . ' user(s).');
 
         return self::SUCCESS;

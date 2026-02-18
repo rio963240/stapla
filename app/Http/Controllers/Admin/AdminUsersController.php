@@ -13,6 +13,7 @@ class AdminUsersController extends Controller
 {
     public function index(Request $request)
     {
+        // ユーザー一覧の取得クエリ
         $query = User::query()
             ->select(['id', 'name', 'email', 'is_admin', 'is_active', 'last_login_at']);
 
@@ -48,6 +49,7 @@ class AdminUsersController extends Controller
         $sort = $request->query('sort', 'desc');
         $query->orderBy('last_login_at', $sort === 'asc' ? 'asc' : 'desc');
 
+        // 表示用に整形
         $users = $query->get()->map(fn (User $u) => [
             'id' => $u->id,
             'name' => $u->name,
@@ -72,6 +74,7 @@ class AdminUsersController extends Controller
 
     public function update(AdminUserUpdateRequest $request, User $user): JsonResponse
     {
+        // 権限/状態/パスワードの更新
         $data = $request->validated();
 
         try {
@@ -88,6 +91,7 @@ class AdminUsersController extends Controller
             ], 500);
         }
 
+        // 変更後のユーザー情報を返却
         return response()->json([
             'status' => 'success',
             'message' => '更新しました',

@@ -1,11 +1,13 @@
 /* ------------------------------ */
 /* フルカレンダー */
 /* ------------------------------ */
+/* 見出し */
 .fc .fc-toolbar-title {
     font-size: 1.25rem;
     font-weight: 600;
 }
 
+/* 土曜の背景 */
 .fc .fc-day-sat {
     background-color: rgba(59, 130, 246, 0.08);
 }
@@ -15,6 +17,7 @@
     border-top-color: transparent !important;
 }
 
+/* 日曜の背景 */
 .fc .fc-day-sun {
     background-color: rgba(239, 68, 68, 0.08);
 }
@@ -38,15 +41,9 @@
     overflow: hidden;
 }
 
-/* 月表示では全イベントを半透明にし、土曜・日曜のセル背景が欠けずに見えるようにする（複数日イベントは別レイヤー描画のため） */
-.fc .fc-dayGridMonth-view .fc-daygrid-event,
-.fc .fc-dayGridMonth-view .fc-daygrid-event .fc-event-main {
-    background-color: rgba(89, 176, 131, 0.82) !important;
-}
+/* 月表示でもAPIで返した資格ごとの backgroundColor / borderColor を反映（上書きしない） */
 
-/* 月表示の横棒に間隔をつける */
-/* 余白は一旦なし */
-/* 週表示のみ余白を入れる */
+/* イベントの余白（週表示のみ） */
 .fc .fc-daygrid-event-harness {
     margin: 0;
 }
@@ -55,10 +52,12 @@
     margin: 0;
 }
 
+/* 週表示のみ縦余白 */
 .fc .fc-dayGridWeek-view .fc-daygrid-event-harness {
     margin: 10px 0;
 }
 
+/* イベント本文の見切れ処理 */
 .fc .fc-daygrid-event .fc-event-main {
     padding: 4px 6px;
     box-sizing: border-box;
@@ -67,6 +66,7 @@
     text-overflow: ellipsis;
 }
 
+/* イベントタイトルの見切れ処理 */
 .fc .fc-daygrid-event .fc-event-title {
     white-space: nowrap;
     overflow: hidden;
@@ -103,6 +103,7 @@
     border-radius: 14px;
 }
 
+/* 月表示の詳細表示を縦並びに */
 .fc .fc-daygrid-event .fc-event-main > div {
     display: flex;
     flex-direction: column;
@@ -110,6 +111,7 @@
     text-align: left;
 }
 
+/* 月表示の詳細行 */
 .fc .fc-daygrid-event .fc-event-main > div > div {
     font-size: 0.72rem;
     line-height: 1.4;
@@ -122,6 +124,7 @@
     justify-content: center;
 }
 
+/* 日付番号の配置 */
 .fc .fc-daygrid-day-number {
     display: inline-block;
     margin: 4px auto 0;
@@ -140,6 +143,7 @@
     box-sizing: border-box;
 }
 
+/* 週表示のイベント幅と中央揃え */
 .fc .fc-daygrid-day-events .fc-daygrid-event {
     flex: 0 0 auto;
     margin: 0 auto;
@@ -147,30 +151,9 @@
     box-sizing: border-box;
 }
 
+/* 週表示の行間 */
 .fc .fc-dayGridWeek-view .fc-daygrid-day-events {
     gap: 10px;
     padding: 6px 0;
 }
 
-/* 月表示の縦スクロールバーと日付の重なり回避（週表示には影響させない） */
-/* .fc .fc-dayGridMonth-view .fc-scroller-harness {
-    position: relative;
-    padding-right: 16px;
-    box-sizing: border-box;
-} */
-
-/* 右端16px（スクロールバー用）を土曜と同じ色で塗り、左端に縦線を引きテーブル罫線と繋がって見えるようにする */
-/* .fc .fc-dayGridMonth-view .fc-scroller-harness::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 16px;
-    background-color: rgba(59, 130, 246, 0.08);
-    border-left: 1px solid var(--fc-border-color, #e2e8f0);
-    pointer-events: none;
-} */
-
-/* 月表示：土曜セルも他曜日と同様に右ボーダーを表示し、グリッドが繋がって見えるようにする */
-/* （右端ストリップとの二重線を避けるため、ストリップ側で border-left を使う場合は .fc-scroller-harness::after で調整） */

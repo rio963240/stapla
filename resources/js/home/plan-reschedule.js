@@ -106,11 +106,13 @@ const initPlanRescheduleModal = () => {
     if (!modal) return;
     const targetSelect = modal.querySelector('[data-reschedule-target]');
 
+    // モーダルを開く
     const open = () => {
         modal.classList.remove('hidden');
         document.body.classList.add('overflow-hidden');
     };
 
+    // モーダルを閉じる
     const close = () => {
         modal.classList.add('hidden');
         document.body.classList.remove('overflow-hidden');
@@ -129,6 +131,7 @@ const initPlanRescheduleModal = () => {
     });
 
     if (targetSelect instanceof HTMLSelectElement) {
+        // 対象変更時に初期データを取得
         targetSelect.addEventListener('change', async () => {
             const targetId = Number.parseInt(targetSelect.value, 10);
             if (!Number.isFinite(targetId)) {
@@ -174,6 +177,7 @@ const initRescheduleNoStudyChips = () => {
     const list = modal.querySelector('[data-reschedule-no-study-list]');
     if (!(addButton instanceof HTMLElement) || !(input instanceof HTMLInputElement) || !list) return;
 
+    // 入力値からチップを追加
     const addChip = () => {
         const value = input.value;
         if (!value) return;
@@ -205,6 +209,7 @@ const initPlanRescheduleSubmit = () => {
     if (!submitButton) return;
 
     submitButton.addEventListener('click', async () => {
+        // モーダルと対象資格を取得
         const modal = document.getElementById('plan-reschedule-modal');
         if (!modal) return;
         const targetSelect = modal.querySelector('[data-reschedule-target]');
@@ -216,6 +221,7 @@ const initPlanRescheduleSubmit = () => {
             return;
         }
 
+        // 入力値の取得とバリデーション
         const dailyInput = modal.querySelector('[data-reschedule-daily]');
         const bufferInput = modal.querySelector('[data-reschedule-buffer]');
         const dailyStudyTime = Number.parseInt(dailyInput?.value ?? '', 10);
@@ -235,6 +241,7 @@ const initPlanRescheduleSubmit = () => {
             return;
         }
 
+        // 重みの取得
         const weightType = modal.dataset.weightType || 'domain';
         const weightInputs = Array.from(
             modal.querySelectorAll('[data-reschedule-weight-id]'),
@@ -253,6 +260,7 @@ const initPlanRescheduleSubmit = () => {
             return;
         }
 
+        // 勉強不可日を収集
         const noStudyList = modal.querySelector('[data-reschedule-no-study-list]');
         const noStudyDays = noStudyList
             ? Array.from(noStudyList.querySelectorAll('[data-no-study-chip]'))
@@ -260,14 +268,17 @@ const initPlanRescheduleSubmit = () => {
                   .filter(Boolean)
             : [];
 
+        // 実行確認
         const ok = window.confirm('明日以降の計画を削除して再生成します。よろしいですか？');
         if (!ok) return;
 
+        // 送信中表示に切り替え
         const originalLabel = submitButton.textContent;
         submitButton.setAttribute('disabled', 'true');
         submitButton.textContent = '処理中...';
 
         try {
+            // リスケジュールAPIへ送信
             const response = await fetch('/plan-reschedule', {
                 method: 'POST',
                 headers: {
@@ -293,6 +304,7 @@ const initPlanRescheduleSubmit = () => {
                 return;
             }
 
+            // エラーメッセージの整形
             const data = await response.json().catch(() => ({}));
             const message =
                 (data?.errors && Object.values(data.errors).flat()[0]) ||
@@ -302,6 +314,7 @@ const initPlanRescheduleSubmit = () => {
         } catch (error) {
             alert('通信に失敗しました。');
         } finally {
+            // ボタン表示を元に戻す
             submitButton.removeAttribute('disabled');
             submitButton.textContent = originalLabel;
         }
