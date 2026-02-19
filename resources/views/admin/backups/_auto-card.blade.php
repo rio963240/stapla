@@ -7,14 +7,11 @@
                 自動バックアップの有効/無効と実行時刻を設定します。
             </p>
         </div>
-        <div class="admin-switch" data-backup-switch>
+        <label class="admin-switch" for="auto-backup-toggle" data-backup-switch>
             <input id="auto-backup-toggle" type="checkbox"
                 {{ $setting['is_enabled'] ? 'checked' : '' }} />
-            <label for="auto-backup-toggle">
-                <span class="admin-switch-track"></span>
-                <span class="admin-switch-thumb"></span>
-            </label>
-        </div>
+            <span class="admin-switch-slider"></span>
+        </label>
     </div>
 
     <div class="admin-backup-actions">

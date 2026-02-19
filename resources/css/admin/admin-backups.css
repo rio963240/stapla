@@ -114,11 +114,14 @@
     text-decoration: underline;
 }
 
-/* スイッチ全体 */
+/* スイッチ全体（LINE通知設定と同じ構造・スタイル） */
 .admin-switch {
     position: relative;
+    display: inline-flex;
+    align-items: center;
     width: 56px;
     height: 30px;
+    cursor: pointer;
 }
 
 /* スイッチの入力を隠す */
@@ -128,44 +131,36 @@
     height: 0;
 }
 
-/* スイッチのラベル */
-.admin-switch label {
-    cursor: pointer;
-    display: block;
-    width: 100%;
-    height: 100%;
-    position: relative;
-}
-
 /* スイッチのトラック */
-.admin-switch-track {
+.admin-switch-slider {
     position: absolute;
     inset: 0;
+    background-color: #e5e7eb;
     border-radius: 9999px;
-    background: #e5e7eb;
-    transition: background 0.2s ease;
+    transition: background-color 0.2s ease;
 }
 
-/* スイッチのつまみ */
-.admin-switch-thumb {
+/* スイッチのつまみ（トラック内に収まるように調整） */
+.admin-switch-slider::before {
+    content: '';
     position: absolute;
-    top: 4px;
-    left: 4px;
-    width: 22px;
     height: 22px;
+    width: 22px;
+    left: 4px;
+    top: 4px;
+    background-color: #ffffff;
     border-radius: 9999px;
-    background: #fff;
-    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2);
     transition: transform 0.2s ease;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2);
 }
 
 /* ON時のトラック色 */
-.admin-switch input:checked + label .admin-switch-track {
-    background: #111827;
+.admin-switch input:checked + .admin-switch-slider {
+    background-color: #111827;
 }
 
-/* ON時のつまみ位置 */
-.admin-switch input:checked + label .admin-switch-thumb {
+/* ON時のつまみ位置（白い丸がはみ出ないよう 56 - 4 - 22 = 30 で translateX(26px)） */
+.admin-switch input:checked + .admin-switch-slider::before {
     transform: translateX(26px);
 }
 
