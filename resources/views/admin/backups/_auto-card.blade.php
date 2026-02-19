@@ -1,5 +1,5 @@
 <section class="admin-backup-card">
-    <div class="flex items-center justify-between">
+    <div class="admin-backup-auto-header">
         <div>
             <p class="text-xs text-gray-500">自動バックアップ設定</p>
             <h2 class="admin-backup-title">自動バックアップ</h2>

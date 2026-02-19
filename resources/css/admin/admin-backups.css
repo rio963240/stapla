@@ -7,6 +7,30 @@
     gap: 1.5rem;
 }
 
+/* 自動バックアップ：トグル行（画面幅に応じて折り返し） */
+.admin-backup-auto-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.admin-backup-auto-header .admin-switch {
+    flex-shrink: 0;
+}
+
+@media (max-width: 380px) {
+    .admin-backup-auto-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-backup-auto-header .admin-switch {
+        align-self: flex-start;
+    }
+}
+
 /* カード共通 */
 .admin-backup-card {
     border: 1px solid #e5e7eb;
