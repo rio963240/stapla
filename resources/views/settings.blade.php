@@ -53,6 +53,56 @@
                 </section>
             </form>
 
+            {{-- 今ある計画 --}}
+            <section class="settings-card">
+                <div class="settings-card-header">
+                    <h3 class="settings-card-title">計画一覧</h3>
+                </div>
+                <div class="settings-card-body" data-plan-list-wrap>
+                    @if ($targets->isEmpty())
+                        <p class="settings-muted">計画はまだありません。ホーム画面で計画を登録しましょう。</p>
+                    @else
+                        <ul class="settings-plan-list" data-plan-list>
+                            @foreach ($targets as $target)
+                                @php
+                                    $endDate = \Carbon\Carbon::parse($target->exam_date)->subDay()->format('Y/m/d');
+                                    $startDate = \Carbon\Carbon::parse($target->start_date)->format('Y/m/d');
+                                    $examDate = \Carbon\Carbon::parse($target->exam_date)->format('Y/m/d');
+                                @endphp
+                                <li class="settings-plan-card" data-plan-target-id="{{ $target->user_qualification_targets_id }}">
+                                    <div class="settings-plan-card-body">
+                                        <p class="settings-plan-title">{{ $target->qualification_name }}</p>
+                                        <dl class="settings-plan-details">
+                                            <div class="settings-plan-row">
+                                                <dt>試験日</dt>
+                                                <dd>{{ $examDate }}</dd>
+                                            </div>
+                                            <div class="settings-plan-row">
+                                                <dt>学習期間</dt>
+                                                <dd>{{ $startDate }} 〜 {{ $endDate }}</dd>
+                                            </div>
+                                            <div class="settings-plan-row">
+                                                <dt>1日あたり</dt>
+                                                <dd>{{ $target->daily_study_time }}分</dd>
+                                            </div>
+                                        </dl>
+                                    </div>
+                                    <form method="POST" action="{{ route('settings.plans.destroy', $target->user_qualification_targets_id) }}"
+                                        class="settings-plan-delete-form" data-plan-delete-form>
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="button" class="settings-plan-delete-button" data-plan-delete-trigger
+                                            data-plan-name="{{ e($target->qualification_name) }}">
+                                            削除
+                                        </button>
+                                    </form>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </div>
+            </section>
+
             {{-- 通知設定（LINE連携・通知時間保存） --}}
             @php
                 $user = auth()->user();
@@ -184,6 +234,27 @@
         </x-sidebar-layout>
     </div>
 
+    {{-- 計画削除の確認モーダル --}}
+    <div class="settings-modal is-hidden" data-plan-delete-modal>
+        <div class="settings-modal-overlay" data-plan-delete-modal-close></div>
+        <div class="settings-modal-panel" role="dialog" aria-modal="true" aria-labelledby="plan-delete-confirm-title">
+            <div class="settings-modal-header">
+                <h3 id="plan-delete-confirm-title" class="settings-modal-title">計画の削除</h3>
+            </div>
+            <p class="settings-modal-text" data-plan-delete-message>
+                「<span data-plan-delete-name></span>」の計画を削除しますか？学習計画・学習記録も含め、取り消すことはできません。
+            </p>
+            <div class="settings-modal-actions">
+                <button type="button" class="settings-secondary-button" data-plan-delete-modal-close>
+                    キャンセル
+                </button>
+                <button type="button" class="settings-modal-danger-button" data-plan-delete-confirm>
+                    削除する
+                </button>
+            </div>
+        </div>
+    </div>
+
     {{-- 一段階目: アカウント削除の事前確認 --}}
     <div class="settings-modal is-hidden" data-delete-confirm-modal>
         <div class="settings-modal-overlay" data-delete-confirm-close></div>
@@ -237,8 +308,12 @@
     {{-- 保存結果を通知するトースト --}}
     <div class="settings-toast-stack" aria-live="polite" aria-atomic="true">
         @php
-            $toastShow = in_array(session('status'), ['basic-info-updated', 'notifications-updated'], true);
-            $toastMessage = session('status') === 'notifications-updated' ? '通知設定を保存しました' : '基本情報を保存しました';
+            $toastShow = in_array(session('status'), ['basic-info-updated', 'notifications-updated', 'plan-deleted'], true);
+            $toastMessage = match (session('status')) {
+                'notifications-updated' => '通知設定を保存しました',
+                'plan-deleted' => '計画を削除しました',
+                default => '基本情報を保存しました',
+            };
         @endphp
         <div id="settings-toast"
             class="settings-toast {{ $toastShow ? 'is-visible' : '' }}"

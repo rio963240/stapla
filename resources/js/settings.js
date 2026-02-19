@@ -379,6 +379,107 @@ const initDeleteAccountModal = () => {
     });
 };
 
+// 計画削除モーダルの開閉と削除実行
+const initPlanDeleteModal = () => {
+    const modal = document.querySelector('[data-plan-delete-modal]');
+    const triggers = document.querySelectorAll('[data-plan-delete-trigger]');
+    const confirmButton = document.querySelector('[data-plan-delete-confirm]');
+    const closeButtons = document.querySelectorAll('[data-plan-delete-modal-close]');
+    const planNameSpan = document.querySelector('[data-plan-delete-name]');
+    if (!modal || !triggers.length) return;
+
+    let pendingForm = null;
+
+    const showToast = (status, message) => {
+        const toast = document.getElementById('settings-toast');
+        if (!toast) return;
+        const label = toast.querySelector('.settings-toast-label');
+        if (label) label.textContent = message;
+        toast.classList.toggle('is-error', status === 'error');
+        toast.classList.add('is-visible');
+        window.setTimeout(() => toast.classList.remove('is-visible'), 3000);
+    };
+
+    const openModal = (form, planName) => {
+        pendingForm = form;
+        if (planNameSpan) planNameSpan.textContent = planName || '';
+        modal.classList.remove('is-hidden');
+    };
+
+    const closeModal = () => {
+        pendingForm = null;
+        modal.classList.add('is-hidden');
+    };
+
+    triggers.forEach((trigger) => {
+        trigger.addEventListener('click', () => {
+            const form = trigger.closest('[data-plan-delete-form]');
+            const planName = trigger.dataset.planName || '';
+            if (form) openModal(form, planName);
+        });
+    });
+
+    closeButtons.forEach((btn) => btn.addEventListener('click', closeModal));
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !modal.classList.contains('is-hidden')) {
+            closeModal();
+        }
+    });
+
+    if (confirmButton) {
+        confirmButton.addEventListener('click', async () => {
+            if (!pendingForm) return;
+
+            const card = pendingForm.closest('.settings-plan-card');
+            const originalText = confirmButton.textContent;
+            confirmButton.disabled = true;
+            confirmButton.textContent = '削除中...';
+
+            try {
+                const tokenMeta = document.querySelector('meta[name="csrf-token"]');
+                const csrfToken = tokenMeta?.getAttribute('content') || '';
+                const formData = new FormData(pendingForm);
+                const response = await fetch(pendingForm.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest',
+                        Accept: 'application/json',
+                    },
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    throw new Error('削除に失敗しました');
+                }
+
+                if (card) {
+                    card.remove();
+                    const list = document.querySelector('[data-plan-list]');
+                    if (list && list.children.length === 0) {
+                        const wrap = list.closest('[data-plan-list-wrap]');
+                        if (wrap) {
+                            const empty = document.createElement('p');
+                            empty.className = 'settings-muted';
+                            empty.textContent = '計画はまだありません。ホーム画面で計画を登録しましょう。';
+                            wrap.innerHTML = '';
+                            wrap.appendChild(empty);
+                        }
+                    }
+                }
+                showToast('success', '計画を削除しました');
+                closeModal();
+            } catch (error) {
+                showToast('error', '削除に失敗しました');
+            } finally {
+                confirmButton.disabled = false;
+                confirmButton.textContent = originalText || '削除する';
+            }
+        });
+    }
+};
+
 // プロフィールメニューの開閉（サイドバー内のアイコン）
 const initProfileMenu = () => {
     const triggers = document.querySelectorAll('.profile-menu-trigger');
@@ -433,6 +534,7 @@ onReady(() => {
     initNotifyTimeToggles();
     initBasicInfoForm();
     initPasswordForm();
+    initPlanDeleteModal();
     initDeleteAccountModal();
     initProfileMenu();
 });

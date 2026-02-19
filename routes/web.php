@@ -69,6 +69,9 @@ Route::middleware([
     // アカウント削除（SettingsController@destroy）
     Route::delete('/settings/account', [SettingsController::class, 'destroy'])
         ->name('settings.account.destroy');
+    // 計画削除（SettingsController@destroyPlan）
+    Route::delete('/settings/plans/{target}', [SettingsController::class, 'destroyPlan'])
+        ->name('settings.plans.destroy');
 
     // ログイン後の遷移先
     // ログイン後ホーム（HomeController@index）

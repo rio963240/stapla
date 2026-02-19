@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SettingsDestroyRequest;
 use App\Models\LineAccount;
+use App\Models\UserQualificationTarget;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -17,13 +18,50 @@ class SettingsController extends Controller
     // 設定画面の表示
     public function index()
     {
-        $lineAccount = Auth::user()?->lineAccount;
+        $user = Auth::user();
+        $lineAccount = $user?->lineAccount;
         $lineLinkToken = session('line_link_token');
+
+        $targets = collect();
+        if ($user) {
+            $targets = DB::table('user_qualification_targets as uqt')
+                ->join('qualification as q', 'uqt.qualification_id', '=', 'q.qualification_id')
+                ->where('uqt.user_id', $user->id)
+                ->orderBy('uqt.created_at', 'desc')
+                ->select([
+                    'uqt.user_qualification_targets_id',
+                    'uqt.start_date',
+                    'uqt.exam_date',
+                    'uqt.daily_study_time',
+                    'q.name as qualification_name',
+                ])
+                ->get();
+        }
 
         return view('settings', [
             'lineAccount' => $lineAccount,
             'lineLinkToken' => $lineLinkToken,
+            'targets' => $targets,
         ]);
+    }
+
+    // 計画（UserQualificationTarget）削除（学習計画・学習記録は cascade で削除される）
+    public function destroyPlan(Request $request, UserQualificationTarget $target)
+    {
+        $user = $request->user();
+        if ($target->user_id !== $user->id) {
+            abort(403);
+        }
+
+        $target->delete();
+
+        if ($request->expectsJson()) {
+            return response()->json(['message' => '計画を削除しました']);
+        }
+
+        return redirect()
+            ->route('settings')
+            ->with('status', 'plan-deleted');
     }
 
     // LINE連携を開始（連携コード発行・QR表示用）
