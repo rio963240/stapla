@@ -11,6 +11,7 @@ use App\Models\UserQualificationTarget;
 use App\Models\UserSubdomainPreference;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -21,7 +22,8 @@ class PlanRegisterSubdomainController extends Controller
     {
         $validated = $request->validated();
 
-        return DB::transaction(function () use ($request, $validated): JsonResponse {
+        try {
+            return DB::transaction(function () use ($request, $validated): JsonResponse {
             $user = $request->user();
             $startDate = Carbon::parse($validated['start_date'])->startOfDay();
             $examDate = Carbon::parse($validated['exam_date'])->startOfDay();
@@ -185,5 +187,13 @@ class PlanRegisterSubdomainController extends Controller
                 'study_plans_id' => $studyPlan->study_plans_id,
             ]);
         });
+        } catch (QueryException $e) {
+            if ($e->getCode() === '23505' && str_contains($e->getMessage() ?? '', 'uq_usdp_target_subdomain')) {
+                throw ValidationException::withMessages([
+                    'subdomains' => ['同じ分野があります。'],
+                ]);
+            }
+            throw $e;
+        }
     }
 }

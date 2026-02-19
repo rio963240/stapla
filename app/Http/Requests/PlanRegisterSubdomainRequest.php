@@ -58,6 +58,12 @@ class PlanRegisterSubdomainRequest extends FormRequest
 
             $subdomains = $this->input('subdomains');
             if (is_array($subdomains)) {
+                // 同じサブ分野の重複を禁止
+                $ids = collect($subdomains)->pluck('id');
+                if ($ids->count() !== $ids->unique()->count()) {
+                    $validator->errors()->add('subdomains', '同じ分野があります。');
+                }
+
                 $qualificationId = $this->input('qualification_id');
                 if ($qualificationId) {
                     // サブ分野が資格に紐づいているかを検証

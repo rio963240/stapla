@@ -58,6 +58,12 @@ class PlanRegisterDomainRequest extends FormRequest
 
             $domains = $this->input('domains');
             if (is_array($domains)) {
+                // 同じ分野の重複を禁止
+                $ids = collect($domains)->pluck('id');
+                if ($ids->count() !== $ids->unique()->count()) {
+                    $validator->errors()->add('domains', '同じ分野があります。');
+                }
+
                 $qualificationId = $this->input('qualification_id');
                 if ($qualificationId) {
                     // 分野が資格に紐づいているかを検証

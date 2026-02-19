@@ -11,6 +11,7 @@ use App\Models\UserNoStudyDay;
 use App\Models\UserQualificationTarget;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -22,7 +23,8 @@ class PlanRegisterController extends Controller
         $validated = $request->validated();
 
         // 計画登録は関連テーブル更新が多いためトランザクションで実施
-        return DB::transaction(function () use ($request, $validated): JsonResponse {
+        try {
+            return DB::transaction(function () use ($request, $validated): JsonResponse {
             $user = $request->user();
             $startDate = Carbon::parse($validated['start_date'])->startOfDay();
             $examDate = Carbon::parse($validated['exam_date'])->startOfDay();
@@ -188,6 +190,13 @@ class PlanRegisterController extends Controller
                 'study_plans_id' => $studyPlan->study_plans_id,
             ]);
         });
+        } catch (QueryException $e) {
+            if ($e->getCode() === '23505' && str_contains($e->getMessage() ?? '', 'uq_udp_target_domain')) {
+                throw ValidationException::withMessages([
+                    'domains' => ['同じ分野があります。'],
+                ]);
+            }
+            throw $e;
+        }
     }
-
 }
