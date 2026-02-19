@@ -50,9 +50,12 @@ const initAdminUsers = () => {
         });
     });
 
-    // キャンセル：一覧に戻る
-    document.querySelector('[data-admin-users-cancel]')?.addEventListener('click', () => {
-        showView('list');
+    // キャンセル：一覧に戻る（複数要素すべてにバインド）
+    document.querySelectorAll('[data-admin-users-cancel]').forEach((el) => {
+        el.addEventListener('click', (e) => {
+            e.preventDefault();
+            showView('list');
+        });
     });
 
     // 確認：入力内容を確認画面に反映
@@ -85,9 +88,12 @@ const initAdminUsers = () => {
         showView('confirm');
     });
 
-    // 戻る：確認画面から編集へ
-    document.querySelector('[data-admin-users-back]')?.addEventListener('click', () => {
-        showView('edit');
+    // 戻る：確認画面から編集へ（複数要素すべてにバインド）
+    document.querySelectorAll('[data-admin-users-back]').forEach((el) => {
+        el.addEventListener('click', (e) => {
+            e.preventDefault();
+            showView('edit');
+        });
     });
 
     // 更新：Ajaxで保存し結果に応じて通知
