@@ -175,6 +175,71 @@ const initBasicInfoForm = () => {
     });
 };
 
+// 通知設定フォームのAjax保存（422バリデーションエラー時はJSONで返却）
+const initNotificationsForm = () => {
+    const form = document.getElementById('settings-notifications-form');
+    if (!form) return;
+
+    const submitButton = document.querySelector('button[form="settings-notifications-form"]');
+    const showToast = (status, message) => {
+        const toast = document.getElementById('settings-toast');
+        if (!toast) return;
+        const label = toast.querySelector('.settings-toast-label');
+        if (label) label.textContent = message;
+        toast.classList.toggle('is-error', status === 'error');
+        toast.classList.add('is-visible');
+        window.setTimeout(() => toast.classList.remove('is-visible'), 3000);
+    };
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const originalText = submitButton?.textContent;
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.textContent = '保存中...';
+        }
+
+        try {
+            const tokenMeta = document.querySelector('meta[name="csrf-token"]');
+            const csrfToken = tokenMeta?.getAttribute('content') || '';
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    Accept: 'application/json',
+                },
+                body: formData,
+            });
+
+            if (response.status === 422) {
+                const data = await response.json();
+                const msg =
+                    data?.errors?.line_morning_at?.[0] ||
+                    data?.errors?.line_evening_at?.[0] ||
+                    '入力内容をご確認ください';
+                showToast('error', msg);
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error('保存に失敗しました');
+            }
+
+            showToast('success', '通知設定を保存しました');
+        } catch (error) {
+            showToast('error', '保存に失敗しました');
+        } finally {
+            if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.textContent = originalText || '保存';
+            }
+        }
+    });
+};
+
 // パスワード変更フォームのAjax保存
 const initPasswordForm = () => {
     const form = document.querySelector('form[action$="settings/password"]');
@@ -533,6 +598,7 @@ onReady(() => {
     initSettingsToast();
     initNotifyTimeToggles();
     initBasicInfoForm();
+    initNotificationsForm();
     initPasswordForm();
     initPlanDeleteModal();
     initDeleteAccountModal();

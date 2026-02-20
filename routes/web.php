@@ -174,6 +174,7 @@ Route::middleware([
         ->name('study-records.todo');
     // 学習記録登録（StudyRecordController@store）
     Route::post('/study-records', [StudyRecordController::class, 'store'])
+        ->middleware('throttle:60,1')
         ->name('study-records.store');
 
     // ダッシュボード（DashboardController@__invoke）

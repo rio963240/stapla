@@ -96,8 +96,8 @@ class SettingsController extends Controller
     {
         $request->validate([
             'line_notify_enabled' => 'nullable|boolean',
-            'line_morning_at' => 'required|string|regex:/^\d{2}:\d{2}$/',
-            'line_evening_at' => 'required|string|regex:/^\d{2}:\d{2}$/',
+            'line_morning_at' => ['required', 'string', 'date_format:H:i'],
+            'line_evening_at' => ['required', 'string', 'date_format:H:i'],
         ]);
 
         $user = $request->user();
