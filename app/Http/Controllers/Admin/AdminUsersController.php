@@ -58,7 +58,7 @@ class AdminUsersController extends Controller
             'role_label' => $u->is_admin ? '管理者' : '一般',
             'status' => $u->is_active ? 'active' : 'stopped',
             'status_label' => $u->is_active ? '有効' : '停止',
-            'last_login_at' => $u->last_login_at?->format('Y/n/j') ?: '-',
+            'last_login_at' => $u->last_login_at?->format('Y/n/j H:i:s') ?: '-',
         ]);
 
         return view('admin.users', [
@@ -103,7 +103,7 @@ class AdminUsersController extends Controller
                 'role_label' => $user->is_admin ? '管理者' : '一般',
                 'status' => $user->is_active ? 'active' : 'stopped',
                 'status_label' => $user->is_active ? '有効' : '停止',
-                'last_login_at' => $user->last_login_at?->format('Y/n/j') ?: '-',
+                'last_login_at' => $user->last_login_at?->format('Y/n/j H:i:s') ?: '-',
             ],
         ]);
     }

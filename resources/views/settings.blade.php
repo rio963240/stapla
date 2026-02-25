@@ -203,7 +203,10 @@
                             <input id="current-password" name="current_password" type="password"
                                 class="settings-input" autocomplete="current-password" required />
 
-                            <label class="settings-label" for="new-password">新しいパスワード</label>
+                            <div>
+                                <label class="settings-label" for="new-password">新しいパスワード</label>
+                                <p class="settings-muted text-sm mt-1">半角英数字を含む8文字以上16文字以下で入力してください。</p>
+                            </div>
                             <input id="new-password" name="password" type="password" class="settings-input"
                                 autocomplete="new-password" required />
 
