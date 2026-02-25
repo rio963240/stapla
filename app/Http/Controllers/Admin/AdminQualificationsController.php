@@ -21,7 +21,7 @@ class AdminQualificationsController extends Controller
 {
     public function downloadTemplate(): BinaryFileResponse
     {
-        $path = storage_path('app/templates/qualification_template.csv');
+        $path = database_path('templates/qualification_template.csv');
 
         if (!is_readable($path)) {
             abort(404, 'テンプレートファイルが見つかりません');
