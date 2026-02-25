@@ -25,8 +25,7 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // 今回はサービス登録なし
-        //
+
     }
 
     /**

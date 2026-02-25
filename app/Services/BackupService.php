@@ -123,9 +123,7 @@ class BackupService
     /**
      * 現在の DB 接続でダンプを取得し、指定パスに書き出す
      *
-     * - sqlite: ファイルコピー
      * - pgsql: pg_dump（DATABASE_URL があればパースして host/port/user/pass/dbname/sslmode を使用。Neon は sslmode=require）
-     * - mysql/mariadb: mysqldump
      */
     private function dumpDatabase(string $outputPath): void
     {
@@ -134,124 +132,70 @@ class BackupService
         $config = config("database.connections.{$connection}", []);
         $driver = $config['driver'] ?? '';
 
-        if ($driver === 'sqlite') {
-            // SQLiteはDBファイルをコピー
-            $databasePath = $config['database'] ?? null;
-            if (!$databasePath || !file_exists($databasePath)) {
-                throw new RuntimeException('SQLiteのデータベースファイルが見つかりません');
-            }
-            if (!copy($databasePath, $outputPath)) {
-                throw new RuntimeException('SQLiteバックアップのコピーに失敗しました');
-            }
-            return;
-        }
-
-        if ($driver === 'pgsql') {
-            // PostgreSQLはpg_dumpでエクスポート
-            $host = $config['host'] ?? '127.0.0.1';
-            $port = $config['port'] ?? 5432;
-            $username = $config['username'] ?? '';
-            $password = $config['password'] ?? '';
-            $database = $config['database'] ?? '';
-            $sslmode = $config['sslmode'] ?? null;
-
-            // DATABASE_URL のみ設定している環境での接続情報を補完
-            $url = $config['url'] ?? env('DATABASE_URL');
-            if ($url) {
-                $parsed = parse_url($url);
-                if ($parsed !== false) {
-                    $host = $parsed['host'] ?? $host;
-                    $port = $parsed['port'] ?? 5432;
-                    $username = $parsed['user'] ?? $username;
-                    $password = $parsed['pass'] ?? $password;
-                    $database = trim($parsed['path'] ?? '', '/') ?: $database;
-                    $query = $parsed['query'] ?? '';
-                    parse_str($query, $params);
-                    $sslmode = $params['sslmode'] ?? $sslmode;
-                }
-            }
-
-            if ($database === '') {
-                throw new RuntimeException('データベース名が未設定です');
-            }
-
-            // pg_dumpのパス解決
-            $pgdump = config('backup.pgdump_path', 'pg_dump');
-            if (!is_executable($pgdump)) {
-                $resolved = $this->resolveBinary('pg_dump');
-                if ($resolved) {
-                    $pgdump = $resolved;
-                } elseif ($pgdump !== 'pg_dump') {
-                    throw new RuntimeException("pg_dumpが見つかりません。BACKUP_PGDUMP_PATH={$pgdump} を確認してください。");
-                } else {
-                    throw new RuntimeException('pg_dumpが見つかりません。PostgreSQLクライアントをインストールしてください。');
-                }
-            }
-
-            // pg_dumpの実行コマンド
-            $command = [
-                $pgdump,
-                '--format=plain',
-                '--no-owner',
-                '--no-privileges',
-                "--host={$host}",
-                "--port={$port}",
-                "--username={$username}",
-                "--file={$outputPath}",
-                $database,
-            ];
-
-            $env = [];
-            if ($password !== '') {
-                $env['PGPASSWORD'] = $password;
-            }
-            if ($sslmode !== null && $sslmode !== '') {
-                $env['PGSSLMODE'] = $sslmode;
-            }
-
-            // 実行とエラーチェック
-            $process = new Process($command, null, $env, null, 120);
-            $process->run();
-
-            if (!$process->isSuccessful()) {
-                throw new RuntimeException($process->getErrorOutput() ?: 'pg_dumpに失敗しました');
-            }
-            return;
-        }
-
-        // MySQL/MariaDB以外は未対応
-        if (!in_array($driver, ['mysql', 'mariadb'], true)) {
+        if ($driver !== 'pgsql') {
             throw new RuntimeException("このDBドライバ({$driver})はバックアップに未対応です");
         }
 
-        // MySQL/MariaDBはmysqldumpでエクスポート
+        // PostgreSQLはpg_dumpでエクスポート
         $host = $config['host'] ?? '127.0.0.1';
-        $port = $config['port'] ?? 3306;
+        $port = $config['port'] ?? 5432;
         $username = $config['username'] ?? '';
         $password = $config['password'] ?? '';
         $database = $config['database'] ?? '';
+        $sslmode = $config['sslmode'] ?? null;
+
+        // DATABASE_URL のみ設定している環境での接続情報を補完
+        $url = $config['url'] ?? env('DATABASE_URL');
+        if ($url) {
+            $parsed = parse_url($url);
+            if ($parsed !== false) {
+                $host = $parsed['host'] ?? $host;
+                $port = $parsed['port'] ?? 5432;
+                $username = $parsed['user'] ?? $username;
+                $password = $parsed['pass'] ?? $password;
+                $database = trim($parsed['path'] ?? '', '/') ?: $database;
+                $query = $parsed['query'] ?? '';
+                parse_str($query, $params);
+                $sslmode = $params['sslmode'] ?? $sslmode;
+            }
+        }
 
         if ($database === '') {
             throw new RuntimeException('データベース名が未設定です');
         }
 
-        $mysqldump = config('backup.mysqldump_path', 'mysqldump');
-        // mysqldumpの実行コマンド
+        // pg_dumpのパス解決
+        $pgdump = config('backup.pgdump_path', 'pg_dump');
+        if (!is_executable($pgdump)) {
+            $resolved = $this->resolveBinary('pg_dump');
+            if ($resolved) {
+                $pgdump = $resolved;
+            } elseif ($pgdump !== 'pg_dump') {
+                throw new RuntimeException("pg_dumpが見つかりません。BACKUP_PGDUMP_PATH={$pgdump} を確認してください。");
+            } else {
+                throw new RuntimeException('pg_dumpが見つかりません。PostgreSQLクライアントをインストールしてください。');
+            }
+        }
+
+        // pg_dumpの実行コマンド
         $command = [
-            $mysqldump,
-            '--single-transaction',
-            '--quick',
-            '--lock-tables=false',
+            $pgdump,
+            '--format=plain',
+            '--no-owner',
+            '--no-privileges',
             "--host={$host}",
             "--port={$port}",
-            "--user={$username}",
-            "--result-file={$outputPath}",
+            "--username={$username}",
+            "--file={$outputPath}",
             $database,
         ];
 
         $env = [];
         if ($password !== '') {
-            $env['MYSQL_PWD'] = $password;
+            $env['PGPASSWORD'] = $password;
+        }
+        if ($sslmode !== null && $sslmode !== '') {
+            $env['PGSSLMODE'] = $sslmode;
         }
 
         // 実行とエラーチェック
@@ -259,7 +203,7 @@ class BackupService
         $process->run();
 
         if (!$process->isSuccessful()) {
-            throw new RuntimeException($process->getErrorOutput() ?: 'mysqldumpに失敗しました');
+            throw new RuntimeException($process->getErrorOutput() ?: 'pg_dumpに失敗しました');
         }
     }
 

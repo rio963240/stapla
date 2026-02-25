@@ -13,6 +13,7 @@ trait PasswordValidationRules
      */
     protected function passwordRules(): array
     {
+        // パスワードのバリデーションルール
         return [
             'required',
             'string',

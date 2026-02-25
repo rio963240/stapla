@@ -11,6 +11,6 @@ class BackupSetting extends BaseModel
 
     protected $casts = [
         'is_enabled' => 'boolean',
-        'run_time'   => 'datetime:H:i:s', // time型を表示整形したい場合（好み）
+        'run_time'   => 'datetime:H:i:s',
     ];
 }
