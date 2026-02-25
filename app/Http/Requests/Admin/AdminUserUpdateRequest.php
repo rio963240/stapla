@@ -15,6 +15,7 @@ class AdminUserUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'name' => ['required', 'string', 'max:255'],
             'is_admin' => ['required', 'boolean'],
             'is_active' => ['required', 'boolean'],
             'password' => ['nullable', 'string', Password::defaults()],
@@ -24,6 +25,7 @@ class AdminUserUpdateRequest extends FormRequest
     public function attributes(): array
     {
         return [
+            'name' => '名前',
             'is_admin' => '権限',
             'is_active' => '状態',
             'password' => 'パスワード',

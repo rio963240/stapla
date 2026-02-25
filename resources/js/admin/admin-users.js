@@ -39,7 +39,8 @@ const initAdminUsers = () => {
             const role = row.dataset.userRole || 'general';
             const status = row.dataset.userStatus || 'active';
 
-            document.querySelector('[data-admin-edit-name]').textContent = name;
+            const nameInput = document.querySelector('[data-admin-edit-name]');
+            if (nameInput) nameInput.value = name;
             document.querySelector('[data-admin-edit-email]').textContent = email;
             document.querySelector('[data-admin-edit-user-id]').value = userId;
             document.querySelector('[data-admin-edit-role]').value = role === 'admin' ? '1' : '0';
@@ -61,7 +62,8 @@ const initAdminUsers = () => {
     // 確認：入力内容を確認画面に反映
     editForm?.addEventListener('submit', (e) => {
         e.preventDefault();
-        const name = document.querySelector('[data-admin-edit-name]').textContent;
+        const nameEl = document.querySelector('[data-admin-edit-name]');
+        const name = nameEl?.value?.trim() ?? nameEl?.textContent ?? '';
         const email = document.querySelector('[data-admin-edit-email]').textContent;
         const roleSelect = document.querySelector('[data-admin-edit-role]');
         const statusSelect = document.querySelector('[data-admin-edit-status]');
@@ -80,6 +82,7 @@ const initAdminUsers = () => {
 
         confirmEl.dataset.pendingUserId = document.querySelector('[data-admin-edit-user-id]').value;
         confirmEl.dataset.pendingData = JSON.stringify({
+            name,
             is_admin: roleSelect?.value === '1',
             is_active: statusSelect?.value === '1',
             password: passwordVal,
@@ -117,6 +120,7 @@ const initAdminUsers = () => {
             const formData = new FormData();
             formData.append('_method', 'PUT');
             formData.append('_token', getCsrfToken());
+            formData.append('name', data.name ?? '');
             formData.append('is_admin', data.is_admin ? '1' : '0');
             formData.append('is_active', data.is_active ? '1' : '0');
             if (data.password) {

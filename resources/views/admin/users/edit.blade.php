@@ -12,10 +12,6 @@
         <p class="admin-users-card-desc">変更不可の項目です</p>
         <div class="admin-users-info-grid">
             <div class="admin-users-info-item">
-                <span class="admin-users-info-label">名前</span>
-                <span class="admin-users-info-value" data-admin-edit-name></span>
-            </div>
-            <div class="admin-users-info-item">
                 <span class="admin-users-info-label">メールアドレス</span>
                 <span class="admin-users-info-value" data-admin-edit-email></span>
             </div>
@@ -24,10 +20,15 @@
 
     <div class="admin-users-edit-card admin-users-card">
         <p class="admin-users-card-label">編集項目</p>
-        <p class="admin-users-card-desc">権限・状態・パスワードを変更できます</p>
+        <p class="admin-users-card-desc">名前・権限・状態・パスワードを変更できます</p>
         <form class="admin-users-edit-form" data-admin-users-edit-form>
             @csrf
             <input type="hidden" name="user_id" data-admin-edit-user-id>
+            <div class="admin-users-form-group">
+                <label for="admin-edit-name">名前</label>
+                <input type="text" id="admin-edit-name" name="name" class="admin-users-input"
+                    data-admin-edit-name required>
+            </div>
             <div class="admin-users-form-group">
                 <label for="admin-edit-role">権限</label>
                 <select id="admin-edit-role" name="is_admin" class="admin-users-select"

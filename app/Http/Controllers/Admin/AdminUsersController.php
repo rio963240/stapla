@@ -74,10 +74,11 @@ class AdminUsersController extends Controller
 
     public function update(AdminUserUpdateRequest $request, User $user): JsonResponse
     {
-        // 権限/状態/パスワードの更新
+        // 名前/権限/状態/パスワードの更新
         $data = $request->validated();
 
         try {
+            $user->name = $data['name'];
             $user->is_admin = filter_var($data['is_admin'], FILTER_VALIDATE_BOOLEAN);
             $user->is_active = filter_var($data['is_active'], FILTER_VALIDATE_BOOLEAN);
             if (!empty($data['password'] ?? '')) {
