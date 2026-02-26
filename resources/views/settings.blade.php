@@ -45,7 +45,7 @@
                             <input id="settings-name" name="name" type="text" class="settings-input"
                                 value="{{ old('name', auth()->user()?->name ?? '') }}" required data-settings-name />
 
-                            <label class="settings-label" for="settings-email">E-mail</label>
+                            <label class="settings-label" for="settings-email">メールアドレス</label>
                             <input id="settings-email" type="email" class="settings-input settings-input-disabled"
                                 value="{{ auth()->user()?->email ?? '' }}" disabled />
                         </div>
