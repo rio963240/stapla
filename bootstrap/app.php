@@ -14,6 +14,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // リバースプロキシ（HTTPS終端）越しのリクエストで正しく URL を扱う（署名付きURL等に必須）
+        $middleware->trustProxies(at: '*');
         // ミドルウェアのエイリアス登録
         $middleware->alias([
             'admin' => AdminMiddleware::class,

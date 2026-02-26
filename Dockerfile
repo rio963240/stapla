@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y git unzip libzip-dev \
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 COPY composer.json composer.lock ./
-# scripts は artisan を呼ぶので止める（あなたの方針でOK）
+# scripts は artisan を呼ぶので止める
 RUN composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader --no-scripts
 
 # ===== 3) Runtime (Apache + PHP) =====
