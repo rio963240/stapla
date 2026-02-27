@@ -225,7 +225,20 @@ class PlanRescheduleController extends Controller
             $target->buffer_rate = (int) $validated['buffer_rate'];
             $target->save();
 
-            $effectiveDaily = (int) floor($target->daily_study_time * (1 - ($target->buffer_rate) / 100));
+            // 余裕確保率を日数に適用して、実際に予定を入れる日数を決定
+            $bufferRate = (int) $target->buffer_rate;
+            $usableDaysCount = (int) floor($daysCount * (1 - $bufferRate / 100));
+            if ($usableDaysCount <= 0) {
+                $usableDaysCount = 1;
+            }
+            $usableDaysCount = min($usableDaysCount, $daysCount);
+
+            // 実際に予定を立てる日（リスケ開始日側から詰める）
+            $days = array_slice($days, 0, $usableDaysCount);
+            $daysCount = count($days);
+
+            // 余裕確保分は「空き日」として残し、使う日には1日あたりの学習時間をフルで割り当てる
+            $effectiveDaily = (int) $target->daily_study_time;
             $totalCapacity = $effectiveDaily * $daysCount;
             if ($remainingTotal > $totalCapacity) {
                 throw ValidationException::withMessages([

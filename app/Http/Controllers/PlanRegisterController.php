@@ -129,9 +129,19 @@ class PlanRegisterController extends Controller
                 ]);
             }
 
-            // 余裕確保率を反映した計画時間
-            $totalCapacity = $availableDays * (int) $validated['daily_study_time'];
-            $planCapacity = (int) floor($totalCapacity * (1 - ((int) $validated['buffer_rate']) / 100));
+            // 余裕確保率を「日数」に適用して実際に予定を入れる日数を決定
+            $bufferRate = (int) $validated['buffer_rate'];
+            $usableDays = (int) floor($availableDays * (1 - $bufferRate / 100));
+            if ($usableDays <= 0) {
+                $usableDays = 1;
+            }
+            $usableDays = min($usableDays, $availableDays);
+
+            // 実際に予定を立てる日（開始日側から詰める）
+            $planDates = array_slice($studyDates, 0, $usableDays);
+
+            // 余裕確保分を「空き日」として残し、使う日には1日あたりの学習時間をフルで割り当てる
+            $planCapacity = $usableDays * (int) $validated['daily_study_time'];
 
             $totalWeight = collect($validated['domains'])->sum('weight');
 
@@ -139,19 +149,20 @@ class PlanRegisterController extends Controller
             $dailyMinutes = [];
             foreach ($validated['domains'] as $domain) {
                 $allocMinutes = $planCapacity * ($domain['weight'] / $totalWeight);
-                $dailyMinutes[$domain['id']] = (int) floor($allocMinutes / $availableDays);
+                $dailyMinutes[$domain['id']] = (int) floor($allocMinutes / $usableDays);
             }
 
             // todo と study_plan_items を生成
             $todos = [];
-            foreach ($studyDates as $date) {
+            foreach ($planDates as $date) {
                 $todos[] = Todo::create([
                     'study_plans_id' => $studyPlan->study_plans_id,
                     'date' => $date->toDateString(),
                 ]);
             }
 
-            $lastTodo = $todos[$availableDays - 1] ?? null;
+            $planDayCount = count($planDates);
+            $lastTodo = $todos[$planDayCount - 1] ?? null;
             $lastTodoItems = [];
             foreach ($todos as $todo) {
                 foreach ($validated['domains'] as $domain) {
@@ -169,7 +180,7 @@ class PlanRegisterController extends Controller
             }
 
             // 端数調整（最終日に+1分ずつ配分）
-            $sumPlanned = array_sum($dailyMinutes) * $availableDays;
+            $sumPlanned = array_sum($dailyMinutes) * $planDayCount;
             $leftover = $planCapacity - $sumPlanned;
             if ($leftover > 0 && $lastTodo) {
                 while ($leftover > 0) {

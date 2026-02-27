@@ -27,6 +27,34 @@ class CalendarController extends Controller
             '#c4b5fd', // 3つ目
         ];
 
+        // ユーザーごとに資格名に対して固定の色を割り当てる。
+        // 「資格ターゲットの登録順」（最大3件）に応じて 1番目=1色目, 2番目=2色目, 3番目=3色目 とする。
+        // 学習計画が複数あっても、user_qualification_targets の登録順で決まるようにしている。
+        $qualificationRows = DB::table('user_qualification_targets')
+            ->join('qualification', 'user_qualification_targets.qualification_id', '=', 'qualification.qualification_id')
+            ->leftJoin(
+                'study_plans',
+                'user_qualification_targets.user_qualification_targets_id',
+                '=',
+                'study_plans.user_qualification_targets_id',
+            )
+            ->where('user_qualification_targets.user_id', $userId)
+            ->where('study_plans.is_active', true)
+            ->orderBy('user_qualification_targets.user_qualification_targets_id')
+            ->select('qualification.name as qualification_name')
+            ->get();
+
+        $qualificationOrder = $qualificationRows
+            ->pluck('qualification_name')
+            ->unique()
+            ->values();
+
+        $colorMap = $qualificationOrder
+            ->mapWithKeys(function ($name, $index) use ($palette) {
+                $color = $palette[$index % count($palette)];
+                return [$name => $color];
+            });
+
         // 勉強不可日の取得（連続イベントの分割に使用）
         $noStudyRows = DB::table('user_no_study_days')
             ->join(
@@ -70,12 +98,6 @@ class CalendarController extends Controller
 
             $events = collect();
             $grouped = $rows->groupBy('qualification_name');
-            $qualificationOrder = $grouped->keys()->values();
-            $colorMap = $qualificationOrder
-                ->mapWithKeys(function ($name, $index) use ($palette) {
-                    $color = $palette[$index % count($palette)];
-                    return [$name => $color];
-                });
             foreach ($grouped as $qualificationName => $items) {
                 // 資格ごとに連続日をまとめる
                 $planOrder = $items->min('plan_order') ?? 0;
@@ -184,14 +206,6 @@ class CalendarController extends Controller
                 'study_plans.study_plans_id as plan_order',
             ])
             ->get();
-
-        // 資格名の出現順で色を固定
-        $qualificationOrder = $rows->pluck('qualification_name')->unique()->values();
-        $colorMap = $qualificationOrder
-            ->mapWithKeys(function ($name, $index) use ($palette) {
-                $color = $palette[$index % count($palette)];
-                return [$name => $color];
-            });
 
         // 日付×資格でまとめて、分野別内訳を付与
         $events = $rows
