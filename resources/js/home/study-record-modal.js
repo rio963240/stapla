@@ -231,7 +231,10 @@ export const initStudyRecordModal = () => {
                 if (!Number.isFinite(itemId)) return null;
                 const rawValue = input.value.trim();
                 const actualMinutes = rawValue === '' ? 0 : Number.parseInt(rawValue, 10);
-                if (!Number.isFinite(actualMinutes)) return null;
+                // 数値でない・マイナス・1件あたり1440分超は無効
+                if (!Number.isFinite(actualMinutes) || actualMinutes < 0 || actualMinutes > 1440) {
+                    return null;
+                }
                 return { study_plan_items_id: itemId, actual_minutes: actualMinutes };
             })
             .filter(Boolean);
@@ -241,6 +244,13 @@ export const initStudyRecordModal = () => {
         const records = collectRecords();
         if (records.length === 0) {
             alert('実績分数を入力してください。');
+            return;
+        }
+
+        // 1日の実績合計が1440分（24時間）を超えないかチェック
+        const totalMinutes = records.reduce((sum, record) => sum + record.actual_minutes, 0);
+        if (totalMinutes > 1440) {
+            alert(`1日の実績合計は最大1440分（24時間）までです。\n現在の合計: ${totalMinutes}分`);
             return;
         }
 

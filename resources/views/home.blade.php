@@ -5,8 +5,9 @@
     @endpush
 
     @php($isAdmin = $isAdmin ?? request()->routeIs('admin.*'))
+    @php($planCount = isset($targets) && is_countable($targets) ? $targets->count() : 0)
     <div class="h-screen bg-gray-100 overflow-hidden">
-        <x-sidebar-layout context="home" :is-admin="$isAdmin">
+        <x-sidebar-layout context="home" :is-admin="$isAdmin" :plan-count="$planCount">
             <div id="calendar" class="h-full min-h-[400px]"></div>
         </x-sidebar-layout>
     </div>

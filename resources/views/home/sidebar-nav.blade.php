@@ -2,13 +2,19 @@
 @php($isAdmin = $isAdmin ?? false)
 @php($homeRoute = $homeRoute ?? ($isAdmin ? 'admin.home' : 'home'))
 @php($studyProgressRoute = $studyProgressRoute ?? ($isAdmin ? 'admin.study-progress' : 'study-progress'))
+@php($planLimit = 3)
+@php($planCount = isset($planCount) && is_numeric($planCount) ? (int) $planCount : 0)
 <nav class="flex flex-1 flex-col justify-between text-lg">
     <a class="flex items-center rounded-md px-3 py-2 text-gray-700 hover:bg-gray-100" href="{{ route($homeRoute) }}">
         <span>HOME</span>
     </a>
     @if ($context === 'home')
-        <button type="button"
-            class="plan-register-trigger flex items-center rounded-md px-3 py-2 text-gray-700 hover:bg-gray-100 w-full text-left">
+        <button
+            type="button"
+            class="plan-register-trigger flex items-center rounded-md px-3 py-2 text-gray-700 hover:bg-gray-100 w-full text-left"
+            data-plan-count="{{ $planCount }}"
+            data-plan-limit="{{ $planLimit }}"
+        >
             <span>計画登録</span>
         </button>
     @else

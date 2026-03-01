@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class LoginViaEmailController extends Controller
 {
@@ -29,6 +30,15 @@ class LoginViaEmailController extends Controller
 
         Auth::login($user, true);
         Cache::put($cacheKey, true, now()->addDays(7));
+
+        $intended = $request->session()->pull('url.intended');
+        if ($intended !== null) {
+            $path = parse_url($intended, PHP_URL_PATH) ?? '';
+
+            if (Str::startsWith($path, '/admin') && ! $user->is_admin) {
+                return redirect()->route('home');
+            }
+        }
 
         return redirect()->intended(route('home'));
     }

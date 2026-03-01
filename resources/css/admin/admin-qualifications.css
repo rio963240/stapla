@@ -29,10 +29,10 @@
     justify-content: center;
 }
 
-/* 危険操作ボタン */
+/* 危険操作ボタン（計画の削除ボタンと同じ色味 #dc2626） */
 .admin-danger-button {
-    border-color: #ef4444;
-    background-color: #ef4444;
+    border-color: #dc2626;
+    background-color: #dc2626;
     color: #fff;
 }
 

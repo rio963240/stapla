@@ -24,7 +24,7 @@
                 </div>
 
                 <div class="modal-actions">
-                    <button type="button" class="modal-secondary" data-admin-delete-open>削除</button>
+                    <button type="button" class="modal-secondary admin-danger-button" data-admin-delete-open>削除</button>
                     <button type="button" class="modal-secondary" data-admin-confirm-open>確認</button>
                     <button type="button" class="modal-secondary" data-admin-modal-close>キャンセル</button>
                 </div>

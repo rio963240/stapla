@@ -1,6 +1,8 @@
 @props([
     'context' => 'home',
     'isAdmin' => false,
+    // ホーム画面での計画件数（計画登録ボタン制御用／任意）
+    'planCount' => null,
 ])
 
 @php($homeRoute = $isAdmin ? 'admin.home' : 'home')
@@ -51,6 +53,7 @@
             'isAdmin' => $isAdmin,
             'homeRoute' => $homeRoute,
             'studyProgressRoute' => $studyProgressRoute,
+            'planCount' => $planCount,
         ])
     </aside>
 
@@ -79,6 +82,7 @@
                 'isAdmin' => $isAdmin,
                 'homeRoute' => $homeRoute,
                 'studyProgressRoute' => $studyProgressRoute,
+                'planCount' => $planCount,
             ])
         </div>
     </aside>

@@ -9,6 +9,7 @@
             src="{{ auth()->user()?->profile_photo_url ?? asset('images/no-image.jpeg') }}"
             alt="プロフィール"
             class="h-16 w-16 rounded-full object-cover"
+            data-profile-avatar
         />
     </button>
     <div
@@ -23,6 +24,7 @@
                     src="{{ auth()->user()?->profile_photo_url ?? asset('images/no-image.jpeg') }}"
                     alt="プロフィール"
                     class="profile-menu-avatar"
+                    data-profile-avatar
                 />
                 <p class="profile-menu-name">
                     {{ auth()->user()?->name ?? 'ゲスト' }} 様

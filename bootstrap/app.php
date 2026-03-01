@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\RedirectIfAuthenticated;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -19,6 +20,8 @@ return Application::configure(basePath: dirname(__DIR__))
         // ミドルウェアのエイリアス登録
         $middleware->alias([
             'admin' => AdminMiddleware::class,
+            // ログイン済みユーザーのリダイレクト挙動をカスタマイズ
+            'guest' => RedirectIfAuthenticated::class,
         ]);
         // LINE webhook はCSRF例外にする
         $middleware->validateCsrfTokens(except: [

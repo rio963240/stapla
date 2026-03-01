@@ -29,7 +29,19 @@ const initPlanRegisterModals = () => {
 
     // モーダルを開くトリガー（複数ある場合はすべてにバインド）
     triggers.forEach((trigger) => {
-        trigger.addEventListener('click', () => openModal('plan-register-choice-modal'));
+        const planLimit = Number.parseInt(trigger.dataset.planLimit || '0', 10);
+        const planCount = Number.parseInt(trigger.dataset.planCount || '0', 10);
+
+        trigger.addEventListener('click', (event) => {
+            // 計画数が上限に達している場合は、まず注意メッセージを表示して登録モーダルは開かない
+            if (planLimit > 0 && Number.isFinite(planCount) && planCount >= planLimit) {
+                event.preventDefault();
+                alert(`計画は最大${planLimit}件まで登録できます。これ以上の登録はできません。既存の計画を見直す場合は、不要な計画を削除してから再度お試しください。`);
+                return;
+            }
+
+            openModal('plan-register-choice-modal');
+        });
     });
     choiceDomainButton?.addEventListener('click', () => openModal('plan-register-domain-modal'));
     choiceSubdomainButton?.addEventListener('click', () =>

@@ -198,17 +198,19 @@
                         </button>
                     </div>
                     <div class="settings-card-body">
-                        <div class="settings-grid">
+                        <div class="settings-grid settings-grid-password">
                             <label class="settings-label" for="current-password">現在のパスワード</label>
                             <input id="current-password" name="current_password" type="password"
                                 class="settings-input" autocomplete="current-password" required />
 
+                            <label class="settings-label" for="new-password">新しいパスワード</label>
                             <div>
-                                <label class="settings-label" for="new-password">新しいパスワード</label>
-                                <p class="settings-muted text-sm mt-1">半角英数字を含む8文字以上16文字以下で入力してください。</p>
+                                <p class="settings-muted text-sm mb-1">
+                                    半角英数字を含む8文字以上16文字以下で入力してください。
+                                </p>
+                                <input id="new-password" name="password" type="password" class="settings-input"
+                                    autocomplete="new-password" required />
                             </div>
-                            <input id="new-password" name="password" type="password" class="settings-input"
-                                autocomplete="new-password" required />
 
                             <label class="settings-label" for="confirm-password">パスワードの確認</label>
                             <input id="confirm-password" name="password_confirmation" type="password"
@@ -244,7 +246,7 @@
             <div class="settings-modal-header">
                 <h3 id="plan-delete-confirm-title" class="settings-modal-title">計画の削除</h3>
             </div>
-            <p class="settings-modal-text" data-plan-delete-message>
+            <p class="settings-modal-text settings-modal-text-danger" data-plan-delete-message>
                 「<span data-plan-delete-name></span>」の計画を削除しますか？学習計画・学習記録も含め、取り消すことはできません。
             </p>
             <div class="settings-modal-actions">
@@ -265,7 +267,7 @@
             <div class="settings-modal-header">
                 <h3 id="delete-confirm-title" class="settings-modal-title">アカウント削除の確認</h3>
             </div>
-            <p class="settings-modal-text">
+            <p class="settings-modal-text settings-modal-text-danger">
                 本当にアカウントを削除しますか？削除すると、登録したデータはすべて取り戻せません。
             </p>
             <div class="settings-modal-actions">
@@ -286,7 +288,7 @@
             <div class="settings-modal-header">
                 <h3 id="delete-account-title" class="settings-modal-title">アカウント削除</h3>
             </div>
-            <p class="settings-modal-text">
+            <p class="settings-modal-text settings-modal-text-danger">
                 アカウントを削除してもよろしいですか？削除すると、アカウントに紐づくデータはすべて
                 完全に削除されます。削除を確定するため、パスワードを入力してください。
             </p>

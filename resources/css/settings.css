@@ -84,6 +84,11 @@
     align-items: center;
 }
 
+/* パスワード変更セクション用: 行間を少し広めに */
+.settings-grid-password {
+    row-gap: 1.1rem;
+}
+
 /* 各入力欄の見出し */
 .settings-label {
     font-size: 0.95rem;
@@ -371,6 +376,12 @@
     color: #4b5563;
     line-height: 1.5;
     margin-bottom: 1.2rem;
+}
+
+/* 削除系の強調テキスト（柔らかめの赤・太字） */
+.settings-modal-text-danger {
+    color: #ef4444;
+    font-weight: 700;
 }
 
 /* モーダルの操作ボタン */

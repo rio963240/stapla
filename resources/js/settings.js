@@ -142,9 +142,16 @@ const initBasicInfoForm = () => {
             if (data?.name && nameInput) {
                 nameInput.value = data.name;
             }
-            if (data?.photo_url && avatarImage) {
-                avatarImage.src = data.photo_url;
-                originalAvatarUrl = data.photo_url;
+            if (data?.photo_url) {
+                const newPhotoUrl = data.photo_url;
+                if (avatarImage) {
+                    avatarImage.src = newPhotoUrl;
+                    originalAvatarUrl = newPhotoUrl;
+                }
+                // サイドバーなど、共通プロフィールアイコンも同時に更新
+                document.querySelectorAll('[data-profile-avatar]').forEach((img) => {
+                    img.setAttribute('src', newPhotoUrl);
+                });
             }
             if (previewUrl) {
                 URL.revokeObjectURL(previewUrl);
