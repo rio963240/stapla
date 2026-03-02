@@ -166,6 +166,47 @@ class CalendarController extends Controller
                 }
             }
 
+            // 受験日を固定で表示（リスケで学習期間が短くなっても試験日は表示し続ける）
+            $examDateRows = DB::table('user_qualification_targets')
+                ->join('qualification', 'user_qualification_targets.qualification_id', '=', 'qualification.qualification_id')
+                ->join(
+                    'study_plans',
+                    'user_qualification_targets.user_qualification_targets_id',
+                    '=',
+                    'study_plans.user_qualification_targets_id',
+                )
+                ->where('user_qualification_targets.user_id', $userId)
+                ->where('study_plans.is_active', true)
+                ->where('user_qualification_targets.exam_date', '>=', $start->toDateString())
+                ->where('user_qualification_targets.exam_date', '<', $end->toDateString())
+                ->select([
+                    'user_qualification_targets.exam_date',
+                    'qualification.name as qualification_name',
+                    'study_plans.study_plans_id as plan_order',
+                ])
+                ->get();
+
+            foreach ($examDateRows as $row) {
+                $examDateStr = Carbon::parse($row->exam_date)->toDateString();
+                $qualificationName = $row->qualification_name;
+                $examEnd = Carbon::parse($row->exam_date)->addDay()->toDateString();
+                $events->push([
+                    'id' => 'exam-' . $qualificationName . '-' . $examDateStr,
+                    'title' => $qualificationName . '（試験日）',
+                    'start' => $examDateStr,
+                    'end' => $examEnd,
+                    'allDay' => true,
+                    'planOrder' => $row->plan_order,
+                    'backgroundColor' => $colorMap[$qualificationName] ?? $palette[0],
+                    'borderColor' => $colorMap[$qualificationName] ?? $palette[0],
+                    'classNames' => ['fc-exam-date'],
+                    'extendedProps' => [
+                        'qualificationName' => $qualificationName,
+                        'isExamDate' => true,
+                    ],
+                ]);
+            }
+
             return response()->json($events);
         }
 
@@ -237,6 +278,46 @@ class CalendarController extends Controller
                 ];
             })
             ->values();
+
+        // 週表示でも受験日を固定表示
+        $examDateRows = DB::table('user_qualification_targets')
+            ->join('qualification', 'user_qualification_targets.qualification_id', '=', 'qualification.qualification_id')
+            ->join(
+                'study_plans',
+                'user_qualification_targets.user_qualification_targets_id',
+                '=',
+                'study_plans.user_qualification_targets_id',
+            )
+            ->where('user_qualification_targets.user_id', $userId)
+            ->where('study_plans.is_active', true)
+            ->where('user_qualification_targets.exam_date', '>=', $start->toDateString())
+            ->where('user_qualification_targets.exam_date', '<', $end->toDateString())
+            ->select([
+                'user_qualification_targets.exam_date',
+                'qualification.name as qualification_name',
+                'study_plans.study_plans_id as plan_order',
+            ])
+            ->get();
+
+        foreach ($examDateRows as $row) {
+            $examDateStr = Carbon::parse($row->exam_date)->toDateString();
+            $qualificationName = $row->qualification_name;
+            $events->push([
+                'id' => 'exam-' . $qualificationName . '-' . $examDateStr,
+                'title' => $qualificationName . '（試験日）',
+                'start' => $examDateStr,
+                'allDay' => true,
+                'planOrder' => $row->plan_order,
+                'backgroundColor' => $colorMap[$qualificationName] ?? $palette[0],
+                'borderColor' => $colorMap[$qualificationName] ?? $palette[0],
+                'classNames' => ['fc-exam-date'],
+                'extendedProps' => [
+                    'qualificationName' => $qualificationName,
+                    'isExamDate' => true,
+                    'details' => [],
+                ],
+            ]);
+        }
 
         return response()->json($events);
     }

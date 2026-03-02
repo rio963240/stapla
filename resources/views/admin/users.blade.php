@@ -75,7 +75,8 @@
                                         data-user-name="{{ e($u['name']) }}"
                                         data-user-email="{{ e($u['email']) }}"
                                         data-user-role="{{ $u['role'] }}"
-                                        data-user-status="{{ $u['status'] }}">
+                                        data-user-status="{{ $u['status'] }}"
+                                        data-user-is-only-admin="{{ ($u['is_only_admin'] ?? false) ? '1' : '0' }}">
                                         <td>{{ $u['id'] }}</td>
                                         <td>{{ $u['name'] }}</td>
                                         <td>{{ $u['email'] }}</td>

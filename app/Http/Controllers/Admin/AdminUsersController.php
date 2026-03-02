@@ -50,6 +50,9 @@ class AdminUsersController extends Controller
         $sort = $request->query('sort', 'desc');
         $query->orderBy('last_login_at', $sort === 'asc' ? 'asc' : 'desc');
 
+        // 管理者が何人いるか（最後の1人を削除不可にするため）
+        $adminCount = User::where('is_admin', true)->count();
+
         // 表示用に整形
         $users = $query->get()->map(fn (User $u) => [
             'id' => $u->id,
@@ -60,6 +63,7 @@ class AdminUsersController extends Controller
             'status' => $u->is_active ? 'active' : 'stopped',
             'status_label' => $u->is_active ? '有効' : '停止',
             'last_login_at' => $u->last_login_at?->format('Y/n/j H:i:s') ?: '-',
+            'is_only_admin' => $u->is_admin && $adminCount === 1,
         ]);
 
         return view('admin.users', [
@@ -118,6 +122,17 @@ class AdminUsersController extends Controller
                 'status' => 'error',
                 'message' => '自分自身のアカウントは削除できません',
             ], 403);
+        }
+
+        // 最後の1人である管理者は削除できない（少なくとも1人の管理者を残す）
+        if ($user->is_admin) {
+            $adminCount = User::where('is_admin', true)->count();
+            if ($adminCount <= 1) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => '最後の管理者は削除できません。少なくとも1人の管理者が必要です。',
+                ], 403);
+            }
         }
 
         try {

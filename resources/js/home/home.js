@@ -12,20 +12,31 @@ const initCalendar = () => {
     // ビュー切替時にAPIのviewパラメータを更新するため保持
     let currentViewType = 'dayGridMonth';
     const renderEventContent = (arg) => {
-        const { qualificationName, domainName, plannedMinutes, details } = arg.event.extendedProps ?? {};
+        const { qualificationName, domainName, plannedMinutes, details, isExamDate } = arg.event.extendedProps ?? {};
         const container = document.createElement('div');
 
-        // 月表示は資格名のみ
+        // 月表示は資格名のみ（受験日は「資格名（試験日）」で固定表示）
         if (arg.view.type === 'dayGridMonth') {
             container.classList.add('fc-month-event-title');
-            container.textContent = qualificationName || arg.event.title;
+            if (isExamDate) {
+                container.textContent = arg.event.title; // 例: CNCF認定（試験日）
+            } else {
+                container.textContent = qualificationName || arg.event.title;
+            }
             return { domNodes: [container] };
         }
 
-        // 週表示は資格名 + 分野名/分数
+        // 週表示は資格名 + 分野名/分数（受験日は「試験日」と表示）
         const title = document.createElement('div');
         title.textContent = qualificationName || arg.event.title;
         container.append(title);
+
+        if (isExamDate) {
+            const line = document.createElement('div');
+            line.textContent = '試験日';
+            container.append(line);
+            return { domNodes: [container] };
+        }
 
         if (Array.isArray(details) && details.length > 0) {
             details.forEach((item) => {

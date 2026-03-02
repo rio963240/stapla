@@ -216,7 +216,8 @@
 /* 画面の切り替え制御 */
 .admin-users-list.is-hidden,
 .admin-users-edit.is-hidden,
-.admin-users-confirm.is-hidden {
+.admin-users-confirm.is-hidden,
+.admin-users-form-actions-right.is-hidden {
     display: none !important;
 }
 
@@ -369,10 +370,26 @@
 /* フォーム操作ボタン */
 .admin-users-form-actions {
     display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
     gap: 0.75rem;
     margin-top: 1.5rem;
     padding-top: 1.25rem;
     border-top: 1px solid #f3f4f6;
+}
+
+.admin-users-form-actions-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.admin-users-form-actions-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: auto;
 }
 
 /* 確認画面 */

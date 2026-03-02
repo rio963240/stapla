@@ -48,6 +48,11 @@ const initAdminUsers = () => {
             document.querySelector('[data-admin-edit-status]').value = status === 'active' ? '1' : '0';
             document.querySelector('[data-admin-edit-password]').value = '';
 
+            const isOnlyAdmin = row.dataset.userIsOnlyAdmin === '1';
+            if (editEl) editEl.dataset.currentUserIsOnlyAdmin = isOnlyAdmin ? '1' : '0';
+            const deleteWrap = document.querySelector('[data-admin-users-delete-wrap]');
+            if (deleteWrap) deleteWrap.classList.toggle('is-hidden', isOnlyAdmin);
+
             showView('edit');
         });
     });
@@ -100,7 +105,7 @@ const initAdminUsers = () => {
         });
     });
 
-    // 削除ボタン：確認モーダルを表示
+    // 削除ボタン：確認モーダルを表示（最後の管理者のときはボタン自体を非表示にしている）
     document.querySelector('[data-admin-users-delete-open]')?.addEventListener('click', () => {
         const userId = document.querySelector('[data-admin-edit-user-id]')?.value;
         const name = document.querySelector('[data-admin-edit-name]')?.value ?? '';

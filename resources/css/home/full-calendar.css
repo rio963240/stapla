@@ -119,6 +119,12 @@
     word-break: break-word;
 }
 
+/* 受験日：学習期間と区別するため点線枠で表示 */
+.fc .fc-daygrid-event.fc-exam-date {
+    border: 2px dashed currentColor;
+    opacity: 0.95;
+}
+
 /* 日付を上中央に配置（Googleカレンダー寄り） */
 .fc .fc-daygrid-day-top {
     justify-content: center;

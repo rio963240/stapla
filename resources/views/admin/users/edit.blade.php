@@ -53,13 +53,17 @@
                 <p class="admin-users-form-hint">空欄のままの場合は変更されません</p>
             </div>
             <div class="admin-users-form-actions">
-                <button type="submit" class="admin-button-primary" data-admin-users-confirm>確認</button>
-                <button type="button" class="admin-button-secondary" data-admin-users-cancel>
-                    キャンセル
-                </button>
-                <button type="button" class="admin-button-danger" data-admin-users-delete-open>
-                    削除
-                </button>
+                <div class="admin-users-form-actions-left">
+                    <button type="submit" class="admin-button-primary" data-admin-users-confirm>確認</button>
+                    <button type="button" class="admin-button-secondary" data-admin-users-cancel>
+                        キャンセル
+                    </button>
+                </div>
+                <div class="admin-users-form-actions-right" data-admin-users-delete-wrap>
+                    <button type="button" class="admin-button-danger" data-admin-users-delete-open>
+                        アカウント削除
+                    </button>
+                </div>
             </div>
         </form>
     </div>
