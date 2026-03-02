@@ -103,6 +103,7 @@
 
                 @include('admin.users.edit')
                 @include('admin.users.confirm')
+                @include('admin.users._delete-modal')
         </x-sidebar-layout>
     </div>
 
@@ -115,6 +116,7 @@
     @push('scripts')
         <script>
             window.ADMIN_USERS_UPDATE_URL = "{{ url('admin/users') }}";
+            window.ADMIN_USERS_DELETE_URL = "{{ url('admin/users') }}";
         </script>
         @vite('resources/js/admin/admin-users.js')
         @vite('resources/js/admin/profile-menu.js')

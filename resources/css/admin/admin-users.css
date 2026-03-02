@@ -2,7 +2,8 @@
 
 /* 管理画面ボタン */
 .admin-button-primary,
-.admin-button-secondary {
+.admin-button-secondary,
+.admin-button-danger {
     border-radius: 0.5rem;
     padding: 0.45rem 1rem;
     font-size: 0.9rem;
@@ -29,6 +30,23 @@
 
 .admin-button-secondary:hover {
     background: #f9fafb;
+}
+
+/* 危険操作ボタン（削除など） */
+.admin-button-danger {
+    border-color: #dc2626;
+    background-color: #dc2626;
+    color: #fff;
+}
+
+.admin-button-danger:hover {
+    background-color: #b91c1c;
+}
+
+.admin-danger-button {
+    border-color: #dc2626;
+    background-color: #dc2626;
+    color: #fff;
 }
 
 /* リンク風ボタン */
@@ -393,5 +411,28 @@
 
 /* 確認アクション */
 .admin-users-confirm-actions {
+    margin-top: 1.5rem;
+}
+
+/* 削除モーダル */
+.admin-users-delete-panel {
+    max-width: 480px;
+}
+
+.admin-users-delete-message {
+    font-size: 0.95rem;
+    color: #6b7280;
+    margin-bottom: 1rem;
+}
+
+.admin-users-delete-value {
+    display: block;
+    padding: 0.5rem 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #111827;
+}
+
+.admin-users-delete-actions {
     margin-top: 1.5rem;
 }

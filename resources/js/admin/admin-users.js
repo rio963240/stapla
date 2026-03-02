@@ -3,6 +3,7 @@ const initAdminUsers = () => {
     const listEl = document.getElementById('admin-users-list');
     const editEl = document.getElementById('admin-users-edit');
     const confirmEl = document.getElementById('admin-users-confirm');
+    const deleteModal = document.querySelector('[data-admin-users-delete-modal]');
     const editForm = document.querySelector('[data-admin-users-edit-form]');
     const toast = document.querySelector('[data-admin-users-toast]');
     const toastLabel = toast?.querySelector('.admin-toast-label');
@@ -97,6 +98,84 @@ const initAdminUsers = () => {
             e.preventDefault();
             showView('edit');
         });
+    });
+
+    // 削除ボタン：確認モーダルを表示
+    document.querySelector('[data-admin-users-delete-open]')?.addEventListener('click', () => {
+        const userId = document.querySelector('[data-admin-edit-user-id]')?.value;
+        const name = document.querySelector('[data-admin-edit-name]')?.value ?? '';
+        const email = document.querySelector('[data-admin-edit-email]')?.textContent ?? '';
+        if (!userId || !deleteModal) return;
+
+        deleteModal.dataset.pendingDeleteUserId = userId;
+        const nameEl = deleteModal.querySelector('[data-admin-users-delete-name]');
+        const emailEl = deleteModal.querySelector('[data-admin-users-delete-email]');
+        if (nameEl) nameEl.textContent = name;
+        if (emailEl) emailEl.textContent = email;
+        deleteModal.classList.remove('hidden');
+    });
+
+    // 削除モーダル：閉じる
+    deleteModal?.querySelectorAll('[data-admin-users-delete-close]').forEach((el) => {
+        el.addEventListener('click', () => {
+            deleteModal.classList.add('hidden');
+        });
+    });
+
+    // 削除モーダル：背景クリックで閉じる
+    deleteModal?.addEventListener('click', (e) => {
+        if (e.target === deleteModal) {
+            deleteModal.classList.add('hidden');
+        }
+    });
+
+    // 削除実行：API呼び出し
+    const deleteConfirmBtn = document.querySelector('[data-admin-users-delete-confirm]');
+    deleteConfirmBtn?.addEventListener('click', async () => {
+        const userId = deleteModal?.dataset?.pendingDeleteUserId;
+        if (!userId || !deleteModal) return;
+
+        const baseUrl = window.ADMIN_USERS_DELETE_URL || '/admin/users';
+        const url = `${baseUrl}/${userId}`;
+        const originalText = deleteConfirmBtn?.textContent;
+
+        if (deleteConfirmBtn) {
+            deleteConfirmBtn.disabled = true;
+            deleteConfirmBtn.textContent = '削除中...';
+        }
+
+        try {
+            const formData = new FormData();
+            formData.append('_method', 'DELETE');
+            formData.append('_token', getCsrfToken());
+
+            const res = await fetch(url, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    Accept: 'application/json',
+                },
+            });
+
+            const json = await res.json().catch(() => ({}));
+
+            if (res.ok && json.status === 'success') {
+                deleteModal.classList.add('hidden');
+                showToast(json.message || 'ユーザーを削除しました');
+                showView('list');
+                window.location.reload();
+            } else {
+                showToast(json.message || '削除に失敗しました', 'error');
+            }
+        } catch (err) {
+            showToast('削除に失敗しました', 'error');
+        } finally {
+            if (deleteConfirmBtn) {
+                deleteConfirmBtn.disabled = false;
+                deleteConfirmBtn.textContent = originalText;
+            }
+        }
     });
 
     // 更新：Ajaxで保存し結果に応じて通知

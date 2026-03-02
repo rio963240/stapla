@@ -167,6 +167,7 @@ Route::middleware([
         // 管理画面：ユーザー
         Route::get('/users', [AdminUsersController::class, 'index'])->name('users');
         Route::put('/users/{user}', [AdminUsersController::class, 'update'])->name('users.update');
+        Route::delete('/users/{user}', [AdminUsersController::class, 'destroy'])->name('users.destroy');
     });
 
     // TODO単位の学習記録表示（StudyRecordController@showTodo）

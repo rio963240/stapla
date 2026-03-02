@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\AdminUserUpdateRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Throwable;
 
 class AdminUsersController extends Controller
@@ -106,6 +107,31 @@ class AdminUsersController extends Controller
                 'status_label' => $user->is_active ? '有効' : '停止',
                 'last_login_at' => $user->last_login_at?->format('Y/n/j H:i:s') ?: '-',
             ],
+        ]);
+    }
+
+    public function destroy(User $user): JsonResponse
+    {
+        // 自分自身は削除できない
+        if (Auth::id() === $user->id) {
+            return response()->json([
+                'status' => 'error',
+                'message' => '自分自身のアカウントは削除できません',
+            ], 403);
+        }
+
+        try {
+            $user->delete();
+        } catch (Throwable $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => '削除に失敗しました',
+            ], 500);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'ユーザーを削除しました',
         ]);
     }
 }

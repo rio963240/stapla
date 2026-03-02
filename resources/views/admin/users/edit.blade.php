@@ -57,6 +57,9 @@
                 <button type="button" class="admin-button-secondary" data-admin-users-cancel>
                     キャンセル
                 </button>
+                <button type="button" class="admin-button-danger" data-admin-users-delete-open>
+                    削除
+                </button>
             </div>
         </form>
     </div>
