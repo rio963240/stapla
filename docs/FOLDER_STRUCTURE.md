@@ -23,28 +23,28 @@
 
 ```
 ├── stapla
-│   ├── app  # アプリケーションのコアコード
-│   │   ├── Actions  # 認証・ユーザー操作などのアクションクラス
-│   │   │   ├── Fortify  # 登録・パスワード・プロフィール更新など
+│   ├── app                  # アプリケーションのコアコード
+│   │   ├── Actions          # 認証・ユーザー操作などのアクションクラス
+│   │   │   ├── Fortify      # 登録・パスワード・プロフィール更新など
 │   │   │   │   ├── CreateNewUser.php
 │   │   │   │   ├── PasswordValidationRules.php
 │   │   │   │   ├── ResetUserPassword.php
 │   │   │   │   ├── UpdateUserPassword.php
 │   │   │   │   └── UpdateUserProfileInformation.php
-│   │   │   └── Jetstream  # アカウント削除など
+│   │   │   └── Jetstream    # アカウント削除など
 │   │   │       └── DeleteUser.php
-│   │   ├── Console  # Artisan コンソール
-│   │   │   └── Commands  # artisan コマンド（バックアップ・LINE通知など）
+│   │   ├── Console          # Artisan コンソール
+│   │   │   └── Commands     # artisan コマンド（バックアップ・LINE通知など）
 │   │   │       ├── RunAutoBackup.php
 │   │   │       ├── SendLineEveningNotification.php
 │   │   │       └── SendLineMorningNotification.php
-│   │   ├── Http  # HTTP リクエスト処理
+│   │   ├── Http             # HTTP リクエスト処理
 │   │   │   ├── Controllers  # コントローラ
-│   │   │   │   ├── Admin  # 管理画面用コントローラ
+│   │   │   │   ├── Admin    # 管理画面用コントローラ
 │   │   │   │   │   ├── AdminBackupsController.php
 │   │   │   │   │   ├── AdminQualificationsController.php
 │   │   │   │   │   └── AdminUsersController.php
-│   │   │   │   ├── Auth  # 認証用コントローラ
+│   │   │   │   ├── Auth     # 認証用コントローラ
 │   │   │   │   │   └── LoginViaEmailController.php
 │   │   │   │   ├── CalendarController.php
 │   │   │   │   ├── Controller.php
@@ -58,11 +58,11 @@
 │   │   │   │   ├── SettingsController.php
 │   │   │   │   ├── StudyProgressController.php
 │   │   │   │   └── StudyRecordController.php
-│   │   │   ├── Middleware  # HTTP ミドルウェア
+│   │   │   ├── Middleware   # HTTP ミドルウェア
 │   │   │   │   ├── AdminMiddleware.php
 │   │   │   │   ├── LineWebhookRawBody.php
 │   │   │   │   └── RedirectIfAuthenticated.php
-│   │   │   ├── Requests  # フォームリクエスト（バリデーション）
+│   │   │   ├── Requests     # フォームリクエスト（バリデーション）
 │   │   │   │   ├── Admin
 │   │   │   │   │   ├── AdminBackupSettingsRequest.php
 │   │   │   │   │   ├── AdminDomainStoreRequest.php
@@ -78,14 +78,14 @@
 │   │   │   │   ├── SettingsDestroyRequest.php
 │   │   │   │   ├── StudyProgressDataRequest.php
 │   │   │   │   └── StudyRecordStoreRequest.php
-│   │   │   └── Responses  # ログイン・登録時のレスポンス
+│   │   │   └── Responses    # ログイン・登録時のレスポンス
 │   │   │       ├── LoginResponse.php
 │   │   │       └── RegisterResponse.php
-│   │   ├── Jobs  # キューで実行するジョブ
+│   │   ├── Jobs             # キューで実行するジョブ
 │   │   │   └── RunBackupJob.php
-│   │   ├── Mail  # 送信メールクラス
+│   │   ├── Mail             # 送信メールクラス
 │   │   │   └── RegistrationCompleteMail.php
-│   │   ├── Models  # Eloquent モデル
+│   │   ├── Models           # Eloquent モデル
 │   │   │   ├── BackupFile.php
 │   │   │   ├── BackupSetting.php
 │   │   │   ├── BaseModel.php
@@ -102,21 +102,21 @@
 │   │   │   ├── UserNoStudyDay.php
 │   │   │   ├── UserQualificationTarget.php
 │   │   │   └── UserSubdomainPreference.php
-│   │   ├── Providers  # サービスプロバイダ
+│   │   ├── Providers        # サービスプロバイダ
 │   │   │   ├── AppServiceProvider.php
 │   │   │   ├── FortifyServiceProvider.php
 │   │   │   └── JetstreamServiceProvider.php
-│   │   ├── Services  # ビジネスロジック（バックアップ・LINE など）
+│   │   ├── Services         # ビジネスロジック（バックアップ・LINE など）
 │   │   │   ├── BackupService.php
 │   │   │   └── LineMessagingService.php
 │   │   └── View
-│   │       └── Components  # Blade レイアウトコンポーネント
+│   │       └── Components   # Blade レイアウトコンポーネント
 │   │           ├── AppLayout.php
 │   │           └── GuestLayout.php
-│   ├── bootstrap  # Laravel 起動・キャッシュ
+│   ├── bootstrap            # Laravel 起動・キャッシュ
 │   │   ├── app.php
 │   │   └── providers.php
-│   ├── config  # 設定ファイル
+│   ├── config               # 設定ファイル
 │   │   ├── app.php
 │   │   ├── auth.php
 │   │   ├── backup.php
@@ -131,10 +131,10 @@
 │   │   ├── sanctum.php
 │   │   ├── services.php
 │   │   └── session.php
-│   ├── database  # DB まわり
-│   │   ├── factories  # モデルファクトリ
+│   ├── database             # DB まわり
+│   │   ├── factories        # モデルファクトリ
 │   │   │   └── UserFactory.php
-│   │   ├── migrations  # マイグレーション
+│   │   ├── migrations       # マイグレーション
 │   │   │   ├── 0001_01_01_000000_create_users_table.php
 │   │   │   ├── 0001_01_01_000001_create_cache_table.php
 │   │   │   ├── 0001_01_01_000002_create_jobs_table.php
@@ -160,7 +160,7 @@
 │   │   │   ├── 2026_02_13_100000_add_notification_times_to_line_accounts.php
 │   │   │   ├── 2026_02_13_120000_remove_notification_times_from_line_accounts.php
 │   │   │   └── 2026_02_13_130000_add_line_notify_enabled_to_users.php
-│   │   ├── seeders  # シーダー
+│   │   ├── seeders          # シーダー
 │   │   │   ├── data
 │   │   │   │   └── qualification_template.csv
 │   │   │   ├── DatabaseSeeder.php
@@ -169,11 +169,11 @@
 │   │   │   └── qualification_template.csv
 │   │   ├── .gitignore
 │   │   └── database.sqlite
-│   ├── docs  # ドキュメント
+│   ├── docs                 # ドキュメント
 │   │   ├── FOLDER_STRUCTURE.md
 │   │   ├── OPERATION_MANUAL.md
 │   │   └── テスト仕様書.md
-│   ├── lang  # 多言語文言（ja など）
+│   ├── lang                 # 多言語文言（ja など）
 │   │   ├── ja
 │   │   │   ├── auth.php
 │   │   │   ├── console.php
@@ -181,7 +181,7 @@
 │   │   │   ├── passwords.php
 │   │   │   └── validation.php
 │   │   └── ja.json
-│   ├── public  # 公開ディレクトリ（index.php・静的ファイル）
+│   ├── public               # 公開ディレクトリ（index.php・静的ファイル）
 │   │   ├── images
 │   │   │   ├── line_qr_code.png
 │   │   │   ├── no-image.jpeg
@@ -192,7 +192,7 @@
 │   │   ├── robots.txt
 │   │   └── storage
 │   ├── resources
-│   │   ├── css  # CSS ソース
+│   │   ├── css              # CSS ソース
 │   │   │   ├── admin
 │   │   │   │   ├── admin-backups.css
 │   │   │   │   ├── admin-qualifications.css
@@ -207,7 +207,7 @@
 │   │   │   │   └── study-record-modal.css
 │   │   │   ├── app.css
 │   │   │   └── settings.css
-│   │   ├── js  # JavaScript ソース
+│   │   ├── js               # JavaScript ソース
 │   │   │   ├── admin
 │   │   │   │   ├── admin-backups.js
 │   │   │   │   ├── admin-qualifications.js
@@ -226,8 +226,8 @@
 │   │   ├── markdown
 │   │   │   ├── policy.md
 │   │   │   └── terms.md
-│   │   └── views  # Blade テンプレート
-│   │       ├── admin  # 管理画面のビュー
+│   │   └── views            # Blade テンプレート
+│   │       ├── admin        # 管理画面のビュー
 │   │       │   ├── backups
 │   │       │   │   ├── _auto-card.blade.php
 │   │       │   │   ├── _header.blade.php
@@ -246,7 +246,7 @@
 │   │       │   ├── backups.blade.php
 │   │       │   ├── qualifications.blade.php
 │   │       │   └── users.blade.php
-│   │       ├── auth  # 認証画面のビュー
+│   │       ├── auth         # 認証画面のビュー
 │   │       │   ├── confirm-password.blade.php
 │   │       │   ├── forgot-password.blade.php
 │   │       │   ├── login.blade.php
@@ -314,14 +314,14 @@
 │   │       ├── navigation-menu.blade.php
 │   │       ├── settings.blade.php
 │   │       └── study-progress.blade.php
-│   ├── routes  # ルート定義
+│   ├── routes               # ルート定義
 │   │   ├── api.php
 │   │   ├── console.php
 │   │   └── web.php
-│   ├── scripts  # 運用・開発用スクリプト
+│   ├── scripts              # 運用・開発用スクリプト
 │   │   ├── make_tree.py
 │   │   └── setup-zsh-path.sh
-│   ├── storage  # ログ・キャッシュ・アップロード・バックアップ
+│   ├── storage              # ログ・キャッシュ・アップロード・バックアップ
 │   │   ├── app
 │   │   │   ├── private
 │   │   │   │   ├── .gitignore
@@ -332,8 +332,8 @@
 │   │   │   └── templates
 │   │   └── framework
 │   │       └── .gitignore
-│   ├── tests  # テスト
-│   │   ├── Feature  # Feature テスト
+│   ├── tests                # テスト
+│   │   ├── Feature          # Feature テスト
 │   │   │   ├── ApiTokenPermissionsTest.php
 │   │   │   ├── AuthenticationTest.php
 │   │   │   ├── BrowserSessionsTest.php
@@ -351,26 +351,26 @@
 │   │   │   ├── StudyProgressDataTest.php
 │   │   │   ├── TwoFactorAuthenticationSettingsTest.php
 │   │   │   └── UpdatePasswordTest.php
-│   │   ├── Unit  # Unit テスト
+│   │   ├── Unit             # Unit テスト
 │   │   │   └── ExampleTest.php
 │   │   └── TestCase.php
-│   ├── .dockerignore  # Docker ビルド時に無視するファイル
-│   ├── .editorconfig  # エディタの共通設定
-│   ├── .env  # 環境変数（本番用・秘密は含めない）
-│   ├── .env.example  # 環境変数のサンプル
-│   ├── .gitattributes  # Git の属性設定
-│   ├── .gitignore  # Git の無視リスト
-│   ├── artisan  # Laravel の CLI エントリ
-│   ├── compose.yaml  # Docker Compose 設定
-│   ├── composer.json  # PHP 依存関係の定義
-│   ├── composer.lock  # PHP 依存のロック
-│   ├── Dockerfile  # コンテナビルド定義
-│   ├── package-lock.json  # npm 依存のロック
-│   ├── package.json  # フロントエンド依存関係の定義
-│   ├── phpunit.xml  # PHPUnit 設定
-│   ├── postcss.config.js  # PostCSS 設定
-│   ├── README.md  # プロジェクト説明
-│   ├── stapla_backup.dump  # DB バックアップダンプ（手動など）
-│   ├── tailwind.config.js  # Tailwind CSS 設定
-│   └── vite.config.js  # Vite ビルド設定
+│   ├── .dockerignore        # Docker ビルド時に無視するファイル
+│   ├── .editorconfig        # エディタの共通設定
+│   ├── .env                 # 環境変数（本番用・秘密は含めない）
+│   ├── .env.example         # 環境変数のサンプル
+│   ├── .gitattributes       # Git の属性設定
+│   ├── .gitignore           # Git の無視リスト
+│   ├── artisan              # Laravel の CLI エントリ
+│   ├── compose.yaml         # Docker Compose 設定
+│   ├── composer.json        # PHP 依存関係の定義
+│   ├── composer.lock        # PHP 依存のロック
+│   ├── Dockerfile           # コンテナビルド定義
+│   ├── package-lock.json    # npm 依存のロック
+│   ├── package.json         # フロントエンド依存関係の定義
+│   ├── phpunit.xml          # PHPUnit 設定
+│   ├── postcss.config.js    # PostCSS 設定
+│   ├── README.md            # プロジェクト説明
+│   ├── stapla_backup.dump   # DB バックアップダンプ（手動など）
+│   ├── tailwind.config.js   # Tailwind CSS 設定
+│   └── vite.config.js       # Vite ビルド設定
 ```

@@ -129,15 +129,35 @@ def children_of(prefix):
         return (0 if is_dir else 1, name.lower())
     return sorted(cand, key=key)
 
-def print_node(prefix, indent, is_last):
-    name = prefix.split('/')[-1] if prefix else 'stapla'
-    conn = '└── ' if is_last else '├── '
-    comment = DESCRIPTIONS.get(prefix, "")
-    suffix = "  # " + comment if comment else ""
-    print(indent + conn + name + suffix)
-    child_indent = indent + ('    ' if is_last else '│   ')
-    kids = children_of(prefix)
-    for i, c in enumerate(kids):
-        print_node(c, child_indent, i == len(kids) - 1)
+def collect_lines():
+    """(left_part, comment) のリストを返す。"""
+    lines = []
 
-print_node('', '', False)
+    def visit(prefix, indent, is_last):
+        name = prefix.split('/')[-1] if prefix else 'stapla'
+        conn = '└── ' if is_last else '├── '
+        left = indent + conn + name
+        comment = DESCRIPTIONS.get(prefix, "")
+        lines.append((left, comment))
+        child_indent = indent + ('    ' if is_last else '│   ')
+        kids = children_of(prefix)
+        for i, c in enumerate(kids):
+            visit(c, child_indent, i == len(kids) - 1)
+
+    visit('', '', False)
+    return lines
+
+def print_tree():
+    lines = collect_lines()
+    # コメントがある行だけ見て、左部分の最大幅を算出（コメントを揃えるため）
+    max_left = max(len(left) for left, comment in lines if comment)
+    if max_left == 0:
+        max_left = 40  # コメントが一つもない場合のデフォルト
+    for left, comment in lines:
+        if comment:
+            padding = max_left - len(left)
+            print(left + " " * padding + "  # " + comment)
+        else:
+            print(left)
+
+print_tree()
