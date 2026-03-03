@@ -151,6 +151,8 @@
                     <form method="POST" action="{{ route('settings.notifications.update') }}" id="settings-notifications-form">
                         @csrf
                         @method('PUT')
+                        {{-- チェックオフ時も line_notify_enabled を送るため hidden を先行させる（ON 時は checkbox の 1 が上書き） --}}
+                        <input type="hidden" name="line_notify_enabled" value="0">
                     <div class="settings-grid">
                         <label class="settings-label" for="line-notify">LINE通知</label>
                         <label class="settings-switch">
