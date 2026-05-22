@@ -1,59 +1,389 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Stapla（スタプラ）
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 概要
 
-## About Laravel
+Stapla（スタプラ）は、学習計画の自動生成・管理を目的としたWebアプリケーションです。
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+「計画を立てるのが苦手」「何をどれくらい勉強すればいいかわからない」「資格勉強が続かない」といった課題を解決するために開発しました。
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+ユーザーが目標資格・試験日・学習可能時間などを入力すると、システムが自動で学習計画を生成します。
+また、日々の学習実績を記録することで、進捗管理や計画の再調整（リスケジュール）も行えます。
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+# システムの目的
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+多くの学習者は以下のような問題を抱えています。
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+* 計画の立て方がわからない
+* 勉強範囲の配分が難しい
+* モチベーションが続かない
+* 計画通りに進まず挫折する
+* 自分でスケジュールを再調整できない
 
-## Laravel Sponsors
+Staplaでは、これらの問題に対して以下を提供します。
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+* 学習計画の自動生成
+* 学習量の自動配分
+* 学習進捗の可視化
+* リスケジュール機能
+* 通知機能による習慣化支援
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+# 主な機能
 
-## Contributing
+## 1. 学習計画自動生成
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+ユーザーが以下を入力することで、学習計画を自動生成します。
 
-## Code of Conduct
+* 目標資格
+* 試験日
+* 学習開始日
+* 1日の学習可能時間
+* 学習可能曜日
+* 学習範囲
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+入力内容をもとに、試験日までの学習量を日ごとに自動配分します。
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 2. Todo生成
 
-## License
+その日に行うべき学習内容をTodo形式で表示します。
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+例：
+
+* 基本情報 午前問題 20問
+* Java Silver Chapter3
+* ネットワーク基礎復習
+
+ユーザーは日々の学習内容を確認しながら勉強できます。
+
+---
+
+## 3. 学習実績記録
+
+実際に行った学習内容や学習時間を記録できます。
+
+* 実績時間
+* 完了状況
+* メモ
+* 達成率
+
+記録したデータはグラフや進捗率として可視化されます。
+
+---
+
+## 4. リスケジュール機能
+
+予定通り進まなかった場合でも、自動で再計画を行います。
+
+### リスケジュールの流れ
+
+1. 未消化タスクを取得
+2. 明日以降の既存計画を削除
+3. 残タスクを再配分
+4. 新しい計画を生成
+
+これにより、学習の遅れが発生しても柔軟に対応できます。
+
+また、予定より多く学習した場合も残量を考慮して再調整可能です。
+
+---
+
+## 5. 通知機能
+
+メールやLINE通知によって学習をサポートします。
+
+### 朝通知
+
+* 今日のTodo通知
+* 今日やるべき内容の確認
+
+### 夜通知
+
+* 実績入力のリマインド
+* 学習記録の促進
+
+### 週次通知
+
+* 学習サマリー
+* 進捗確認
+
+---
+
+## 6. グラフ・分析機能
+
+学習状況を可視化します。
+
+* 学習時間グラフ
+* 達成率
+* 学習推移
+* 資格ごとの進捗
+* 残タスク量
+
+---
+
+## 7. 認証機能
+
+ユーザー認証機能を搭載しています。
+
+* 会員登録
+* ログイン
+* ログアウト
+* パスワードリセット
+* プロフィール管理
+
+Laravel Fortify / Jetstream を利用しています。
+
+---
+
+# 使用技術
+
+## フロントエンド
+
+* HTML
+* CSS
+* JavaScript
+* Blade
+* Tailwind CSS
+
+---
+
+## バックエンド
+
+* PHP
+* Laravel
+
+---
+
+## データベース
+
+* PostgreSQL
+* Neon
+
+---
+
+## インフラ
+
+* Render
+* Cloudflare
+* Docker
+
+---
+
+## 通知
+
+* Resend
+* LINE Messaging API
+
+---
+
+# システム構成
+
+```text
+ユーザー
+   ↓
+フロントエンド（Blade / Tailwind CSS）
+   ↓
+Laravel Application
+   ↓
+PostgreSQL（Neon）
+   ↓
+通知システム（メール / LINE）
+```
+
+---
+
+# ディレクトリ構成
+
+```text
+stapla/
+├── app/
+│   ├── Actions/
+│   ├── Console/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   ├── Middleware/
+│   │   └── Requests/
+│   ├── Models/
+│   ├── Services/
+│   └── Providers/
+│
+├── bootstrap/
+├── config/
+├── database/
+│   ├── migrations/
+│   ├── seeders/
+│   └── factories/
+│
+├── public/
+├── resources/
+│   ├── views/
+│   ├── css/
+│   └── js/
+│
+├── routes/
+├── storage/
+├── tests/
+└── docker/
+```
+
+---
+
+# こだわったポイント
+
+## 1. 「計画が苦手な人」に焦点を当てた
+
+単なるタスク管理アプリではなく、「計画を立てること自体が苦手な人」を対象にしています。
+
+学習効率を高めるだけでなく、「最初の一歩を踏み出せる」ことを重視して設計しました。
+
+---
+
+## 2. リスケジュール機能
+
+多くの学習アプリは計画生成だけで終わりますが、Staplaでは学習の遅れを考慮した再生成機能を実装しています。
+
+現実的な学習継続を重視しました。
+
+---
+
+## 3. MVCを意識した設計
+
+LaravelのMVC構成を意識し、責務分離を行っています。
+
+* Controller
+* Model
+* Service
+* Request
+
+などを適切に分割し、保守性を意識しました。
+
+---
+
+## 4. セキュリティ対策
+
+以下のセキュリティ対策を行っています。
+
+* CSRF対策
+* バリデーション
+* 認証機能
+* Cloudflareによる保護
+* XSS対策
+* SQLインジェクション対策
+
+---
+
+# 開発環境構築
+
+## 必要環境
+
+* Docker
+* Docker Compose
+* PHP
+* Composer
+* Node.js
+* npm
+
+---
+
+## インストール
+
+```bash
+# リポジトリをクローン
+ git clone <repository-url>
+
+# ディレクトリ移動
+ cd stapla
+
+# .env作成
+ cp .env.example .env
+
+# コンテナ起動
+ docker compose up -d
+
+# Composer install
+ composer install
+
+# npm install
+ npm install
+
+# ビルド
+ npm run build
+
+# アプリキー生成
+ php artisan key:generate
+
+# マイグレーション
+ php artisan migrate
+
+# シーダー実行
+ php artisan db:seed
+```
+
+---
+
+# 起動方法
+
+```bash
+php artisan serve
+```
+
+または
+
+```bash
+docker compose up
+```
+
+---
+
+# 今後の課題
+
+* AIによる計画最適化
+* 学習分析機能強化
+* モバイル対応
+* SNSログイン
+* カレンダー連携
+* 学習データ分析
+* 通知機能の高度化
+* 他ユーザーとの共有機能
+
+---
+
+# 今後実装したい機能
+
+* AIによる自動難易度調整
+* 学習傾向分析
+* 学習ランキング
+* 学習コミュニティ
+* スマホアプリ化
+* PWA対応
+* 資格おすすめ機能
+
+---
+
+# 制作背景
+
+このシステムは、修了研究として開発しました。
+
+自分自身が「計画を立てて勉強すること」に苦手意識を持っていた経験から、同じ悩みを持つ人の助けになるシステムを作りたいと考えたことが開発のきっかけです。
+
+また、ただのToDo管理ではなく、
+
+「勉強を継続できる仕組み」
+
+を重視して設計・開発を行いました。
+
+---
+
+# 制作者
+
+* Koga Ryota
+
+---
+
+# ライセンス
+
+MIT License
